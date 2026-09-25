@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ctgx43wa5dvjp"]
+
+[ext_resource type="Script" uid="uid://bd5dodcnswu50" path="res://Chapter1.cs" id="1_wocge"]
+
+[node name="Chapter1" type="Node2D" unique_id=813521800]
+script = ExtResource("1_wocge")
