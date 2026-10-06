@@ -1,0 +1,404 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://ProjectXLowFidelityPlayer.cs" id="1_player"]
+
+[sub_resource type="RectangleShape2D" id="Rectangle_NorthWall"]
+size = Vector2(1600, 32)
+
+[sub_resource type="RectangleShape2D" id="Rectangle_SouthWall"]
+size = Vector2(1600, 32)
+
+[sub_resource type="RectangleShape2D" id="Rectangle_WestWall"]
+size = Vector2(32, 936)
+
+[sub_resource type="RectangleShape2D" id="Rectangle_EastWall"]
+size = Vector2(32, 936)
+
+[sub_resource type="RectangleShape2D" id="Rectangle_Square"]
+size = Vector2(88, 88)
+
+[sub_resource type="CircleShape2D" id="Circle_Circle"]
+radius = 56
+
+[sub_resource type="RectangleShape2D" id="Rectangle_HorizontalWall"]
+size = Vector2(320, 36)
+
+[sub_resource type="RectangleShape2D" id="Rectangle_VerticalWall"]
+size = Vector2(36, 220)
+
+[sub_resource type="RectangleShape2D" id="Rectangle_RotatedCrate"]
+size = Vector2(130, 60)
+
+[sub_resource type="RectangleShape2D" id="Rectangle_RoomTop"]
+size = Vector2(320, 28)
+
+[sub_resource type="RectangleShape2D" id="Rectangle_RoomBottom"]
+size = Vector2(320, 28)
+
+[sub_resource type="RectangleShape2D" id="Rectangle_RoomLeft"]
+size = Vector2(28, 152)
+
+[sub_resource type="CircleShape2D" id="Circle_LargeCircle"]
+radius = 70
+
+[sub_resource type="RectangleShape2D" id="PlayerShape"]
+size = Vector2(32, 32)
+
+[node name="ProjectXLowFidelity" type="Node2D"]
+
+[node name="Floor" type="Polygon2D" parent="."]
+color = Color(0.82, 0.84, 0.86, 1)
+polygon = PackedVector2Array(0, 0, 1600, 0, 1600, 1000, 0, 1000)
+
+[node name="Grid" type="Node2D" parent="."]
+
+[node name="Vertical100" type="Line2D" parent="Grid"]
+points = PackedVector2Array(100, 32, 100, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical200" type="Line2D" parent="Grid"]
+points = PackedVector2Array(200, 32, 200, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical300" type="Line2D" parent="Grid"]
+points = PackedVector2Array(300, 32, 300, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical400" type="Line2D" parent="Grid"]
+points = PackedVector2Array(400, 32, 400, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical500" type="Line2D" parent="Grid"]
+points = PackedVector2Array(500, 32, 500, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical600" type="Line2D" parent="Grid"]
+points = PackedVector2Array(600, 32, 600, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical700" type="Line2D" parent="Grid"]
+points = PackedVector2Array(700, 32, 700, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical800" type="Line2D" parent="Grid"]
+points = PackedVector2Array(800, 32, 800, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical900" type="Line2D" parent="Grid"]
+points = PackedVector2Array(900, 32, 900, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical1000" type="Line2D" parent="Grid"]
+points = PackedVector2Array(1000, 32, 1000, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical1100" type="Line2D" parent="Grid"]
+points = PackedVector2Array(1100, 32, 1100, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical1200" type="Line2D" parent="Grid"]
+points = PackedVector2Array(1200, 32, 1200, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical1300" type="Line2D" parent="Grid"]
+points = PackedVector2Array(1300, 32, 1300, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical1400" type="Line2D" parent="Grid"]
+points = PackedVector2Array(1400, 32, 1400, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Vertical1500" type="Line2D" parent="Grid"]
+points = PackedVector2Array(1500, 32, 1500, 968)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Horizontal100" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32, 100, 1568, 100)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Horizontal200" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32, 200, 1568, 200)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Horizontal300" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32, 300, 1568, 300)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Horizontal400" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32, 400, 1568, 400)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Horizontal500" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32, 500, 1568, 500)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Horizontal600" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32, 600, 1568, 600)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Horizontal700" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32, 700, 1568, 700)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Horizontal800" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32, 800, 1568, 800)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Horizontal900" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32, 900, 1568, 900)
+width = 1.0
+default_color = Color(0.73, 0.76, 0.79, 1)
+
+[node name="Obstacles" type="Node2D" parent="."]
+
+[node name="NorthWall" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(800, 16)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/NorthWall"]
+color = Color(0.36, 0.39, 0.43, 1)
+polygon = PackedVector2Array(-800, -16, 800, -16, 800, 16, -800, 16)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/NorthWall"]
+shape = SubResource("Rectangle_NorthWall")
+
+[node name="SouthWall" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(800, 984)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/SouthWall"]
+color = Color(0.36, 0.39, 0.43, 1)
+polygon = PackedVector2Array(-800, -16, 800, -16, 800, 16, -800, 16)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/SouthWall"]
+shape = SubResource("Rectangle_SouthWall")
+
+[node name="WestWall" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(16, 500)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/WestWall"]
+color = Color(0.36, 0.39, 0.43, 1)
+polygon = PackedVector2Array(-16, -468, 16, -468, 16, 468, -16, 468)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/WestWall"]
+shape = SubResource("Rectangle_WestWall")
+
+[node name="EastWall" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(1584, 500)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/EastWall"]
+color = Color(0.36, 0.39, 0.43, 1)
+polygon = PackedVector2Array(-16, -468, 16, -468, 16, 468, -16, 468)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/EastWall"]
+shape = SubResource("Rectangle_EastWall")
+
+[node name="Square" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(420, 220)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/Square"]
+color = Color(0.36, 0.39, 0.43, 1)
+polygon = PackedVector2Array(-44, -44, 44, -44, 44, 44, -44, 44)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/Square"]
+shape = SubResource("Rectangle_Square")
+
+[node name="Circle" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(650, 230)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/Circle"]
+color = Color(0.48, 0.51, 0.55, 1)
+polygon = PackedVector2Array(56, 0, 55.52091, 7.30947, 54.09185, 14.49387, 51.73725, 21.43027, 48.49742, 28, 44.42779, 34.09064, 39.59798, 39.59798, 34.09064, 44.42779, 28, 48.49742, 21.43027, 51.73725, 14.49387, 54.09185, 7.30947, 55.52091, 0, 56, -7.30947, 55.52091, -14.49387, 54.09185, -21.43027, 51.73725, -28, 48.49742, -34.09064, 44.42779, -39.59798, 39.59798, -44.42779, 34.09064, -48.49742, 28, -51.73725, 21.43027, -54.09185, 14.49387, -55.52091, 7.30947, -56, 0, -55.52091, -7.30947, -54.09185, -14.49387, -51.73725, -21.43027, -48.49742, -28, -44.42779, -34.09064, -39.59798, -39.59798, -34.09064, -44.42779, -28, -48.49742, -21.43027, -51.73725, -14.49387, -54.09185, -7.30947, -55.52091, -0, -56, 7.30947, -55.52091, 14.49387, -54.09185, 21.43027, -51.73725, 28, -48.49742, 34.09064, -44.42779, 39.59798, -39.59798, 44.42779, -34.09064, 48.49742, -28, 51.73725, -21.43027, 54.09185, -14.49387, 55.52091, -7.30947)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/Circle"]
+shape = SubResource("Circle_Circle")
+
+[node name="Triangle" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(950, 240)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/Triangle"]
+color = Color(0.42, 0.45, 0.49, 1)
+polygon = PackedVector2Array(-64, 46, 0, -62, 64, 46)
+
+[node name="Collision" type="CollisionPolygon2D" parent="Obstacles/Triangle"]
+polygon = PackedVector2Array(-64, 46, 0, -62, 64, 46)
+
+[node name="HorizontalWall" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(580, 460)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/HorizontalWall"]
+color = Color(0.36, 0.39, 0.43, 1)
+polygon = PackedVector2Array(-160, -18, 160, -18, 160, 18, -160, 18)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/HorizontalWall"]
+shape = SubResource("Rectangle_HorizontalWall")
+
+[node name="VerticalWall" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(1020, 540)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/VerticalWall"]
+color = Color(0.36, 0.39, 0.43, 1)
+polygon = PackedVector2Array(-18, -110, 18, -110, 18, 110, -18, 110)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/VerticalWall"]
+shape = SubResource("Rectangle_VerticalWall")
+
+[node name="RotatedCrate" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(1320, 420)
+collision_layer = 1
+collision_mask = 2
+rotation = 0.45
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/RotatedCrate"]
+color = Color(0.36, 0.39, 0.43, 1)
+polygon = PackedVector2Array(-65, -30, 65, -30, 65, 30, -65, 30)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/RotatedCrate"]
+shape = SubResource("Rectangle_RotatedCrate")
+
+[node name="RoomTop" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(250, 650)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/RoomTop"]
+color = Color(0.36, 0.39, 0.43, 1)
+polygon = PackedVector2Array(-160, -14, 160, -14, 160, 14, -160, 14)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/RoomTop"]
+shape = SubResource("Rectangle_RoomTop")
+
+[node name="RoomBottom" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(250, 830)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/RoomBottom"]
+color = Color(0.36, 0.39, 0.43, 1)
+polygon = PackedVector2Array(-160, -14, 160, -14, 160, 14, -160, 14)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/RoomBottom"]
+shape = SubResource("Rectangle_RoomBottom")
+
+[node name="RoomLeft" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(104, 740)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/RoomLeft"]
+color = Color(0.36, 0.39, 0.43, 1)
+polygon = PackedVector2Array(-14, -76, 14, -76, 14, 76, -14, 76)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/RoomLeft"]
+shape = SubResource("Rectangle_RoomLeft")
+
+[node name="LargeCircle" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(1240, 780)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/LargeCircle"]
+color = Color(0.48, 0.51, 0.55, 1)
+polygon = PackedVector2Array(70, 0, 69.40114, 9.13683, 67.61481, 18.11733, 64.67157, 26.78784, 60.62178, 35, 55.53473, 42.6133, 49.49747, 49.49747, 42.6133, 55.53473, 35, 60.62178, 26.78784, 64.67157, 18.11733, 67.61481, 9.13683, 69.40114, 0, 70, -9.13683, 69.40114, -18.11733, 67.61481, -26.78784, 64.67157, -35, 60.62178, -42.6133, 55.53473, -49.49747, 49.49747, -55.53473, 42.6133, -60.62178, 35, -64.67157, 26.78784, -67.61481, 18.11733, -69.40114, 9.13683, -70, 0, -69.40114, -9.13683, -67.61481, -18.11733, -64.67157, -26.78784, -60.62178, -35, -55.53473, -42.6133, -49.49747, -49.49747, -42.6133, -55.53473, -35, -60.62178, -26.78784, -64.67157, -18.11733, -67.61481, -9.13683, -69.40114, -0, -70, 9.13683, -69.40114, 18.11733, -67.61481, 26.78784, -64.67157, 35, -60.62178, 42.6133, -55.53473, 49.49747, -49.49747, 55.53473, -42.6133, 60.62178, -35, 64.67157, -26.78784, 67.61481, -18.11733, 69.40114, -9.13683)
+
+[node name="Collision" type="CollisionShape2D" parent="Obstacles/LargeCircle"]
+shape = SubResource("Circle_LargeCircle")
+
+[node name="Diamond" type="StaticBody2D" parent="Obstacles"]
+position = Vector2(700, 760)
+collision_layer = 1
+collision_mask = 2
+
+[node name="Visual" type="Polygon2D" parent="Obstacles/Diamond"]
+color = Color(0.42, 0.45, 0.49, 1)
+polygon = PackedVector2Array(0, -60, 60, 0, 0, 60, -60, 0)
+
+[node name="Collision" type="CollisionPolygon2D" parent="Obstacles/Diamond"]
+polygon = PackedVector2Array(0, -60, 60, 0, 0, 60, -60, 0)
+
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(150, 170)
+collision_layer = 2
+collision_mask = 1
+motion_mode = 1
+script = ExtResource("1_player")
+
+[node name="Visual" type="Polygon2D" parent="Player"]
+color = Color(0.1, 0.43, 0.94, 1)
+polygon = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[node name="Collision" type="CollisionShape2D" parent="Player"]
+shape = SubResource("PlayerShape")
+
+[node name="Camera" type="Camera2D" parent="Player"]
+limit_left = 0
+limit_top = 0
+limit_right = 1600
+limit_bottom = 1000
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Instructions" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 670.0
+offset_bottom = 88.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.06, 0.07, 0.09, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 18
+text = "PROJECT X - LOW FIDELITY
+WASD / pijltjes: beweeg het blauwe blok. Grijze vormen en muren blokkeren je."
+
+[node name="InputStatus" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 98.0
+offset_right = 730.0
+offset_bottom = 166.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.06, 0.07, 0.09, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 18
+text = "C# NOG NIET ACTIEF
+Controleer de .NET-editor en Build/Output als deze tekst blijft staan."
