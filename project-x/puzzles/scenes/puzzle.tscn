@@ -59,7 +59,6 @@ layout_mode = 2
 [node name="ButtonGrid" type="GridContainer" parent="PuzzleUI" unique_id=195789999]
 layout_mode = 2
 offset_transform_enabled = true
-offset_transform_position = Vector2(180, 0)
 columns = 2
 
 [node name="Button0" type="Button" parent="PuzzleUI/ButtonGrid" unique_id=1945498780]
