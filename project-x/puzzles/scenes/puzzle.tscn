@@ -1,0 +1,86 @@
+[gd_scene format=3 uid="uid://dwllpamu7lv51"]
+
+[ext_resource type="Script" uid="uid://dgfskkadapajn" path="res://puzzles/scripts/puzzle.gd" id="1_0ugkh"]
+
+[node name="Puzzle" type="Control" unique_id=1110917673]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0ugkh")
+
+[node name="Intro" type="VBoxContainer" parent="." unique_id=846184620]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 200.0
+offset_right = 456.0
+offset_bottom = 408.0
+
+[node name="Title" type="Label" parent="Intro" unique_id=272403698]
+layout_mode = 2
+text = "Puzzle Name"
+
+[node name="Description" type="Label" parent="Intro" unique_id=1335759450]
+layout_mode = 2
+text = "Follow the correct pattern to complete puzzle."
+
+[node name="HowItWorksButton" type="Button" parent="Intro" unique_id=1204135992]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "How it works.."
+
+[node name="StartButton" type="Button" parent="Intro" unique_id=1161704281]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+text = "Start"
+
+[node name="PuzzleUI" type="VBoxContainer" parent="." unique_id=947619315]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.21300001
+anchor_bottom = 0.32900003
+offset_left = 500.0
+offset_top = 50.0
+offset_right = 825.62396
+offset_bottom = 337.80798
+alignment = 1
+
+[node name="PuzzleTitle" type="Label" parent="PuzzleUI" unique_id=1258164581]
+layout_mode = 2
+
+[node name="ProgressBar" type="ProgressBar" parent="PuzzleUI" unique_id=1047682013]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="PuzzleUI" unique_id=1913926521]
+layout_mode = 2
+
+[node name="ButtonGrid" type="GridContainer" parent="PuzzleUI" unique_id=195789999]
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position = Vector2(180, 0)
+columns = 2
+
+[node name="Button0" type="Button" parent="PuzzleUI/ButtonGrid" unique_id=1945498780]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+text = "1"
+
+[node name="Button1" type="Button" parent="PuzzleUI/ButtonGrid" unique_id=1151177054]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+text = "2"
+
+[node name="Button2" type="Button" parent="PuzzleUI/ButtonGrid" unique_id=2097702357]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+text = "3"
+
+[node name="Button3" type="Button" parent="PuzzleUI/ButtonGrid" unique_id=2107761141]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+text = "4"
+
+[node name="RestartButton" type="Button" parent="PuzzleUI" unique_id=1439181718]
+layout_mode = 2
