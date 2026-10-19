@@ -6,3 +6,163 @@
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_pgubr")
+
+[node name="PuzzleUI" type="PanelContainer" parent="." unique_id=1683534694]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PuzzleUI" unique_id=717378277]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=1001274400]
+layout_mode = 2
+text = "Fill the bars the exact same as the ones above"
+
+[node name="StatusLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=1463086739]
+layout_mode = 2
+text = "Adjust the Sliders!"
+
+[node name="EqualizerContainer" type="HBoxContainer" parent="PuzzleUI/VBoxContainer" unique_id=1283414867]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Channel0" type="VBoxContainer" parent="PuzzleUI/VBoxContainer/EqualizerContainer" unique_id=1028562714]
+layout_mode = 2
+
+[node name="TargetBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel0" unique_id=974158697]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="PlayerBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel0" unique_id=1589220961]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="Slider" type="VSlider" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel0" unique_id=533743924]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+
+[node name="Channel1" type="VBoxContainer" parent="PuzzleUI/VBoxContainer/EqualizerContainer" unique_id=1132493996]
+layout_mode = 2
+
+[node name="TargetBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel1" unique_id=2057651770]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="PlayerBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel1" unique_id=1444064079]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="Slider" type="VSlider" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel1" unique_id=863029543]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+
+[node name="Channel2" type="VBoxContainer" parent="PuzzleUI/VBoxContainer/EqualizerContainer" unique_id=2026285059]
+layout_mode = 2
+
+[node name="TargetBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel2" unique_id=1736384003]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="PlayerBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel2" unique_id=1289656931]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="Slider" type="VSlider" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel2" unique_id=932612492]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+
+[node name="Channel3" type="VBoxContainer" parent="PuzzleUI/VBoxContainer/EqualizerContainer" unique_id=1087290562]
+layout_mode = 2
+
+[node name="TargetBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel3" unique_id=980093033]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="PlayerBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel3" unique_id=361523688]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="Slider" type="VSlider" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel3" unique_id=930558385]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+
+[node name="Channel4" type="VBoxContainer" parent="PuzzleUI/VBoxContainer/EqualizerContainer" unique_id=1659022276]
+layout_mode = 2
+
+[node name="TargetBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel4" unique_id=1467929993]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="PlayerBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel4" unique_id=963752262]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="Slider" type="VSlider" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel4" unique_id=292624867]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+
+[node name="Channel5" type="VBoxContainer" parent="PuzzleUI/VBoxContainer/EqualizerContainer" unique_id=1500974956]
+layout_mode = 2
+
+[node name="TargetBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel5" unique_id=1200558249]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="PlayerBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel5" unique_id=1457018680]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="Slider" type="VSlider" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel5" unique_id=2007198820]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+
+[node name="Channel6" type="VBoxContainer" parent="PuzzleUI/VBoxContainer/EqualizerContainer" unique_id=734799714]
+layout_mode = 2
+
+[node name="TargetBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel6" unique_id=287510230]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="PlayerBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel6" unique_id=1220998358]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="Slider" type="VSlider" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel6" unique_id=1073350130]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+
+[node name="Channel7" type="VBoxContainer" parent="PuzzleUI/VBoxContainer/EqualizerContainer" unique_id=643487423]
+layout_mode = 2
+
+[node name="TargetBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel7" unique_id=1143495184]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="PlayerBar" type="ProgressBar" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel7" unique_id=158081045]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+fill_mode = 3
+
+[node name="Slider" type="VSlider" parent="PuzzleUI/VBoxContainer/EqualizerContainer/Channel7" unique_id=103639665]
+custom_minimum_size = Vector2(25, 100)
+layout_mode = 2
+
+[node name="RestartButton" type="Button" parent="PuzzleUI/VBoxContainer" unique_id=2135149308]
+layout_mode = 2
+text = "Restart"

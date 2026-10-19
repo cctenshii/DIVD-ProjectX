@@ -4,10 +4,8 @@ extends Control
 @onready var intro = $Intro
 @onready var puzzle_container = $PuzzleContainer
 
-# Turn this on when you want to randomize the games.
-var randomize_puzzle: bool = false
+var randomize_puzzle: bool = true
 
-# Available puzzles and their matching intro information.
 var puzzles: Array[Dictionary] = [
 	{
 		"title": "Memory Puzzle",
@@ -20,8 +18,8 @@ var puzzles: Array[Dictionary] = [
 		"scene": "res://minipuzzles/puzzles/puzzle_02/puzzle_02.tscn"
 	},
 	{
-		"title": "Puzzle 3",
-		"description": "Instructions for your third puzzle will go here.",
+		"title": "Equalizer Matching",
+		"description": "Fill the bars the exact same as the ones above",
 		"scene": "res://minipuzzles/puzzles/puzzle_03/puzzle_03.tscn"
 	}
 ]
