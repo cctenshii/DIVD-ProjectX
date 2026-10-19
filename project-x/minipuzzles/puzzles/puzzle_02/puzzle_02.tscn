@@ -1,0 +1,117 @@
+[gd_scene format=3 uid="uid://bv6hld4bwf8ae"]
+
+[ext_resource type="Script" uid="uid://mfb58c7m2d24" path="res://minipuzzles/puzzles/puzzle_02/puzzle_02.gd" id="1_p0ydo"]
+
+[node name="Puzzle02" type="Control" unique_id=960701689]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_p0ydo")
+
+[node name="PuzzleUI" type="PanelContainer" parent="." unique_id=1324280614]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PuzzleUI" unique_id=1644907606]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=791442954]
+layout_mode = 2
+text = "Rhythm Challenge"
+
+[node name="LaneContainer" type="HBoxContainer" parent="PuzzleUI/VBoxContainer" unique_id=2081891861]
+layout_mode = 2
+theme_override_constants/separation = 15
+alignment = 1
+
+[node name="LaneW" type="Panel" parent="PuzzleUI/VBoxContainer/LaneContainer" unique_id=60146420]
+custom_minimum_size = Vector2(90, 400)
+clip_contents = true
+layout_mode = 2
+
+[node name="TargetMarker" type="ColorRect" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneW" unique_id=927028559]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 0
+offset_top = 360.0
+offset_right = 90.0
+offset_bottom = 400.0
+
+[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneW" unique_id=1955300481]
+layout_mode = 0
+offset_left = 25.0
+offset_right = 65.0
+offset_bottom = 23.0
+text = "W"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LaneA" type="Panel" parent="PuzzleUI/VBoxContainer/LaneContainer" unique_id=660295184]
+custom_minimum_size = Vector2(90, 400)
+clip_contents = true
+layout_mode = 2
+
+[node name="TargetMarker" type="ColorRect" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneA" unique_id=1640980609]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 0
+offset_top = 360.0
+offset_right = 90.0
+offset_bottom = 400.0
+
+[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneA" unique_id=1047755666]
+layout_mode = 0
+offset_left = 25.0
+offset_right = 65.0
+offset_bottom = 23.0
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LaneS" type="Panel" parent="PuzzleUI/VBoxContainer/LaneContainer" unique_id=15738678]
+custom_minimum_size = Vector2(90, 400)
+clip_contents = true
+layout_mode = 2
+
+[node name="TargetMarker" type="ColorRect" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneS" unique_id=1067152992]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 0
+offset_top = 360.0
+offset_right = 90.0
+offset_bottom = 400.0
+
+[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneS" unique_id=691425159]
+layout_mode = 0
+offset_left = 25.0
+offset_right = 65.0
+offset_bottom = 23.0
+text = "S"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LaneD" type="Panel" parent="PuzzleUI/VBoxContainer/LaneContainer" unique_id=840883303]
+custom_minimum_size = Vector2(90, 400)
+clip_contents = true
+layout_mode = 2
+
+[node name="TargetMarker" type="ColorRect" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneD" unique_id=153126610]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 0
+offset_top = 360.0
+offset_right = 90.0
+offset_bottom = 400.0
+
+[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneD" unique_id=357502590]
+layout_mode = 0
+offset_left = 25.0
+offset_right = 65.0
+offset_bottom = 23.0
+text = "D"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=1052221854]
+layout_mode = 2
+text = "Score:"
+
+[node name="RestartButton" type="Button" parent="PuzzleUI/VBoxContainer" unique_id=1174046729]
+layout_mode = 2
+text = "Restart"

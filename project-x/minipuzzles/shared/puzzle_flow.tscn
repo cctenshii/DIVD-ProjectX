@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://chhxmcht0nddy"]
+
+[ext_resource type="Script" uid="uid://pud6qt2r4dtx" path="res://minipuzzles/shared/puzzle_manager.gd" id="1_r1r20"]
+[ext_resource type="PackedScene" uid="uid://bb8ktguhtlkpg" path="res://minipuzzles/shared/puzzle_intro.tscn" id="2_6ooxb"]
+
+[node name="PuzzleFlow" type="Control" unique_id=293981037]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_r1r20")
+
+[node name="Intro" parent="." unique_id=321731924 instance=ExtResource("2_6ooxb")]
+layout_mode = 0
+
+[node name="PuzzleContainer" type="Control" parent="." unique_id=687840952]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0

@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://bb8ktguhtlkpg"]
+
+[ext_resource type="Script" uid="uid://cm6qkjr6ues60" path="res://minipuzzles/shared/puzzle_intro.gd" id="1_0fq2o"]
+
+[node name="Puzzle_intro" type="Control" unique_id=321731924]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_0fq2o")
+
+[node name="Title" type="Label" parent="." unique_id=664568314]
+layout_mode = 0
+offset_left = 250.0
+offset_top = 250.0
+offset_right = 290.0
+offset_bottom = 273.0
+text = "Title"
+
+[node name="Description" type="Label" parent="." unique_id=1655696403]
+layout_mode = 0
+offset_left = 250.0
+offset_top = 275.0
+offset_right = 339.0
+offset_bottom = 298.0
+text = "Description"
+
+[node name="HowItWorksButton" type="Button" parent="." unique_id=2036778107]
+layout_mode = 0
+offset_left = 250.0
+offset_top = 315.0
+offset_right = 359.0
+offset_bottom = 346.0
+text = "How it works"
+
+[node name="StartButton" type="Button" parent="." unique_id=2075275936]
+layout_mode = 0
+offset_left = 250.0
+offset_top = 350.0
+offset_right = 296.0
+offset_bottom = 381.0
+text = "Start"
+
+[node name="CancelButton" type="Button" parent="." unique_id=1951583814]
+layout_mode = 0
+offset_left = 320.0
+offset_top = 350.0
+offset_right = 380.0
+offset_bottom = 381.0
+text = "Cancel"

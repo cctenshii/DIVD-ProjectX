@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://dwllpamu7lv51"]
+[gd_scene format=3 uid="uid://ee1o5jqsraf7"]
 
-[ext_resource type="Script" uid="uid://dgfskkadapajn" path="res://puzzles/scripts/puzzle.gd" id="1_0ugkh"]
+[ext_resource type="Script" uid="uid://cwv0egjedqt08" path="res://minipuzzles/puzzles/puzzle_01/puzzle_01.gd" id="1_dcj4d"]
 
 [node name="Puzzle" type="Control" unique_id=1110917673]
 layout_mode = 3
@@ -9,32 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_0ugkh")
-
-[node name="Intro" type="VBoxContainer" parent="." unique_id=846184620]
-layout_mode = 0
-offset_left = 100.0
-offset_top = 200.0
-offset_right = 456.0
-offset_bottom = 408.0
-
-[node name="Title" type="Label" parent="Intro" unique_id=272403698]
-layout_mode = 2
-text = "Puzzle Name"
-
-[node name="Description" type="Label" parent="Intro" unique_id=1335759450]
-layout_mode = 2
-text = "Follow the correct pattern to complete puzzle."
-
-[node name="HowItWorksButton" type="Button" parent="Intro" unique_id=1204135992]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-text = "How it works.."
-
-[node name="StartButton" type="Button" parent="Intro" unique_id=1161704281]
-custom_minimum_size = Vector2(0, 100)
-layout_mode = 2
-text = "Start"
+script = ExtResource("1_dcj4d")
 
 [node name="PuzzleUI" type="VBoxContainer" parent="." unique_id=947619315]
 layout_mode = 1
