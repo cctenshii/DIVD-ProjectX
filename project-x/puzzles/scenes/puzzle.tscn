@@ -43,8 +43,8 @@ anchor_right = 0.21300001
 anchor_bottom = 0.32900003
 offset_left = 500.0
 offset_top = 50.0
-offset_right = 825.62396
-offset_bottom = 337.80798
+offset_right = 658.62396
+offset_bottom = 360.80798
 alignment = 1
 
 [node name="PuzzleTitle" type="Label" parent="PuzzleUI" unique_id=1258164581]
@@ -83,3 +83,4 @@ text = "4"
 
 [node name="RestartButton" type="Button" parent="PuzzleUI" unique_id=1439181718]
 layout_mode = 2
+text = "Restart"

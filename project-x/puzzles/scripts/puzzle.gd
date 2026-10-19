@@ -171,7 +171,7 @@ func style_puzzle_buttons() -> void:
 	for i in range(buttons.size()):
 		var button = buttons[i]
 
-		button.custom_minimum_size = Vector2(110, 110)
+		button.custom_minimum_size = Vector2(200, 200)
 		button.text = ""
 		button.add_theme_stylebox_override(
 			"normal",
