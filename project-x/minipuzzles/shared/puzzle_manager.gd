@@ -3,7 +3,9 @@ extends Control
 
 @onready var intro = $Intro
 @onready var puzzle_container = $PuzzleContainer
+@onready var timer_display = $TimerDisplay
 
+var time_limit: float = 60.0
 var randomize_puzzle: bool = true
 
 var puzzles: Array[Dictionary] = [
@@ -19,7 +21,7 @@ var puzzles: Array[Dictionary] = [
 	},
 	{
 		"title": "Equalizer Matching",
-		"description": "Fill the bars the exact same as the ones above",
+		"description": "Fill the bars to match the ones above.",
 		"scene": "res://minipuzzles/puzzles/puzzle_03/puzzle_03.tscn"
 	}
 ]
@@ -28,19 +30,22 @@ var selected_puzzle: Dictionary = {}
 
 
 func _ready() -> void:
-	# Connect the intro signals.
+	# Connect intro signals.
 	intro.start_requested.connect(_on_start_requested)
 	intro.cancel_requested.connect(_on_cancel_requested)
 
-	# Start with the intro visible.
-	intro.show()
-	puzzle_container.hide()
+	# Connect the timer signal.
+	timer_display.time_up.connect(_on_time_up)
 
-	# Select a puzzle and update the intro.
+	# Initially show the intro, not the timer or puzzle.
+	timer_display.hide()
+	puzzle_container.hide()
+	intro.show()
+
 	_select_puzzle()
 
 
-# Choose a puzzle and update its introduction.
+# Select a puzzle and update the intro.
 func _select_puzzle() -> void:
 	if puzzles.is_empty():
 		push_error("No puzzles have been added.")
@@ -49,7 +54,6 @@ func _select_puzzle() -> void:
 	if randomize_puzzle:
 		selected_puzzle = puzzles.pick_random()
 	else:
-		# For now, always use Puzzle 1.
 		selected_puzzle = puzzles[0]
 
 	intro.setup(
@@ -60,35 +64,73 @@ func _select_puzzle() -> void:
 
 # Called when the player clicks Start.
 func _on_start_requested() -> void:
-	var scene_path: String = selected_puzzle["scene"]
+	if selected_puzzle.is_empty():
+		push_error("No puzzle has been selected.")
+		return
 
+	var scene_path: String = selected_puzzle["scene"]
 	var packed_scene: PackedScene = load(scene_path)
 
 	if packed_scene == null:
 		push_error("Could not load puzzle scene: " + scene_path)
 		return
 
-	var puzzle_instance = packed_scene.instantiate()
+	# Stop any previous timer.
+	timer_display.stop_timer()
+	timer_display.hide()
 
-	# Clear any previous puzzle.
+	# Remove any previous puzzle.
 	for child in puzzle_container.get_children():
+		puzzle_container.remove_child(child)
 		child.queue_free()
 
+	# Create the selected puzzle.
+	var puzzle_instance = packed_scene.instantiate()
 	puzzle_container.add_child(puzzle_instance)
 
-	# Hide the intro and show the selected puzzle.
+	# Show the game.
 	intro.hide()
 	puzzle_container.show()
+
+	# Start and display the countdown.
+	timer_display.show()
+	timer_display.start_timer(time_limit)
 
 
 # Called when the player clicks Cancel.
 func _on_cancel_requested() -> void:
-	# Return to the intro screen if a puzzle is running.
+	# Stop and hide the timer.
+	timer_display.stop_timer()
+	timer_display.hide()
+
+	# Remove the current puzzle.
 	for child in puzzle_container.get_children():
+		puzzle_container.remove_child(child)
 		child.queue_free()
 
 	puzzle_container.hide()
 	intro.show()
 
-	# Select and display a puzzle again.
+	# Select a puzzle for the next attempt.
 	_select_puzzle()
+
+
+# Called when the countdown reaches zero.
+func _on_time_up() -> void:
+	# Stop and hide the timer.
+	timer_display.stop_timer()
+	timer_display.hide()
+
+	# Remove the current puzzle.
+	for child in puzzle_container.get_children():
+		puzzle_container.remove_child(child)
+		child.queue_free()
+
+	puzzle_container.hide()
+
+	# Return to the intro with a retry message.
+	intro.show()
+	intro.setup(
+		"Time's Up!",
+		"You ran out of time. Click Start to try again!"
+	)

@@ -161,7 +161,7 @@ func _on_puzzle_button_pressed(index: int) -> void:
 
 		if is_inside_tree() and current_game_id == game_id:
 			_restart_puzzle()
-
+			
 
 func style_puzzle_buttons() -> void:
 	var colors = [

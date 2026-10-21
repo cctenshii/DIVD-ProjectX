@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://pud6qt2r4dtx" path="res://minipuzzles/shared/puzzle_manager.gd" id="1_r1r20"]
 [ext_resource type="PackedScene" uid="uid://bb8ktguhtlkpg" path="res://minipuzzles/shared/puzzle_intro.tscn" id="2_6ooxb"]
+[ext_resource type="PackedScene" uid="uid://ci25wh3akdm4a" path="res://minipuzzles/components/timer_display.tscn" id="3_78bjm"]
 
 [node name="PuzzleFlow" type="Control" unique_id=293981037]
 layout_mode = 3
@@ -15,3 +16,8 @@ layout_mode = 0
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
+
+[node name="TimerDisplay" parent="." unique_id=1586212677 instance=ExtResource("3_78bjm")]
+layout_mode = 1
+offset_left = 1012.0
+offset_right = 1152.0
