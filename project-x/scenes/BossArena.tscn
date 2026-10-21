@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://dt1golsqf33nu"]
+[gd_scene format=3]
 
 [ext_resource type="Script" uid="uid://ua6o52abh7jh" path="res://scripts/PXBossArena.cs" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2"]
@@ -11,14 +11,14 @@ size = Vector2(664, 12)
 [sub_resource type="RectangleShape2D" id="VerticalWall"]
 size = Vector2(12, 640)
 
-[sub_resource type="ConvexPolygonShape2D" id="TriangleObstacle"]
-points = PackedVector2Array(0, -32, 32, 28, -32, 28)
-
 [sub_resource type="CircleShape2D" id="RoundObstacle"]
 radius = 42.0
 
 [sub_resource type="RectangleShape2D" id="SquareObstacle"]
 size = Vector2(80, 80)
+
+[sub_resource type="ConvexPolygonShape2D" id="TriangleObstacle"]
+points = PackedVector2Array(0, -32, 32, 28, -32, 28)
 
 [sub_resource type="StyleBoxFlat" id="BarBackground"]
 bg_color = Color(0.82, 0.85, 0.86, 1)
@@ -37,265 +37,284 @@ border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.2, 0.3, 0.34, 1)
 
-[node name="BossArena" type="Node2D" unique_id=1007645320]
+[node name="BossArena" type="Node2D"]
 script = ExtResource("1")
 
-[node name="Background" type="Polygon2D" parent="." unique_id=689630017]
+[node name="Background" type="Polygon2D" parent="."]
 color = Color(0.96, 0.97, 0.97, 1)
 polygon = PackedVector2Array(0, 0, 1120, 0, 1120, 800, 0, 800)
 
-[node name="Floor" type="Polygon2D" parent="." unique_id=433802440]
+[node name="Floor" type="Polygon2D" parent="."]
 color = Color(0.89, 0.92, 0.92, 1)
 polygon = PackedVector2Array(32, 110, 672, 110, 672, 750, 32, 750)
 
-[node name="Grid" type="Node2D" parent="." unique_id=152151972]
+[node name="Grid" type="Node2D" parent="."]
 
-[node name="X1" type="Line2D" parent="Grid" unique_id=1088519616]
-points = PackedVector2Array(96, 110, 96, 750)
+[node name="X1" type="Line2D" parent="Grid"]
+points = PackedVector2Array(96.000, 110.000, 96.000, 750.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="Y1" type="Line2D" parent="Grid" unique_id=722229471]
-points = PackedVector2Array(32, 174, 672, 174)
+[node name="Y1" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32.000, 174.000, 672.000, 174.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="X2" type="Line2D" parent="Grid" unique_id=38407622]
-points = PackedVector2Array(160, 110, 160, 750)
+[node name="X2" type="Line2D" parent="Grid"]
+points = PackedVector2Array(160.000, 110.000, 160.000, 750.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="Y2" type="Line2D" parent="Grid" unique_id=590349793]
-points = PackedVector2Array(32, 238, 672, 238)
+[node name="Y2" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32.000, 238.000, 672.000, 238.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="X3" type="Line2D" parent="Grid" unique_id=1724413971]
-points = PackedVector2Array(224, 110, 224, 750)
+[node name="X3" type="Line2D" parent="Grid"]
+points = PackedVector2Array(224.000, 110.000, 224.000, 750.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="Y3" type="Line2D" parent="Grid" unique_id=1249940919]
-points = PackedVector2Array(32, 302, 672, 302)
+[node name="Y3" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32.000, 302.000, 672.000, 302.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="X4" type="Line2D" parent="Grid" unique_id=1368881345]
-points = PackedVector2Array(288, 110, 288, 750)
+[node name="X4" type="Line2D" parent="Grid"]
+points = PackedVector2Array(288.000, 110.000, 288.000, 750.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="Y4" type="Line2D" parent="Grid" unique_id=708325226]
-points = PackedVector2Array(32, 366, 672, 366)
+[node name="Y4" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32.000, 366.000, 672.000, 366.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="X5" type="Line2D" parent="Grid" unique_id=1595412831]
-points = PackedVector2Array(352, 110, 352, 750)
+[node name="X5" type="Line2D" parent="Grid"]
+points = PackedVector2Array(352.000, 110.000, 352.000, 750.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="Y5" type="Line2D" parent="Grid" unique_id=429363722]
-points = PackedVector2Array(32, 430, 672, 430)
+[node name="Y5" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32.000, 430.000, 672.000, 430.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="X6" type="Line2D" parent="Grid" unique_id=1691971665]
-points = PackedVector2Array(416, 110, 416, 750)
+[node name="X6" type="Line2D" parent="Grid"]
+points = PackedVector2Array(416.000, 110.000, 416.000, 750.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="Y6" type="Line2D" parent="Grid" unique_id=1609535517]
-points = PackedVector2Array(32, 494, 672, 494)
+[node name="Y6" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32.000, 494.000, 672.000, 494.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="X7" type="Line2D" parent="Grid" unique_id=1243474192]
-points = PackedVector2Array(480, 110, 480, 750)
+[node name="X7" type="Line2D" parent="Grid"]
+points = PackedVector2Array(480.000, 110.000, 480.000, 750.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="Y7" type="Line2D" parent="Grid" unique_id=1799236839]
-points = PackedVector2Array(32, 558, 672, 558)
+[node name="Y7" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32.000, 558.000, 672.000, 558.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="X8" type="Line2D" parent="Grid" unique_id=1752533450]
-points = PackedVector2Array(544, 110, 544, 750)
+[node name="X8" type="Line2D" parent="Grid"]
+points = PackedVector2Array(544.000, 110.000, 544.000, 750.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="Y8" type="Line2D" parent="Grid" unique_id=1534287412]
-points = PackedVector2Array(32, 622, 672, 622)
+[node name="Y8" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32.000, 622.000, 672.000, 622.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="X9" type="Line2D" parent="Grid" unique_id=13734272]
-points = PackedVector2Array(608, 110, 608, 750)
+[node name="X9" type="Line2D" parent="Grid"]
+points = PackedVector2Array(608.000, 110.000, 608.000, 750.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="Y9" type="Line2D" parent="Grid" unique_id=1816453003]
-points = PackedVector2Array(32, 686, 672, 686)
+[node name="Y9" type="Line2D" parent="Grid"]
+points = PackedVector2Array(32.000, 686.000, 672.000, 686.000)
 width = 1.0
 default_color = Color(0.83, 0.87, 0.88, 1)
 
-[node name="Walls" type="Node2D" parent="." unique_id=216201820]
+[node name="Walls" type="Node2D" parent="."]
 
-[node name="Top" type="StaticBody2D" parent="Walls" unique_id=676098916]
+[node name="Top" type="StaticBody2D" parent="Walls"]
 position = Vector2(352, 104)
+collision_layer = 1
 collision_mask = 6
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top" unique_id=562725368]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Top"]
 shape = SubResource("HorizontalWall")
 
-[node name="Shape" type="Polygon2D" parent="Walls/Top" unique_id=1842156067]
+[node name="Shape" type="Polygon2D" parent="Walls/Top"]
 color = Color(0.29, 0.37, 0.41, 1)
-polygon = PackedVector2Array(-332, -6, 332, -6, 332, 6, -332, 6)
+polygon = PackedVector2Array(-332.000, -6.000, 332.000, -6.000, 332.000, 6.000, -332.000, 6.000)
 
-[node name="Bottom" type="StaticBody2D" parent="Walls" unique_id=618166879]
+[node name="Bottom" type="StaticBody2D" parent="Walls"]
 position = Vector2(352, 756)
+collision_layer = 1
 collision_mask = 6
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom" unique_id=2006203883]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Bottom"]
 shape = SubResource("HorizontalWall")
 
-[node name="Shape" type="Polygon2D" parent="Walls/Bottom" unique_id=2061331626]
+[node name="Shape" type="Polygon2D" parent="Walls/Bottom"]
 color = Color(0.29, 0.37, 0.41, 1)
-polygon = PackedVector2Array(-332, -6, 332, -6, 332, 6, -332, 6)
+polygon = PackedVector2Array(-332.000, -6.000, 332.000, -6.000, 332.000, 6.000, -332.000, 6.000)
 
-[node name="Left" type="StaticBody2D" parent="Walls" unique_id=1606012880]
+[node name="Left" type="StaticBody2D" parent="Walls"]
 position = Vector2(26, 430)
+collision_layer = 1
 collision_mask = 6
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Left" unique_id=1819766714]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Left"]
 shape = SubResource("VerticalWall")
 
-[node name="Shape" type="Polygon2D" parent="Walls/Left" unique_id=928419000]
+[node name="Shape" type="Polygon2D" parent="Walls/Left"]
 color = Color(0.29, 0.37, 0.41, 1)
-polygon = PackedVector2Array(-6, -320, 6, -320, 6, 320, -6, 320)
+polygon = PackedVector2Array(-6.000, -320.000, 6.000, -320.000, 6.000, 320.000, -6.000, 320.000)
 
-[node name="Right" type="StaticBody2D" parent="Walls" unique_id=1389958727]
+[node name="Right" type="StaticBody2D" parent="Walls"]
 position = Vector2(678, 430)
+collision_layer = 1
 collision_mask = 6
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Right" unique_id=522963901]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/Right"]
 shape = SubResource("VerticalWall")
 
-[node name="Shape" type="Polygon2D" parent="Walls/Right" unique_id=732654476]
+[node name="Shape" type="Polygon2D" parent="Walls/Right"]
 color = Color(0.29, 0.37, 0.41, 1)
-polygon = PackedVector2Array(-6, -320, 6, -320, 6, 320, -6, 320)
+polygon = PackedVector2Array(-6.000, -320.000, 6.000, -320.000, 6.000, 320.000, -6.000, 320.000)
 
-[node name="Obstacles" type="Node2D" parent="." unique_id=214661666]
+[node name="Obstacles" type="Node2D" parent="."]
 
-[node name="Triangle" type="StaticBody2D" parent="Obstacles" unique_id=1958812938]
+[node name="Triangle" type="StaticBody2D" parent="Obstacles"]
 position = Vector2(190, 280)
+collision_layer = 1
 collision_mask = 6
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/Triangle" unique_id=1743388778]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/Triangle"]
 shape = SubResource("TriangleObstacle")
 
-[node name="Shape" type="Polygon2D" parent="Obstacles/Triangle" unique_id=1219586848]
+[node name="Shape" type="Polygon2D" parent="Obstacles/Triangle"]
 color = Color(0.61, 0.68, 0.7, 1)
-polygon = PackedVector2Array(0, -32, 32, 28, -32, 28)
+polygon = PackedVector2Array(0.000, -32.000, 32.000, 28.000, -32.000, 28.000)
 
-[node name="Circle" type="StaticBody2D" parent="Obstacles" unique_id=684219215]
+[node name="Circle" type="StaticBody2D" parent="Obstacles"]
 position = Vector2(450, 300)
+collision_layer = 1
 collision_mask = 6
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/Circle" unique_id=1163313448]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/Circle"]
 shape = SubResource("RoundObstacle")
 
-[node name="Shape" type="Polygon2D" parent="Obstacles/Circle" unique_id=1279840987]
+[node name="Shape" type="Polygon2D" parent="Obstacles/Circle"]
 color = Color(0.61, 0.68, 0.7, 1)
-polygon = PackedVector2Array(42, 0, 41.641, 5.482, 40.569, 10.87, 38.803, 16.073, 36.373, 21, 33.321, 25.568, 29.698, 29.698, 25.568, 33.321, 21, 36.373, 16.073, 38.803, 10.87, 40.569, 5.482, 41.641, 0, 42, -5.482, 41.641, -10.87, 40.569, -16.073, 38.803, -21, 36.373, -25.568, 33.321, -29.698, 29.698, -33.321, 25.568, -36.373, 21, -38.803, 16.073, -40.569, 10.87, -41.641, 5.482, -42, 0, -41.641, -5.482, -40.569, -10.87, -38.803, -16.073, -36.373, -21, -33.321, -25.568, -29.698, -29.698, -25.568, -33.321, -21, -36.373, -16.073, -38.803, -10.87, -40.569, -5.482, -41.641, 0, -42, 5.482, -41.641, 10.87, -40.569, 16.073, -38.803, 21, -36.373, 25.568, -33.321, 29.698, -29.698, 33.321, -25.568, 36.373, -21, 38.803, -16.073, 40.569, -10.87, 41.641, -5.482)
+polygon = PackedVector2Array(42.000, 0.000, 41.641, 5.482, 40.569, 10.870, 38.803, 16.073, 36.373, 21.000, 33.321, 25.568, 29.698, 29.698, 25.568, 33.321, 21.000, 36.373, 16.073, 38.803, 10.870, 40.569, 5.482, 41.641, 0.000, 42.000, -5.482, 41.641, -10.870, 40.569, -16.073, 38.803, -21.000, 36.373, -25.568, 33.321, -29.698, 29.698, -33.321, 25.568, -36.373, 21.000, -38.803, 16.073, -40.569, 10.870, -41.641, 5.482, -42.000, 0.000, -41.641, -5.482, -40.569, -10.870, -38.803, -16.073, -36.373, -21.000, -33.321, -25.568, -29.698, -29.698, -25.568, -33.321, -21.000, -36.373, -16.073, -38.803, -10.870, -40.569, -5.482, -41.641, -0.000, -42.000, 5.482, -41.641, 10.870, -40.569, 16.073, -38.803, 21.000, -36.373, 25.568, -33.321, 29.698, -29.698, 33.321, -25.568, 36.373, -21.000, 38.803, -16.073, 40.569, -10.870, 41.641, -5.482)
 
-[node name="Square" type="StaticBody2D" parent="Obstacles" unique_id=1995055407]
+[node name="Square" type="StaticBody2D" parent="Obstacles"]
 position = Vector2(215, 565)
+collision_layer = 1
 collision_mask = 6
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/Square" unique_id=1334236681]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/Square"]
 shape = SubResource("SquareObstacle")
 
-[node name="Shape" type="Polygon2D" parent="Obstacles/Square" unique_id=681121146]
+[node name="Shape" type="Polygon2D" parent="Obstacles/Square"]
 color = Color(0.61, 0.68, 0.7, 1)
 polygon = PackedVector2Array(-40, -40, 40, -40, 40, 40, -40, 40)
 
-[node name="Triangle2" type="StaticBody2D" parent="Obstacles" unique_id=474514755]
+[node name="Triangle2" type="StaticBody2D" parent="Obstacles"]
 position = Vector2(500, 560)
+collision_layer = 1
 collision_mask = 6
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/Triangle2" unique_id=419733665]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Obstacles/Triangle2"]
 shape = SubResource("TriangleObstacle")
 
-[node name="Shape" type="Polygon2D" parent="Obstacles/Triangle2" unique_id=1259930342]
+[node name="Shape" type="Polygon2D" parent="Obstacles/Triangle2"]
 color = Color(0.61, 0.68, 0.7, 1)
-polygon = PackedVector2Array(0, -32, 32, 28, -32, 28)
+polygon = PackedVector2Array(0.000, -32.000, 32.000, 28.000, -32.000, 28.000)
 
-[node name="Player" parent="." unique_id=64268523 instance=ExtResource("2")]
+[node name="Player" parent="." instance=ExtResource("2")]
 position = Vector2(205, 430)
 
-[node name="Boss" parent="." unique_id=629432979 instance=ExtResource("3")]
+[node name="Boss" parent="." instance=ExtResource("3")]
 position = Vector2(490, 430)
 
-[node name="HUD" type="CanvasLayer" parent="." unique_id=1714675342]
+[node name="HUD" type="CanvasLayer" parent="."]
 
-[node name="Title" type="Label" parent="HUD" unique_id=1176241275]
+[node name="Title" type="Label" parent="HUD"]
 offset_left = 32.0
 offset_top = 22.0
 offset_right = 682.0
 offset_bottom = 58.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.15, 0.23, 0.27, 1)
 theme_override_font_sizes/font_size = 29
 text = "PROJECT X / BOSS ARENA"
 
-[node name="Subtitle" type="Label" parent="HUD" unique_id=406693876]
+
+[node name="Subtitle" type="Label" parent="HUD"]
 offset_left = 33.0
 offset_top = 60.0
 offset_right = 633.0
 offset_bottom = 84.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.39, 0.47, 0.5, 1)
 theme_override_font_sizes/font_size = 16
-text = "FASE 1 "
+text = "FASE 1 / DE JACHT"
 
-[node name="Context" type="Label" parent="HUD" unique_id=1780012580]
+
+[node name="Context" type="Label" parent="HUD"]
 offset_left = 34.0
 offset_top = 767.0
 offset_right = 674.0
 offset_bottom = 792.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.15, 0.23, 0.27, 1)
 theme_override_font_sizes/font_size = 16
 text = "LOOP DICHTER NAAR DE BOSS"
 horizontal_alignment = 1
 
-[node name="SideTitle" type="Label" parent="HUD" unique_id=250254103]
+[node name="SideTitle" type="Label" parent="HUD"]
 offset_left = 720.0
 offset_top = 24.0
 offset_right = 1080.0
 offset_bottom = 58.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.15, 0.23, 0.27, 1)
 theme_override_font_sizes/font_size = 25
 text = "OMNI-TOOL TEST"
 
-[node name="PlayerHealth" type="Label" parent="HUD" unique_id=363053292]
+
+[node name="PlayerHealth" type="Label" parent="HUD"]
 offset_left = 720.0
 offset_top = 93.0
 offset_right = 1080.0
 offset_bottom = 119.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.15, 0.23, 0.27, 1)
 theme_override_font_sizes/font_size = 19
 text = "SPELER 100 / 100 HP"
 
-[node name="BossHealth" type="Label" parent="HUD" unique_id=808101069]
+
+[node name="BossHealth" type="Label" parent="HUD"]
 offset_left = 720.0
 offset_top = 164.0
 offset_right = 1080.0
 offset_bottom = 190.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.15, 0.23, 0.27, 1)
 theme_override_font_sizes/font_size = 19
 text = "HACKS 0 / 15"
 
-[node name="PlayerBar" type="ProgressBar" parent="HUD" unique_id=138438199]
+
+[node name="PlayerBar" type="ProgressBar" parent="HUD"]
 offset_left = 720.0
 offset_top = 127.0
 offset_right = 1080.0
@@ -306,7 +325,7 @@ theme_override_styles/fill = SubResource("PlayerFill")
 value = 100.0
 show_percentage = false
 
-[node name="BossBar" type="ProgressBar" parent="HUD" unique_id=645349440]
+[node name="BossBar" type="ProgressBar" parent="HUD"]
 offset_left = 720.0
 offset_top = 198.0
 offset_right = 1080.0
@@ -317,53 +336,46 @@ theme_override_styles/fill = SubResource("BossFill")
 value = 100.0
 show_percentage = false
 
-[node name="Message" type="Label" parent="HUD" unique_id=1378110660]
+[node name="Message" type="Label" parent="HUD"]
 offset_left = 720.0
 offset_top = 237.0
 offset_right = 1080.0
 offset_bottom = 287.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.15, 0.23, 0.27, 1)
 theme_override_font_sizes/font_size = 17
 text = "LOOP NAAR DE BOSS EN DRUK OP E."
 autowrap_mode = 3
 
-[node name="Controls" type="Label" parent="HUD" unique_id=1994096583]
+[node name="Controls" type="Label" parent="HUD"]
 offset_left = 720.0
 offset_top = 301.0
 offset_right = 1080.0
 offset_bottom = 377.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.15, 0.23, 0.27, 1)
 theme_override_font_sizes/font_size = 17
-text = "WASD / pijltjes - bewegen   SHIFT - dash
-E - hack dichtbij de boss
-R - arena opnieuw starten"
+text = "WASD / pijltjes - bewegen   SHIFT - dash\nE - hack dichtbij de boss\nR - arena opnieuw starten"
 
-[node name="IdleInfo" type="Label" parent="HUD" unique_id=1659165726]
+
+[node name="IdleInfo" type="Label" parent="HUD"]
 offset_left = 720.0
 offset_top = 430.0
 offset_right = 1080.0
 offset_bottom = 640.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.36, 0.44, 0.47, 1)
 theme_override_font_sizes/font_size = 18
-text = "JIJ = CIRKEL / BOSS = VIERKANT
+text = "JIJ = CIRKEL / BOSS = VIERKANT\n\n1-5: achtervolging\n6-10: gerichte lasers\n11-15: ringen + spreidschoten\n\nObstakels blokkeren zicht en lasers.\nMislukte hack: -20 HP\nTijdens een hack staat de arena stil."
 
-1-5: achtervolging
-6-10: gerichte lasers
-11-15: ringen + spreidschoten
 
-Obstakels blokkeren zicht en lasers.
-Mislukte hack: -20 HP
-Tijdens een hack staat de arena stil."
-
-[node name="HackPanel" parent="HUD" unique_id=1302699165 instance=ExtResource("4")]
-layout_mode = 3
-anchors_preset = 0
+[node name="HackPanel" parent="HUD" instance=ExtResource("4")]
 offset_left = 720.0
 offset_top = 390.0
 offset_right = 1080.0
 offset_bottom = 742.0
 
-[node name="EndPanel" type="PanelContainer" parent="HUD" unique_id=2135907049]
+[node name="EndPanel" type="PanelContainer" parent="HUD"]
 visible = false
 offset_left = 720.0
 offset_top = 405.0
@@ -371,7 +383,7 @@ offset_right = 1080.0
 offset_bottom = 625.0
 theme_override_styles/panel = SubResource("EndBox")
 
-[node name="Text" type="Label" parent="HUD/EndPanel" unique_id=220618758]
+[node name="Text" type="Label" parent="HUD/EndPanel"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.15, 0.23, 0.27, 1)
 theme_override_font_sizes/font_size = 23
@@ -379,7 +391,7 @@ text = "BOSS VERSLAGEN"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Restart" type="Button" parent="HUD" unique_id=1423036466]
+[node name="Restart" type="Button" parent="HUD"]
 offset_left = 720.0
 offset_top = 756.0
 offset_right = 1080.0
@@ -388,17 +400,17 @@ focus_mode = 0
 theme_override_font_sizes/font_size = 16
 text = "OPNIEUW / R"
 
-[node name="StageBanner" type="Label" parent="HUD" unique_id=273382297]
+[node name="StageBanner" type="Label" parent="HUD"]
 visible = false
 offset_left = 72.0
 offset_top = 365.0
 offset_right = 632.0
 offset_bottom = 495.0
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.1, 0.18, 0.23, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 12
 theme_override_font_sizes/font_size = 42
-text = "FASE 2
-LASERS"
+text = "FASE 2\nLASERS"
 horizontal_alignment = 1
 vertical_alignment = 1
