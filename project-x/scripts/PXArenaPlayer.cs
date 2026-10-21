@@ -15,12 +15,16 @@ public partial class PXArenaPlayer : CharacterBody2D
     public bool Locked { get; set; }
     public bool IsAlive => Health > 0;
 
+    public bool DashReady => _dashCooldown <= 0f;
+    private float _dashCooldown, _dashTime;
+    private Vector2 _dashDirection = Vector2.Right;
     private float _invulnerability;
     private Vector2 _knockback;
     private Polygon2D _body;
 
     public override void _EnterTree()
     {
+        RegisterAction("px_boss_dash", Key.Shift);
         RegisterAction("px_boss_left", Key.A, Key.Left);
         RegisterAction("px_boss_right", Key.D, Key.Right);
         RegisterAction("px_boss_up", Key.W, Key.Up);
@@ -36,6 +40,7 @@ public partial class PXArenaPlayer : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
+        _dashCooldown = Mathf.Max(0f, _dashCooldown - (float)delta);
         _invulnerability = Mathf.Max(0f, _invulnerability - (float)delta);
         _body.Modulate = _invulnerability > 0f && ((int)(_invulnerability * 12f) % 2 == 0)
             ? new Color(1f, 1f, 1f, 0.35f) : Colors.White;
@@ -47,7 +52,15 @@ public partial class PXArenaPlayer : CharacterBody2D
         }
 
         Vector2 direction = Input.GetVector("px_boss_left", "px_boss_right", "px_boss_up", "px_boss_down");
-        Velocity = direction * Speed + _knockback;
+        if (direction.LengthSquared() > 0) _dashDirection = direction;
+        if (Input.IsActionJustPressed("px_boss_dash") && _dashCooldown <= 0 && direction.LengthSquared() > 0)
+        {
+            _dashTime = 0.15f;
+            _dashCooldown = 1.1f;
+            _invulnerability = Mathf.Max(_invulnerability, 0.18f);
+        }
+        _dashTime = Mathf.Max(0f, _dashTime - (float)delta);
+        Velocity = _dashTime > 0 ? _dashDirection * 570f : direction * Speed + _knockback;
         _knockback = _knockback.MoveToward(Vector2.Zero, 850f * (float)delta);
         MoveAndSlide();
     }
@@ -74,6 +87,7 @@ public partial class PXArenaPlayer : CharacterBody2D
     {
         _invulnerability = Mathf.Max(_invulnerability, 0.8f);
         _knockback = Vector2.Zero;
+        _dashTime = 0;
     }
 
     public void ResetPlayer(Vector2 spawn)
@@ -84,6 +98,7 @@ public partial class PXArenaPlayer : CharacterBody2D
         Velocity = Vector2.Zero;
         _knockback = Vector2.Zero;
         _invulnerability = 0f;
+        _dashCooldown = _dashTime = 0f;
         if (_body != null) _body.Modulate = Colors.White;
         EmitSignal(SignalName.HealthChanged, Health, MaxHealth);
     }
