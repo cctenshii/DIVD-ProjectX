@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="ProjectX"
-run/main_scene="uid://cyxvhtxm3x8cw"
+run/main_scene="uid://ccxbvtb8b4vh7"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 
 [display]
