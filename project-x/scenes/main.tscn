@@ -15,12 +15,12 @@ position = Vector2(-2373.41, -976)
 
 [node name="ChatBox" parent="." instance=ExtResource("1_jyhfs")]
 
+[node name="Player" parent="." instance=ExtResource("4_o6xl0")]
+position = Vector2(3614.06, 6539)
+
 [node name="NPC" parent="." node_paths=PackedStringArray("chat_box") instance=ExtResource("2_tbgi4")]
-position = Vector2(3517.17, 6514)
+position = Vector2(3219.49, 6290)
 chat_box = NodePath("../ChatBox")
 
-[node name="Player" parent="." instance=ExtResource("4_o6xl0")]
-position = Vector2(3705.96, 6743)
-
 [node name="MainMap" parent="." instance=ExtResource("5_tbgi4")]
-position = Vector2(100.89, -172)
+position = Vector2(106.883, -195)
