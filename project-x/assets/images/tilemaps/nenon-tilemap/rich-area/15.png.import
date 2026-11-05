@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://duifcksv2hq0k"
-path="res://.godot/imported/2.png-b4a96488eeba9c34ea9eb8ce481602f3.ctex"
+uid="uid://bcc0678inldbf"
+path="res://.godot/imported/15.png-45ed67025aa85fe190f2462429082730.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/tilemaps/nenon-tilemap/2.png"
-dest_files=["res://.godot/imported/2.png-b4a96488eeba9c34ea9eb8ce481602f3.ctex"]
+source_file="res://assets/images/tilemaps/nenon-tilemap/rich-area/15.png"
+dest_files=["res://.godot/imported/15.png-45ed67025aa85fe190f2462429082730.ctex"]
 
 [params]
 
