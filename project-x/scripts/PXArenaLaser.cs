@@ -29,7 +29,7 @@ public partial class PXArenaLaser : Node2D
         }
         GlobalPosition = next;
         _life -= dt;
-        if (_life <= 0 || !new Rect2(25, 100, 660, 662).HasPoint(GlobalPosition)) QueueFree();
+        if (_life <= 0 || !PXArenaTerrain.Bounds.Grow(24).HasPoint(GlobalPosition)) QueueFree();
     }
 
     public override void _Draw()

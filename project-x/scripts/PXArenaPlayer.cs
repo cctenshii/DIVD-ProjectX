@@ -7,7 +7,7 @@ public partial class PXArenaPlayer : CharacterBody2D
     [Signal] public delegate void HealthChangedEventHandler(int current, int maximum);
     [Signal] public delegate void DiedEventHandler();
 
-    [Export] public float Speed { get; set; } = 235f;
+    [Export] public float Speed { get; set; } = 340f;
     [Export] public int MaxHealth { get; set; } = 100;
     [Export] public float InvulnerabilitySeconds { get; set; } = 1f;
 
@@ -35,11 +35,14 @@ public partial class PXArenaPlayer : CharacterBody2D
     {
         MotionMode = MotionModeEnum.Floating;
         _body = GetNode<Polygon2D>("Body");
+        GetNode<Label>("Name").AddThemeFontOverride("font", PXRetroUI.Font);
+        GetNode<Label>("Name").AddThemeColorOverride("font_color", PXRetroUI.Accent);
         ResetPlayer(GlobalPosition);
     }
 
     public override void _PhysicsProcess(double delta)
     {
+        if (Locked || !IsAlive) { Velocity = Vector2.Zero; return; }
         _dashCooldown = Mathf.Max(0f, _dashCooldown - (float)delta);
         _invulnerability = Mathf.Max(0f, _invulnerability - (float)delta);
         _body.Modulate = _invulnerability > 0f && ((int)(_invulnerability * 12f) % 2 == 0)
@@ -60,7 +63,7 @@ public partial class PXArenaPlayer : CharacterBody2D
             _invulnerability = Mathf.Max(_invulnerability, 0.18f);
         }
         _dashTime = Mathf.Max(0f, _dashTime - (float)delta);
-        Velocity = _dashTime > 0 ? _dashDirection * 570f : direction * Speed + _knockback;
+        Velocity = _dashTime > 0 ? _dashDirection * 820f : direction * Speed + _knockback;
         _knockback = _knockback.MoveToward(Vector2.Zero, 850f * (float)delta);
         MoveAndSlide();
     }
@@ -83,9 +86,9 @@ public partial class PXArenaPlayer : CharacterBody2D
         return true;
     }
 
-    public void ProtectAfterHack()
+    public void ProtectAfterHack(float seconds = 1.5f)
     {
-        _invulnerability = Mathf.Max(_invulnerability, 0.8f);
+        _invulnerability = Mathf.Max(_invulnerability, seconds);
         _knockback = Vector2.Zero;
         _dashTime = 0;
     }

@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="Script" uid="uid://kr2tthdhrpjf" path="res://scripts/PXArenaBoss.cs" id="1"]
+[ext_resource type="Script" path="res://scripts/PXArenaBoss.cs" id="1"]
 
 [sub_resource type="RectangleShape2D" id="BossShape"]
 size = Vector2(72, 72)
@@ -10,7 +10,7 @@ size = Vector2(82, 82)
 
 [node name="Boss" type="CharacterBody2D"]
 collision_layer = 4
-collision_mask = 3
+collision_mask = 11
 motion_mode = 1
 script = ExtResource("1")
 
