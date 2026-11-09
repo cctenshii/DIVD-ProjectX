@@ -1,11 +1,11 @@
 extends Area2D
 
-# Variables that must be at the top
+
 @export var chat_box: CanvasLayer
 var is_player_in_range: bool = false
 
 func _ready() -> void:
-	# Connect signals automatically
+	
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 
@@ -14,7 +14,7 @@ func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("interact"):
 		print("Q button was pressed!")
 		
-		# Check if the player is actually close enough
+		
 		if is_player_in_range:
 			print("Player is in range. Attempting to show chat box...")
 			if chat_box:

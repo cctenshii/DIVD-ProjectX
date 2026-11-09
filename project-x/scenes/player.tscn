@@ -1,7 +1,9 @@
-[gd_scene load_steps=26 format=3 uid="uid://bbdkdp4g6wvt5"]
+[gd_scene load_steps=28 format=3 uid="uid://bbdkdp4g6wvt5"]
 
 [ext_resource type="Script" uid="uid://bl2636iwud2jw" path="res://scripts/player.gd" id="1_g2els"]
 [ext_resource type="Texture2D" uid="uid://ccmfro3pxsi3l" path="res://assets/images/player/all-position-V2.png" id="2_qhqgy"]
+[ext_resource type="Texture2D" uid="uid://c2oh5vtpbbkkc" path="res://assets/images/effects/arrow.png" id="3_dqkch"]
+[ext_resource type="Script" uid="uid://vu3jksraqbfa" path="res://scripts/quest_arrow.gd" id="4_qlg0r"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dqkch"]
 atlas = ExtResource("2_qhqgy")
@@ -194,7 +196,7 @@ script = ExtResource("1_g2els")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
 sprite_frames = SubResource("SpriteFrames_fs4d3")
 animation = &"running_left"
-frame_progress = 0.296621
+frame_progress = 0.934957
 flip_h = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
@@ -205,3 +207,9 @@ shape = SubResource("RectangleShape2D_g2els")
 [node name="Camera2D" type="Camera2D" parent="Player"]
 zoom = Vector2(1.5, 1.5)
 position_smoothing_enabled = true
+
+[node name="QuestArrow" type="Sprite2D" parent="Player"]
+position = Vector2(0, -44)
+scale = Vector2(-0.02, -0.02)
+texture = ExtResource("3_dqkch")
+script = ExtResource("4_qlg0r")
