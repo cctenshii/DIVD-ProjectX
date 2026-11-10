@@ -23,6 +23,11 @@ var puzzles: Array[Dictionary] = [
 		"title": "Equalizer Matching",
 		"description": "Fill the bars to match the ones above.",
 		"scene": "res://minipuzzles/puzzles/puzzle_03/puzzle_03.tscn"
+	},
+	{
+		"title": "Connect Cables",
+		"description": "Connect the matching symbols across the panels.",
+		"scene": "res://minipuzzles/puzzles/puzzle_04/puzzle_04.tscn"
 	}
 ]
 
