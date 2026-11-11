@@ -20,7 +20,9 @@ public partial class PXArenaPlayer : CharacterBody2D
 	private Vector2 _dashDirection = Vector2.Right;
 	private float _invulnerability;
 	private Vector2 _knockback;
-	private Polygon2D _body;
+	private Sprite2D _body;
+	private int _facing;
+	private float _walkTime;
 
 	public override void _EnterTree()
 	{
@@ -34,7 +36,7 @@ public partial class PXArenaPlayer : CharacterBody2D
 	public override void _Ready()
 	{
 		MotionMode = MotionModeEnum.Floating;
-		_body = GetNode<Polygon2D>("Body");
+		_body = GetNode<Sprite2D>("Body");
 		GetNode<Label>("Name").AddThemeFontOverride("font", PXRetroUI.Font);
 		GetNode<Label>("Name").AddThemeColorOverride("font_color", PXRetroUI.Accent);
 		ResetPlayer(GlobalPosition);
@@ -55,6 +57,7 @@ public partial class PXArenaPlayer : CharacterBody2D
 		}
 
 		Vector2 direction = Input.GetVector("px_boss_left", "px_boss_right", "px_boss_up", "px_boss_down");
+		UpdateSprite(direction, (float)delta);
 		if (direction.LengthSquared() > 0) _dashDirection = direction;
 		if (Input.IsActionJustPressed("px_boss_dash") && _dashCooldown <= 0 && direction.LengthSquared() > 0)
 		{
@@ -66,6 +69,20 @@ public partial class PXArenaPlayer : CharacterBody2D
 		Velocity = _dashTime > 0 ? _dashDirection * 820f : direction * Speed + _knockback;
 		_knockback = _knockback.MoveToward(Vector2.Zero, 850f * (float)delta);
 		MoveAndSlide();
+	}
+
+	private void UpdateSprite(Vector2 direction, float dt)
+	{
+		bool moving = direction.LengthSquared() > 0;
+		if (moving)
+		{
+			_facing = Mathf.Abs(direction.X) > Mathf.Abs(direction.Y) ? 1 : direction.Y < 0 ? 2 : 0;
+			_body.FlipH = _facing == 1 && direction.X < 0;
+			_walkTime += dt;
+		}
+		else _walkTime = 0;
+		int frame = moving ? (int)(_walkTime * 10) % 6 : 0;
+		_body.RegionRect = new Rect2(28 + frame * 66, (moving ? 290 : 26) + _facing * 66, 64, 64);
 	}
 
 	public bool TakeDamage(int amount, Vector2 source, bool ignoreInvulnerability = false)
@@ -102,6 +119,8 @@ public partial class PXArenaPlayer : CharacterBody2D
 		_knockback = Vector2.Zero;
 		_invulnerability = 0f;
 		_dashCooldown = _dashTime = 0f;
+		_facing = 0; _walkTime = 0;
+		if (_body != null) { _body.FlipH = false; UpdateSprite(Vector2.Zero, 0); }
 		if (_body != null) _body.Modulate = Colors.White;
 		EmitSignal(SignalName.HealthChanged, Health, MaxHealth);
 	}

@@ -5,20 +5,32 @@ namespace ProjectXBossArenaPrototype;
 
 public partial class PXArenaTerrain : Node2D
 {
-	public static readonly Rect2 Bounds = new(64, 144, 1792, 824);
+	[Export] public Rect2 Bounds { get; set; } = new(64, 144, 1792, 824);
+	[Export] public bool BuildWalls { get; set; } = true;
+	[Export] public bool DrawFloor { get; set; } = true;
+	[Export] public Vector2 ObstacleSizeRange { get; set; } = new(120, 156);
 	public readonly List<Rect2> Footprints = new();
 	public int Generation { get; private set; }
 	public bool Connected { get; private set; }
 	private readonly RandomNumberGenerator _rng = new();
 	private readonly AStarGrid2D _grid = new();
 	private Node2D _objects;
-	private const int Cell = 16, Cols = 112, Rows = 51;
+	private int _stage = 1;
+	private const int Cell = 16;
+	private int Cols => (int)(Bounds.Size.X / Cell);
+	private int Rows => (int)(Bounds.Size.Y / Cell);
 
 	public override void _Ready()
 	{
 		_rng.Randomize(); _objects = new Node2D { Name = "Obstacles" }; AddChild(_objects);
-		Wall(new(960, 132), new(1816, 24)); Wall(new(960, 980), new(1816, 24));
-		Wall(new(52, 556), new(24, 824)); Wall(new(1868, 556), new(24, 824));
+		if (BuildWalls)
+		{
+			var center = Bounds.GetCenter();
+			Wall(new(center.X, Bounds.Position.Y - 12), new(Bounds.Size.X + 24, 24));
+			Wall(new(center.X, Bounds.End.Y + 12), new(Bounds.Size.X + 24, 24));
+			Wall(new(Bounds.Position.X - 12, center.Y), new(24, Bounds.Size.Y));
+			Wall(new(Bounds.End.X + 12, center.Y), new(24, Bounds.Size.Y));
+		}
 		_grid.Region = new Rect2I(0, 0, Cols, Rows); _grid.CellSize = new(Cell, Cell);
 		_grid.Offset = Bounds.Position + new Vector2(8, 8);
 		_grid.DiagonalMode = AStarGrid2D.DiagonalModeEnum.Never; _grid.Update();
@@ -30,14 +42,14 @@ public partial class PXArenaTerrain : Node2D
 	}
 	public void Generate(int stage, Vector2 player, Vector2 boss)
 	{
-		foreach (Node child in _objects.GetChildren()) { _objects.RemoveChild(child); child.QueueFree(); }
-		Footprints.Clear();
+		Clear(false); _stage = stage;
 		// Jittered, shuffled cells give different layouts while retaining wide corridors.
 		var candidates = new List<Rect2>();
 		for (int row = 0; row < 4; row++) for (int col = 0; col < 7; col++)
 		{
-			var center = new Vector2(190 + col * 250, 240 + row * 212) + new Vector2(_rng.RandfRange(-6, 6), _rng.RandfRange(-6, 6));
-			var size = new Vector2(_rng.RandfRange(60, 78), _rng.RandfRange(60, 78));
+			var center = Bounds.Position + new Vector2((col + .5f) * Bounds.Size.X / 7, (row + .5f) * Bounds.Size.Y / 4) + new Vector2(_rng.RandfRange(-6, 6), _rng.RandfRange(-6, 6));
+			var size = new Vector2(_rng.RandfRange(ObstacleSizeRange.X, ObstacleSizeRange.Y),
+				_rng.RandfRange(ObstacleSizeRange.X, ObstacleSizeRange.Y));
 			var rect = new Rect2(center - size / 2, size);
 			if (!rect.Grow(140).HasPoint(player) && !rect.Grow(140).HasPoint(boss)) candidates.Add(rect);
 		}
@@ -46,8 +58,15 @@ public partial class PXArenaTerrain : Node2D
 		int wanted = 16 + (stage - 1) * 2;
 		for (int i = 0; i < Mathf.Min(wanted, candidates.Count); i++) Footprints.Add(candidates[i]);
 		BuildGrid();
+		while (!Connected && Footprints.Count > 0)
+		{ Footprints.RemoveAt(Footprints.Count - 1); BuildGrid(); }
 		for (int i = 0; i < Footprints.Count; i++) MakeObstacle(Footprints[i], _rng.RandiRange(0, 2));
 		Generation++; QueueRedraw();
+	}
+	public void Clear(bool resetGeneration = true)
+	{
+		foreach (Node child in _objects.GetChildren()) { _objects.RemoveChild(child); child.QueueFree(); }
+		Footprints.Clear(); if (resetGeneration) Generation = 0; QueueRedraw();
 	}
 	private void MakeObstacle(Rect2 rect, int kind)
 	{
@@ -97,7 +116,7 @@ public partial class PXArenaTerrain : Node2D
 	{
 		for (int i = 0; i < 4000; i++)
 		{
-			var p = new Vector2(_rng.RandfRange(140, 1780), _rng.RandfRange(220, 900));
+			var p = new Vector2(_rng.RandfRange(Bounds.Position.X + 76, Bounds.End.X - 76), _rng.RandfRange(Bounds.Position.Y + 76, Bounds.End.Y - 76));
 			if (!IsClear(p, 60) || p.DistanceTo(player) < 280 || p.DistanceTo(boss) < 150) continue;
 			bool free = true; foreach (var other in occupied) free &= p.DistanceTo(other) > 160;
 			if (free) return p;
@@ -124,6 +143,13 @@ public partial class PXArenaTerrain : Node2D
 	}
 	public override void _Draw()
 	{
+		if (!DrawFloor)
+		{
+			if (Generation > 0) DrawRect(Bounds, _stage switch {
+				2 => new Color(.8f, .4f, .05f, .22f), 3 => new Color(.65f, .08f, .5f, .28f),
+				_ => new Color(.1f, .3f, .45f, .16f) });
+			return;
+		}
 		DrawRect(new(0, 0, 1920, 1080), new Color("0b1420")); DrawRect(Bounds, new Color("142332"));
 		for (float x = 64; x < 1856; x += 32) DrawLine(new(x, 144), new(x, 968), new Color("1b2e3e"));
 		for (float y = 144; y < 968; y += 32) DrawLine(new(64, y), new(1856, y), new Color("1b2e3e"));

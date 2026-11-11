@@ -13,7 +13,7 @@ public partial class ProjectXLowFidelityPlayer : CharacterBody2D
 		ProcessMode = ProcessModeEnum.Always;
 		SetPhysicsProcess(true);
 
-		// Alleen tijdelijke, unieke test-acties; project.godot blijft ongewijzigd.
+		// Temporary, unique test actions; project.godot remains unchanged.
 		AddTestAction("px_lf_left", Key.A, Key.Left);
 		AddTestAction("px_lf_right", Key.D, Key.Right);
 		AddTestAction("px_lf_up", Key.W, Key.Up);
@@ -21,9 +21,9 @@ public partial class ProjectXLowFidelityPlayer : CharacterBody2D
 
 		_status = GetNodeOrNull<Label>("../HUD/InputStatus");
 		if (_status != null)
-			_status.Text = "C# ACTIEF - klik in het gamevenster en gebruik WASD of de pijltjes.";
+			_status.Text = "C# ACTIVE - click the game window and use WASD or the arrow keys.";
 
-		GD.Print("[ProjectX LowFidelity] C# controller actief; WASD en pijltjes geregistreerd.");
+		GD.Print("[ProjectX LowFidelity] C# controller active; WASD and arrow keys registered.");
 	}
 
 	private static void AddTestAction(string name, Key letter, Key arrow)
@@ -49,8 +49,8 @@ public partial class ProjectXLowFidelityPlayer : CharacterBody2D
 
 		if (_status != null)
 		{
-			_status.Text = $"C# ACTIEF | Input: ({direction.X:0.00}, {direction.Y:0.00})\n"
-				+ $"Positie: ({Position.X:0}, {Position.Y:0}) | Botsingen: {GetSlideCollisionCount()}";
+			_status.Text = $"C# ACTIVE | Input: ({direction.X:0.00}, {direction.Y:0.00})\n"
+				+ $"Position: ({Position.X:0}, {Position.Y:0}) | Collisions: {GetSlideCollisionCount()}";
 		}
 	}
 }

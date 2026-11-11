@@ -11,7 +11,7 @@ public partial class PXHackPanel : Control
     public HackKind CurrentKind { get; private set; }
     public float TimeLimit { get; private set; }
     public string InstructionTitle => _title.Text;
-    public string InstructionBody => _instruction.Text.Replace("\n", " ") + "\n\nJe hebt " + TimeLimit + " seconden. De arena is gepauzeerd. ESC breekt af en telt als een mislukte hack.";
+    public string InstructionBody => _instruction.Text.Replace("\n", " ") + "\n\nYou have " + TimeLimit + " seconds. The arena is paused. ESC cancels and counts as a failed hack.";
     private readonly RandomNumberGenerator _random = new();
     private readonly List<int> _bag = new();
     private readonly int[] _sequence = new int[3], _wires = new int[3], _order = new int[6];
@@ -100,25 +100,25 @@ public partial class PXHackPanel : Control
         NewClickTarget();
         Active = true;
         _submit.Visible = kind is HackKind.Timing or HackKind.Fingerprint or HackKind.Pressure;
-        _submit.Text = kind == HackKind.Timing ? "STOP / SPATIE" : kind == HackKind.Pressure ? "HOUD INGEDRUKT / SPATIE" : "CONTROLEER";
+        _submit.Text = kind == HackKind.Timing ? "STOP / SPACE" : kind == HackKind.Pressure ? "HOLD / SPACE" : "CHECK";
         _numberButtons.Visible = kind == HackKind.Memory;
         SetNumberButtonsEnabled(_preview <= 0);
         _title.Text = kind switch
         {
-            HackKind.Timing => "01 / TIMING", HackKind.Targets => "02 / DOELWITTEN", HackKind.Memory => "03 / GEHEUGEN",
-            HackKind.Wires => "04 / KABELS", HackKind.Order => "05 / VOLGORDE", HackKind.Circuit => "06 / CIRCUIT",
-            HackKind.Fingerprint => "07 / VINGERAFDRUK", _ => "08 / DRUKREGELING"
+            HackKind.Timing => "01 / TIMING", HackKind.Targets => "02 / TARGETS", HackKind.Memory => "03 / MEMORY",
+            HackKind.Wires => "04 / WIRES", HackKind.Order => "05 / ORDER", HackKind.Circuit => "06 / CIRCUIT",
+            HackKind.Fingerprint => "07 / FINGERPRINT", _ => "08 / PRESSURE"
         };
         _instruction.Text = kind switch
         {
-            HackKind.Timing => "Stop de pijl in het groene vak.\nGebruik SPATIE of STOP.",
-            HackKind.Targets => "Klik 3 cirkels aan.\nNaast een cirkel klikken = fout.",
-            HackKind.Memory => "Onthoud 3 cijfers. Herhaal daarna\nmet 1-4 of de knoppen.",
-            HackKind.Wires => "Klik links en dan rechts dezelfde\nvorm aan. Verbind alle 3 kabels.",
-            HackKind.Order => "Klik de cijfers van laag naar hoog:\n1, 2, 3, 4, 5, 6.",
-            HackKind.Circuit => "Klik om de 4 hoeken te draaien.\nMaak een gesloten vierkant.",
-            HackKind.Fingerprint => "Klik de rechter stroken tot ze links\nmatchen. Klik dan CONTROLEER.",
-            _ => "Houd SPATIE of de knop ingedrukt.\nBlijf 1,5 s groen: druk en laat los."
+            HackKind.Timing => "Stop the marker in the green zone.\nPress SPACE or STOP.",
+            HackKind.Targets => "Click 3 circles.\nClicking outside a circle fails.",
+            HackKind.Memory => "Remember 3 digits. Repeat them\nusing 1-4 or the buttons.",
+            HackKind.Wires => "Match each left shape to the right.\nConnect all 3 wires.",
+            HackKind.Order => "Click the numbers in order:\n1, 2, 3, 4, 5, 6.",
+            HackKind.Circuit => "Click to rotate the 4 corners.\nComplete a closed square.",
+            HackKind.Fingerprint => "Click the right strips to match\nthe left. Then click CHECK.",
+            _ => "Hold SPACE or the button.\nHold and release: stay green 1.5 s."
         };
         _timeBar.Value = 100;
         UpdateStatus();
@@ -277,8 +277,8 @@ public partial class PXHackPanel : Control
                     DrawLine(center, center + b * 27, Ink, 5, true);
                     DrawCircle(center, 5, new Color("328b85"));
                 }
-                TextAt(new Vector2(38, 179), "DRAAI", 14, Ink);
-                TextAt(new Vector2(244, 179), "SLUIT", 14, Ink);
+                TextAt(new Vector2(38, 179), "TURN", 14, Ink);
+                TextAt(new Vector2(244, 179), "CLOSE", 14, Ink);
                 break;
             case HackKind.Fingerprint:
                 for (int i = 0; i < 3; i++)
@@ -291,7 +291,7 @@ public partial class PXHackPanel : Control
                 DrawRect(new Rect2(40, 147, 280, 34), Ink);
                 DrawRect(new Rect2(40 + 0.4f * 280, 147, 0.28f * 280, 34), Green);
                 DrawLine(new Vector2(40 + _pressure * 280, 140), new Vector2(40 + _pressure * 280, 189), Colors.White, 4);
-                TextAt(new Vector2(65, 219), $"STABIEL: {_stableTime:0.0} / 1.5 s", 20, Ink);
+                TextAt(new Vector2(65, 219), $"STABLE: {_stableTime:0.0} / 1.5 s", 20, Ink);
                 break;
         }
     }
@@ -367,9 +367,9 @@ public partial class PXHackPanel : Control
         string progress = CurrentKind switch
         {
             HackKind.Targets or HackKind.Memory or HackKind.Wires => $"{_completed} / 3",
-            HackKind.Order => $"{_completed} / 6", _ => "VOLTOOI DE HACK"
+            HackKind.Order => $"{_completed} / 6", _ => "COMPLETE THE HACK"
         };
-        _status.Text = _preview > 0 ? "KIJK GOED..." : $"{Mathf.Max(0, TimeLimit - _elapsed):0.0} s  /  {progress}";
+        _status.Text = _preview > 0 ? "WATCH CLOSELY..." : $"{Mathf.Max(0, TimeLimit - _elapsed):0.0} s  /  {progress}";
     }
 
     public void ResetDeck() { _bag.Clear(); _lastKind = -1; }

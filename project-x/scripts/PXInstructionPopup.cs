@@ -22,7 +22,7 @@ public partial class PXInstructionPopup : Control
         _body = PXRetroUI.Label(panel, "", new(52, 188, 976, 268), 32);
         _body.AutowrapMode = TextServer.AutowrapMode.WordSmart;
         _count = PXRetroUI.Label(panel, "", new(52, 500, 450, 48), 24, PXRetroUI.Muted);
-        _next = PXRetroUI.Button(panel, "VERDER", new(612, 490, 416, 68), Advance);
+        _next = PXRetroUI.Button(panel, "CONTINUE", new(612, 490, 416, 68), Advance);
         Hide();
     }
     public void ShowPages(string[] titles, string[] pages, Action finished)
@@ -33,8 +33,8 @@ public partial class PXInstructionPopup : Control
     private void Refresh()
     {
         _title.Text = _titles[_index]; _body.Text = _pages[_index];
-        _count.Text = $"{_index + 1} / {_pages.Length}   |   ENTER = VERDER";
-        _next.Text = _index == _pages.Length - 1 ? "START" : "VERDER";
+        _count.Text = $"{_index + 1} / {_pages.Length}   |   ENTER = CONTINUE";
+        _next.Text = _index == _pages.Length - 1 ? "START" : "CONTINUE";
     }
     public void Advance()
     {

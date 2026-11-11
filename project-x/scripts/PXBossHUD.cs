@@ -41,7 +41,7 @@ public partial class PXBossHUD : CanvasLayer
 		_hackTarget = PXRetroUI.Label(frame, "", new(52, 385, 680, 60), 38, PXRetroUI.Accent);
 		_hackCaption = PXRetroUI.Label(frame, "", new(52, 470, 650, 180), 28, PXRetroUI.Muted);
 		_hackCaption.AutowrapMode = TextServer.AutowrapMode.WordSmart;
-		PXRetroUI.Label(frame, "ARENA BEVROREN\nHP BLIJFT ZICHTBAAR", new(52, 732, 680, 90), 26, PXRetroUI.Accent);
+		PXRetroUI.Label(frame, "ARENA FROZEN\nHP REMAINS VISIBLE", new(52, 732, 680, 90), 26, PXRetroUI.Accent);
 		Hack = GD.Load<PackedScene>("res://scenes/HackPanel.tscn").Instantiate<PXHackPanel>();
 		Hack.Position = new(800, 100); Hack.Scale = new(2, 2); frame.AddChild(Hack); HackOverlay.Hide();
 		_banner = Root("StageBanner");
@@ -53,19 +53,19 @@ public partial class PXBossHUD : CanvasLayer
 		_menu = Backdrop("MainMenu");
 		PXRetroUI.Label(_menu, "PROJECT X", new(340, 160, 1240, 140), 112);
 		PXRetroUI.Label(_menu, "OMNI-TOOL  /  BOSS ARENA", new(348, 320, 1200, 70), 42, PXRetroUI.Accent);
-		PXRetroUI.Label(_menu, "LOW-FIDELITY TEST  //  3 FASES  //  8 HACKS", new(348, 410, 1200, 50), 28, PXRetroUI.Muted);
+		PXRetroUI.Label(_menu, "LOW-FIDELITY TEST  //  3 PHASES  //  8 HACKS", new(348, 410, 1200, 50), 28, PXRetroUI.Muted);
 		PXRetroUI.Button(_menu, "START", new(350, 540, 480, 86), () => StartPressed?.Invoke());
-		PXRetroUI.Button(_menu, "AFSLUITEN", new(350, 650, 480, 76), () => GetTree().Quit());
+		PXRetroUI.Button(_menu, "QUIT", new(350, 650, 480, 76), () => GetTree().Quit());
 		PXRetroUI.Label(_menu, "V3.2  /  ROOT FOLDER LAYOUT", new(350, 870, 1200, 44), 24, PXRetroUI.Muted);
 		_ending = Backdrop("EndScreen");
 		_endTitle = PXRetroUI.Label(_ending, "", new(350, 250, 1400, 100), 76);
 		_endBody = PXRetroUI.Label(_ending, "", new(355, 380, 1200, 120), 36, PXRetroUI.Accent);
-		PXRetroUI.Button(_ending, "OPNIEUW", new(355, 570, 480, 84), () => RetryPressed?.Invoke());
-		PXRetroUI.Button(_ending, "HOOFDMENU", new(875, 570, 480, 84), () => MenuPressed?.Invoke()); _ending.Hide();
+		PXRetroUI.Button(_ending, "RETRY", new(355, 570, 480, 84), () => RetryPressed?.Invoke());
+		PXRetroUI.Button(_ending, "MAIN MENU", new(875, 570, 480, 84), () => MenuPressed?.Invoke()); _ending.Hide();
 		_pause = Backdrop("PauseScreen");
-		PXRetroUI.Label(_pause, "GEPAUZEERD", new(530, 290, 1100, 100), 72);
-		PXRetroUI.Button(_pause, "VERDER", new(530, 460, 800, 84), () => ResumePressed?.Invoke());
-		PXRetroUI.Button(_pause, "HOOFDMENU", new(530, 570, 800, 84), () => MenuPressed?.Invoke()); _pause.Hide();
+		PXRetroUI.Label(_pause, "PAUSED", new(530, 290, 1100, 100), 72);
+		PXRetroUI.Button(_pause, "RESUME", new(530, 460, 800, 84), () => ResumePressed?.Invoke());
+		PXRetroUI.Button(_pause, "MAIN MENU", new(530, 570, 800, 84), () => MenuPressed?.Invoke()); _pause.Hide();
 		Instructions = GD.Load<PackedScene>("res://scenes/InstructionPopup.tscn").Instantiate<PXInstructionPopup>();
 		AddChild(Instructions);
 		// Last UI child: health stays above every hack and instruction popup.
@@ -84,20 +84,20 @@ public partial class PXBossHUD : CanvasLayer
 		if (!Initialized || player == null || boss == null) return;
 		PlayerBar.MaxValue = player.MaxHealth; PlayerBar.Value = player.Health;
 		_healthFill.BgColor = _healthFill.BorderColor = player.Health <= 30 ? new Color("f27777") : PXRetroUI.Accent;
-		_playerText.Text = $"SPELER  {player.Health} / {player.MaxHealth} HP";
+		_playerText.Text = $"PLAYER  {player.Health} / {player.MaxHealth} HP";
 		_bossBar.MaxValue = boss.MaxHealth; _bossBar.Value = boss.Health;
 		_bossText.Text = $"BOSS  {boss.SuccessfulHacks} / 15 HACKS   |   {boss.Intent}";
-		_phase.Text = intermission ? $"MINIONS OVER: {minions}" : $"FASE {boss.Stage} / 3";
-		_dash.Text = player.DashReady ? "SHIFT  /  DASH GEREED" : "DASH HERLAADT";
-		_context.Text = cooldown > 0 ? $"OMNI-TOOL HERLAADT  {cooldown:0.0}s" : context;
+		_phase.Text = intermission ? $"MINIONS LEFT: {minions}" : $"PHASE {boss.Stage} / 3";
+		_dash.Text = player.DashReady ? "SHIFT  /  DASH READY" : "DASH RECHARGING";
+		_context.Text = cooldown > 0 ? $"OMNI-TOOL RECHARGING  {cooldown:0.0}s" : context;
 	}
 	public void Message(string message) => _message.Text = message;
 	public void ShowMenu() { _menu.Show(); _ending.Hide(); _pause.Hide(); _top.Hide(); HideHack(); HideBanner(); Instructions.CloseSilently(); }
 	public void HideMenu() { _menu.Hide(); _ending.Hide(); _pause.Hide(); _top.Show(); }
 	public void ShowHack(string target)
 	{
-		_hackTarget.Text = "DOELWIT  /  " + target;
-		_hackCaption.Text = $"{Hack.InstructionTitle}\n\nSucces: hackschade.\nMislukt: 20 HP schade.\n\nEen geslaagde bosshack geeft\n1,5 seconde ontsnappingstijd.";
+		_hackTarget.Text = "TARGET  /  " + target;
+		_hackCaption.Text = $"{Hack.InstructionTitle}\n\nSuccess: hack damage.\nFailure: lose 20 HP.\n\nA successful boss hack grants\n1.5 seconds to escape.";
 		HackOverlay.Show();
 	}
 	public void HideHack() => HackOverlay.Hide();
@@ -106,8 +106,8 @@ public partial class PXBossHUD : CanvasLayer
 	public void Pause(bool paused) => _pause.Visible = paused;
 	public void End(bool win, int hacks, int minions)
 	{
-		_endTitle.Text = win ? "BOSS UITGESCHAKELD" : "SIGNAL LOST";
-		_endBody.Text = $"{hacks} / 15 BOSSHACKS\n{minions} MINIONS UITGESCHAKELD";
+		_endTitle.Text = win ? "BOSS DISABLED" : "SIGNAL LOST";
+		_endBody.Text = $"{hacks} / 15 BOSS HACKS\n{minions} MINIONS DISABLED";
 		HideHack(); HideBanner(); Instructions.CloseSilently(); _ending.Show();
 	}
 }

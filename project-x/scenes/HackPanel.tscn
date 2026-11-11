@@ -33,7 +33,7 @@ offset_bottom = 94.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.15, 0.23, 0.27, 1)
 theme_override_font_sizes/font_size = 16
-text = "Voltooi de hack."
+text = "Complete the hack."
 
 
 [node name="TimeBar" type="ProgressBar" parent="."]
@@ -65,7 +65,7 @@ offset_right = 336.0
 offset_bottom = 316.0
 focus_mode = 0
 theme_override_font_sizes/font_size = 18
-text = "STOP / SPATIE"
+text = "STOP / SPACE"
 
 [node name="NumberButtons" type="HBoxContainer" parent="."]
 offset_left = 24.0
@@ -110,5 +110,5 @@ offset_bottom = 344.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.15, 0.23, 0.27, 1)
 theme_override_font_sizes/font_size = 13
-text = "ESC = afbreken (telt als mislukte hack)"
+text = "ESC = cancel (counts as a failed hack)"
 

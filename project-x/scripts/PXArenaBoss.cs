@@ -19,6 +19,7 @@ public partial class PXArenaBoss : CharacterBody2D
 	public int Stage => Mathf.Min(3, SuccessfulHacks / 5 + 1);
 	public bool IsAlive => SuccessfulHacks < RequiredHacks;
 	public bool Locked { get; set; }
+	public bool Dormant { get; set; }
 	public bool PhaseFrozen { get; set; }
 	public float StunRemaining { get; private set; }
 	public float AttackCooldown => _attackCooldown;
@@ -30,9 +31,9 @@ public partial class PXArenaBoss : CharacterBody2D
 	}
 	public bool CanSeePlayer { get; private set; }
 	public BrainState State { get; private set; } = BrainState.Wandering;
-	public string Intent => !IsAlive ? "VERSLAGEN" : PhaseFrozen ? "ONKWETSBAAR" : Locked ? "HACK ACTIEF" : StunRemaining > 0 ? $"STUN {StunRemaining:0.0}s" :
-		_windup > 0 ? (_radialAttack ? "RINGAANVAL!" : "LASERS!") :
-		State == BrainState.Chasing ? "ACHTERVOLGT" : State == BrainState.Searching ? "ZOEKT..." : "PATROUILLE";
+	public string Intent => !IsAlive ? "DEFEATED" : Dormant ? "DORMANT" : PhaseFrozen ? "INVULNERABLE" : Locked ? "PAUSED" : StunRemaining > 0 ? $"STUN {StunRemaining:0.0}s" :
+		_windup > 0 ? (_radialAttack ? "RING ATTACK!" : "LASERS!") :
+		State == BrainState.Chasing ? "CHASING" : State == BrainState.Searching ? "SEARCHING..." : "PATROLLING";
 	[Export] public float HackRange { get; set; } = 190f;
 	[Export] public float BaseChaseSpeed { get; set; } = 195f;
 
@@ -88,7 +89,7 @@ public partial class PXArenaBoss : CharacterBody2D
 		_body.Modulate = _flash > 0 ? new Color(1.8f, 1.8f, 1.8f) : Colors.White;
 		_name.Text = Intent;
 		QueueRedraw();
-		if (Locked || PhaseFrozen || !IsAlive || _player == null || !_player.IsAlive)
+		if (Dormant || Locked || PhaseFrozen || !IsAlive || _player == null || !_player.IsAlive)
 		{
 			Velocity = Vector2.Zero;
 			return;
@@ -214,7 +215,7 @@ public partial class PXArenaBoss : CharacterBody2D
 
 	public void CompleteHack()
 	{
-		if (!IsAlive || PhaseFrozen) return;
+		if (!IsAlive || PhaseFrozen || Dormant) return;
 		int previousStage = Stage;
 		SuccessfulHacks++;
 		_flash = 0.25f;

@@ -12,7 +12,7 @@ public static class PXRetroUI
 		{
 			if (_font == null)
 			{
-				const string path = "res://BossArenaPrototype/assets/PixelifySans.ttf";
+				const string path = "res://assets/PixelifySans.ttf";
 				FontFile font = null;
 				// F6 can be pressed before the editor imports a newly copied font.
 				// In an editor build we can read the original TTF directly.
@@ -35,7 +35,7 @@ public static class PXRetroUI
 				{
 					// Cache the fallback as well: never retry a missing file each frame.
 					_font = ThemeDB.FallbackFont ?? new SystemFont();
-					GD.Print("Project X: PixelifySans niet beschikbaar; standaardlettertype actief.");
+					GD.Print("Project X: PixelifySans unavailable; using the default font.");
 				}
 			}
 			return _font;

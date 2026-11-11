@@ -1,12 +1,12 @@
 [gd_scene format=4 uid="uid://cw17you85qnn"]
 
-[ext_resource type="Texture2D" uid="uid://b3e8ly5arbeim" path="res://assets/images/tilemaps/nenon-tilemap/water-neon.png" id="1_1xo34"]
-[ext_resource type="Texture2D" uid="uid://ckib0ntwoluff" path="res://assets/images/tilemaps/nenon-tilemap/10.png" id="2_eqscl"]
-[ext_resource type="Texture2D" uid="uid://duifcksv2hq0k" path="res://assets/images/tilemaps/nenon-tilemap/2.png" id="3_4synu"]
-[ext_resource type="Texture2D" uid="uid://c6lo1tj4b4x4a" path="res://assets/images/tilemaps/nenon-tilemap/void.png" id="3_cyf2o"]
-[ext_resource type="Texture2D" uid="uid://bxexdqpwkg6ck" path="res://assets/images/tilemaps/nenon-tilemap/8.png" id="4_cyf2o"]
-[ext_resource type="Texture2D" uid="uid://b4qphxv2mx04n" path="res://assets/images/tilemaps/nenon-tilemap/15.png" id="5_64gt2"]
-[ext_resource type="Texture2D" uid="uid://ct85pp3cxb0jj" path="res://assets/images/tilemaps/nenon-tilemap/17.png" id="6_2xk3c"]
+[ext_resource type="Texture2D" path="res://assets/images/tilemaps/nenon-tilemap/water-neon.png" id="1_1xo34"]
+[ext_resource type="Texture2D" path="res://assets/images/tilemaps/nenon-tilemap/10.png" id="2_eqscl"]
+[ext_resource type="Texture2D" path="res://assets/images/tilemaps/nenon-tilemap/2.png" id="3_4synu"]
+[ext_resource type="Texture2D" path="res://assets/images/tilemaps/nenon-tilemap/void.png" id="3_cyf2o"]
+[ext_resource type="Texture2D" path="res://assets/images/tilemaps/nenon-tilemap/8.png" id="4_cyf2o"]
+[ext_resource type="Texture2D" path="res://assets/images/tilemaps/nenon-tilemap/15.png" id="5_64gt2"]
+[ext_resource type="Texture2D" path="res://assets/images/tilemaps/nenon-tilemap/17.png" id="6_2xk3c"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_uxg3y"]
 texture = ExtResource("1_1xo34")
@@ -4550,7 +4550,7 @@ texture_region_size = Vector2i(32, 32)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rk4p5"]
 texture = ExtResource("6_2xk3c")
-texture_region_size = Vector2i(33, 31)
+texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
