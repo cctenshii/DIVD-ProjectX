@@ -45,6 +45,7 @@ layout_mode = 2
 
 [node name="LineCanvas" type="Control" parent="PuzzleUI/VBoxContainer/MainLayout" unique_id=1020454636]
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="RightPanel" type="VBoxContainer" parent="PuzzleUI/VBoxContainer/MainLayout" unique_id=236922179]
 layout_mode = 2
@@ -67,3 +68,5 @@ layout_mode = 2
 [node name="RestartButton" type="Button" parent="PuzzleUI/VBoxContainer" unique_id=262310103]
 layout_mode = 2
 text = "Restart"
+
+[connection signal="draw" from="PuzzleUI/VBoxContainer/MainLayout/LineCanvas" to="." method="_on_line_canvas_draw"]

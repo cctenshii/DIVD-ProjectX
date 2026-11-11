@@ -27,7 +27,7 @@ var right_symbols: Array[int] = [3, 0, 1, 2] # Shuffled target order
 
 # Connection state tracking
 var selected_left_index: int = -1
-var connections: Dictionary = {} # left_index -> right_index
+var connections: Dictionary = {} 
 var puzzle_solved: bool = false
 
 
@@ -45,7 +45,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	# Continuously redraw lines to follow UI positions
+	# Continuously redraw lines to follow UI positions | STILL NEED TO FIX
 	line_canvas.queue_redraw()
 
 
@@ -55,7 +55,6 @@ func _restart_puzzle() -> void:
 	puzzle_solved = false
 	status_label.text = "Click a left terminal, then click its match."
 	
-	# Shuffle right side symbols randomly for variety
 	right_symbol_shuffle()
 	_update_button_visuals()
 
@@ -72,7 +71,6 @@ func _update_button_visuals() -> void:
 		left_buttons[i].text = symbol_names[left_symbols[i]]
 		right_buttons[i].text = symbol_names[right_symbols[i]]
 		
-		# Reset button modulate/colors
 		left_buttons[i].modulate = Color.WHITE
 		right_buttons[i].modulate = Color.WHITE
 
@@ -81,7 +79,6 @@ func _on_left_pressed(index: int) -> void:
 	if puzzle_solved:
 		return
 		
-	# Select this left terminal
 	selected_left_index = index
 	status_label.text = "Selected left terminal. Now click the matching right terminal."
 	
@@ -149,3 +146,7 @@ func _draw() -> void:
 		
 		# Draw a smooth connection cable line
 		line_canvas.draw_line(start_pos, end_pos, Color(0.2, 0.8, 1.0), 6.0, true)
+
+
+func _on_line_canvas_draw() -> void:
+	pass # Replace with function body.

@@ -28,6 +28,11 @@ var puzzles: Array[Dictionary] = [
 		"title": "Connect Cables",
 		"description": "Connect the matching symbols across the panels.",
 		"scene": "res://minipuzzles/puzzles/puzzle_04/puzzle_04.tscn"
+	},
+	{
+		"title": "Frequency Tuning",
+		"description": "Adjust speed, height, and phase to match the target frequency wave.",
+		"scene": "res://minipuzzles/puzzles/puzzle_05/puzzle_05.tscn"
 	}
 ]
 

@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://djcl1k3xl37jw"]
+
+[ext_resource type="Script" uid="uid://qwms10njhbh7" path="res://minipuzzles/puzzles/puzzle_05/puzzle_05.gd" id="1_86r0y"]
+
+[node name="Puzzle05" type="Control" unique_id=1924293803]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_86r0y")
+
+[node name="PuzzleUI" type="PanelContainer" parent="." unique_id=196918118]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PuzzleUI" unique_id=1122339407]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=1744219154]
+layout_mode = 2
+text = "Frequency Tuning"
+
+[node name="InstructionLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=281402312]
+layout_mode = 2
+text = "Match your signal to the target wave."
+
+[node name="TargetWaveDisplay" type="Control" parent="PuzzleUI/VBoxContainer" unique_id=2025053123]
+custom_minimum_size = Vector2(600, 120)
+layout_mode = 2
+
+[node name="PlayerWaveDisplay" type="Control" parent="PuzzleUI/VBoxContainer" unique_id=605497770]
+custom_minimum_size = Vector2(600, 120)
+layout_mode = 2
+
+[node name="SliderContainer" type="VBoxContainer" parent="PuzzleUI/VBoxContainer" unique_id=789524920]
+layout_mode = 2
+
+[node name="SpeedRow" type="HBoxContainer" parent="PuzzleUI/VBoxContainer/SliderContainer" unique_id=175034729]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/SliderContainer/SpeedRow" unique_id=1373571442]
+layout_mode = 2
+text = "Speed"
+
+[node name="SpeedSlider" type="HSlider" parent="PuzzleUI/VBoxContainer/SliderContainer/SpeedRow" unique_id=2139528220]
+layout_mode = 2
+
+[node name="HeightRow" type="HBoxContainer" parent="PuzzleUI/VBoxContainer/SliderContainer" unique_id=1654269417]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/SliderContainer/HeightRow" unique_id=1989430570]
+layout_mode = 2
+text = "Height"
+
+[node name="HeightSlider" type="HSlider" parent="PuzzleUI/VBoxContainer/SliderContainer/HeightRow" unique_id=49752701]
+layout_mode = 2
+
+[node name="PhaseRow" type="HBoxContainer" parent="PuzzleUI/VBoxContainer/SliderContainer" unique_id=1942931354]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/SliderContainer/PhaseRow" unique_id=277601197]
+layout_mode = 2
+text = "Phase"
+
+[node name="PhaseSlider" type="HSlider" parent="PuzzleUI/VBoxContainer/SliderContainer/PhaseRow" unique_id=909492384]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=1462793197]
+layout_mode = 2
+text = "Adjust sliders to match the waves!"
+
+[node name="RestartButton" type="Button" parent="PuzzleUI/VBoxContainer" unique_id=931805374]
+layout_mode = 2
+text = "Reset"
+
+[connection signal="draw" from="PuzzleUI/VBoxContainer/TargetWaveDisplay" to="." method="_on_target_wave_display_draw"]
+[connection signal="draw" from="PuzzleUI/VBoxContainer/PlayerWaveDisplay" to="." method="_on_player_wave_display_draw"]
