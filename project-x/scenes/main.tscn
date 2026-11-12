@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://cwel34lllvaje"]
+
+[ext_resource type="PackedScene" uid="uid://c8b6xtqwp2n7b" path="res://scenes/chat_box.tscn" id="1_jyhfs"]
+[ext_resource type="PackedScene" uid="uid://bbdkdp4g6wvt5" path="res://scenes/player.tscn" id="4_o6xl0"]
+[ext_resource type="PackedScene" uid="uid://cw17you85qnn" path="res://scenes/main_map.tscn" id="5_tbgi4"]
+[ext_resource type="PackedScene" uid="uid://vq4nmswecdhd" path="res://scenes/quest_1_npcs.tscn" id="6_tefeu"]
+[ext_resource type="Texture2D" uid="uid://dgcrwf447fuli" path="res://assets/images/tilemaps/nenon-tilemap/big-robot10.png" id="7_o6xl0"]
+
+[node name="Main" type="Node2D" unique_id=1880656200]
+y_sort_enabled = true
+scale = Vector2(1.00109, 1)
+
+[node name="ChatBox" parent="." unique_id=396766177 instance=ExtResource("1_jyhfs")]
+
+[node name="Player" parent="." unique_id=1740200962 instance=ExtResource("4_o6xl0")]
+position = Vector2(3708.96, 3312)
+
+[node name="MainMap" parent="." unique_id=1285751839 instance=ExtResource("5_tbgi4")]
+position = Vector2(106.883, -195)
+
+[node name="Quest-1-NPCS" parent="." unique_id=712262842 groups=["Player"] instance=ExtResource("6_tefeu")]
+position = Vector2(2791.96, 3162)
+
+[node name="NPC1" parent="Quest-1-NPCS" index="0"]
+position = Vector2(774.152, -41)
+
+[node name="Area2D" parent="Quest-1-NPCS/NPC1" index="1" node_paths=PackedStringArray("chat_box")]
+chat_box = NodePath("../../../ChatBox")
+
+[node name="Quest-1-NPCS2" parent="." unique_id=1285676631 groups=["NPC2", "Player"] instance=ExtResource("6_tefeu")]
+position = Vector2(4376.23, 3311)
+
+[node name="Area2D" parent="Quest-1-NPCS2/NPC1" index="1" node_paths=PackedStringArray("chat_box")]
+chat_box = NodePath("../../../ChatBox")
+npc_quest_id = 1
+
+[node name="Bossfightlocation" type="Marker2D" parent="." unique_id=220829344 groups=["Boss"]]
+position = Vector2(3617.06, 4176)
+
+[node name="Sprite2D" type="Sprite2D" parent="Bossfightlocation" unique_id=1110410594]
+position = Vector2(37.9586, 151)
+scale = Vector2(2, 2)
+texture = ExtResource("7_o6xl0")
+
+[editable path="Quest-1-NPCS"]
+[editable path="Quest-1-NPCS2"]
