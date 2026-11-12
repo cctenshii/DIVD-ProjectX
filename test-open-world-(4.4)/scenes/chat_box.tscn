@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8b6xtqwp2n7b"]
+
+[ext_resource type="Script" uid="uid://dl6b4ypjtndmn" path="res://chat_box.gd" id="1_qqv8j"]
+
+[node name="ChatBox" type="CanvasLayer"]
+script = ExtResource("1_qqv8j")
+
+[node name="Panel" type="Panel" parent="."]
+offset_top = 514.0
+offset_right = 1151.0
+offset_bottom = 648.0
+
+[node name="Label" type="Label" parent="Panel"]
+layout_mode = 0
+offset_right = 1151.0
+offset_bottom = 134.0
+vertical_alignment = 1
