@@ -27,8 +27,8 @@ chat_box = NodePath("../ChatBox")
 [node name="MainMap" parent="." instance=ExtResource("5_tbgi4")]
 position = Vector2(106.883, -195)
 
-[node name="Quest-1-NPCS" parent="." groups=["Player"] instance=ExtResource("6_tefeu")]
-position = Vector2(2791.96, 3162)
+[node name="Quest-1-NPCS" parent="." instance=ExtResource("6_tefeu")]
+position = Vector2(2673.09, 3230)
 
 [node name="NPC1" parent="Quest-1-NPCS" index="0"]
 position = Vector2(774.152, -41)
@@ -36,20 +36,21 @@ position = Vector2(774.152, -41)
 [node name="Area2D" parent="Quest-1-NPCS/NPC1" index="1" node_paths=PackedStringArray("chat_box")]
 chat_box = NodePath("../../../ChatBox")
 
-[node name="Quest-1-NPCS2" parent="." groups=["NPC2", "Player"] instance=ExtResource("6_tefeu")]
-position = Vector2(4376.23, 3311)
+[node name="Quest-1-NPCS2" parent="." groups=["NPC2"] instance=ExtResource("6_tefeu")]
+position = Vector2(4445.15, 3274)
 
 [node name="Area2D" parent="Quest-1-NPCS2/NPC1" index="1" node_paths=PackedStringArray("chat_box")]
 chat_box = NodePath("../../../ChatBox")
 npc_quest_id = 1
 
 [node name="Bossfightlocation" type="Marker2D" parent="." groups=["Boss"]]
-position = Vector2(3617.06, 4176)
+position = Vector2(6599.81, 4248)
 
 [node name="Sprite2D" type="Sprite2D" parent="Bossfightlocation"]
-position = Vector2(37.9586, 151)
+position = Vector2(-6.99289, 0)
 scale = Vector2(2, 2)
 texture = ExtResource("7_o6xl0")
 
+[editable path="MainMap"]
 [editable path="Quest-1-NPCS"]
 [editable path="Quest-1-NPCS2"]

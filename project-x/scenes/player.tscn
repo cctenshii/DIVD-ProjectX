@@ -208,8 +208,12 @@ shape = SubResource("RectangleShape2D_g2els")
 zoom = Vector2(1.5, 1.5)
 position_smoothing_enabled = true
 
-[node name="QuestArrow" type="Sprite2D" parent="Player"]
-position = Vector2(0, -44)
-scale = Vector2(-0.02, -0.02)
+[node name="QuestArrow" type="Sprite2D" parent="Player" node_paths=PackedStringArray("nav_agent")]
+position = Vector2(0, -40)
+rotation = 3.14159
+scale = Vector2(0.02, 0.02)
 texture = ExtResource("3_dqkch")
 script = ExtResource("4_qlg0r")
+nav_agent = NodePath("../../NavigationAgent2D")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
