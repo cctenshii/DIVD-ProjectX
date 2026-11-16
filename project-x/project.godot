@@ -16,12 +16,16 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="test-open world"
 run/main_scene="uid://cwel34lllvaje"
-config/features=PackedStringArray("4.7", "Forward Plus")
+config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 QuestManager="*res://scripts/QuestManager.gd"
+
+[dotnet]
+
+project/assembly_name="test-open world"
 
 [input]
 
