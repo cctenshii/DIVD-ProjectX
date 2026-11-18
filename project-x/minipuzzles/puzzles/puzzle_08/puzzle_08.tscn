@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://bjirgom6567yq"]
+
+[ext_resource type="Script" uid="uid://p1gahife447s" path="res://minipuzzles/puzzles/puzzle_08/puzzle_08.gd" id="1_1qq3g"]
+
+[node name="Puzzle08" type="Control" unique_id=415113455]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1qq3g")
+
+[node name="PuzzleUI" type="PanelContainer" parent="." unique_id=1494832858]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PuzzleUI" unique_id=1429934718]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=981036488]
+layout_mode = 2
+text = "Fuse Placement"
+
+[node name="InstructionLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=1699714627]
+layout_mode = 2
+text = "Choose fuses to reach the exact target energy."
+
+[node name="TargetLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=86004552]
+layout_mode = 2
+text = "TARGET: 10"
+
+[node name="SlotContainer" type="HBoxContainer" parent="PuzzleUI/VBoxContainer" unique_id=1479180982]
+layout_mode = 2
+
+[node name="Slot0" type="Button" parent="PuzzleUI/VBoxContainer/SlotContainer" unique_id=1238273372]
+layout_mode = 2
+
+[node name="Slot1" type="Button" parent="PuzzleUI/VBoxContainer/SlotContainer" unique_id=2074703672]
+layout_mode = 2
+
+[node name="InventoryContainer" type="HBoxContainer" parent="PuzzleUI/VBoxContainer" unique_id=951693711]
+layout_mode = 2
+
+[node name="FuseBtn2" type="Button" parent="PuzzleUI/VBoxContainer/InventoryContainer" unique_id=1040524010]
+layout_mode = 2
+
+[node name="FuseBtn3" type="Button" parent="PuzzleUI/VBoxContainer/InventoryContainer" unique_id=2102569392]
+layout_mode = 2
+
+[node name="FuseBtn5" type="Button" parent="PuzzleUI/VBoxContainer/InventoryContainer" unique_id=723869283]
+layout_mode = 2
+
+[node name="FuseBtn7" type="Button" parent="PuzzleUI/VBoxContainer/InventoryContainer" unique_id=1746089635]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=1716712860]
+layout_mode = 2
+text = "Current Energy: 0/10."
+
+[node name="RestartButton" type="Button" parent="PuzzleUI/VBoxContainer" unique_id=1251992472]
+layout_mode = 2
+text = "Restart"

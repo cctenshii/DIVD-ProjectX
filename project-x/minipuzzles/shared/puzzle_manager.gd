@@ -43,6 +43,11 @@ var puzzles: Array[Dictionary] = [
 		"title": "Rhythm Clicking",
 		"description": "Click the numbered circles in sequential order along the path.",
 		"scene": "res://minipuzzles/puzzles/puzzle_07/puzzle_07.tscn"
+	},
+	{
+		"title": "Fuse Placement",
+		"description": "Choose and place fuses into sockets to hit the exact target energy.",
+		"scene": "res://minipuzzles/puzzles/puzzle_08/puzzle_08.tscn"
 	}
 ]
 
