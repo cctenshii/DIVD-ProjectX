@@ -1,220 +1,31 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=4 format=3]
 
-[ext_resource type="Script" path="res://scripts/PXArenaPlayer.cs" id="1_g2els"]
-[ext_resource type="Texture2D" uid="uid://ccmfro3pxsi3l" path="res://assets/images/player/all-position-V2.png" id="2_qhqgy"]
-[ext_resource type="Texture2D" uid="uid://c2oh5vtpbbkkc" path="res://assets/images/effects/arrow.png" id="3_dqkch"]
-[ext_resource type="Script" uid="uid://vu3jksraqbfa" path="res://scripts/quest_arrow.gd" id="4_qlg0r"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_dqkch"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(26, 25, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_g2els"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(26, 91, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qhqgy"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(26, 157, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qlg0r"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(26, 289, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_tuyoq"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(92, 289, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_fjrip"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(158, 289, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_smehm"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(224, 289, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ur7pv"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(290, 289, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_y4r1p"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(356, 289, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_d2wvv"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(26, 355, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_3v2ag"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(92, 355, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_jej6c"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(158, 355, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_f1ej7"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(224, 355, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_oprun"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(290, 355, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_a8ls1"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(356, 355, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qfm1y"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(27, 421, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_fulsm"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(93, 421, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_4r5pv"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(159, 421, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_60mlk"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(225, 421, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_i4ail"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(291, 421, 66, 66)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_a38lo"]
-atlas = ExtResource("2_qhqgy")
-region = Rect2(357, 421, 66, 66)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_fs4d3"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_dqkch")
-}],
-"loop": true,
-"name": &"idle_down",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_g2els")
-}],
-"loop": true,
-"name": &"idle_left",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qhqgy")
-}],
-"loop": true,
-"name": &"idle_up",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qlg0r")
-}, {
-"duration": 1.1,
-"texture": SubResource("AtlasTexture_tuyoq")
-}, {
-"duration": 1.2,
-"texture": SubResource("AtlasTexture_fjrip")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_smehm")
-}, {
-"duration": 1.1,
-"texture": SubResource("AtlasTexture_ur7pv")
-}, {
-"duration": 1.2,
-"texture": SubResource("AtlasTexture_y4r1p")
-}],
-"loop": true,
-"name": &"running_down",
-"speed": 8.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_d2wvv")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_3v2ag")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_jej6c")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_f1ej7")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_oprun")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_a8ls1")
-}],
-"loop": true,
-"name": &"running_left",
-"speed": 8.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qfm1y")
-}, {
-"duration": 1.2,
-"texture": SubResource("AtlasTexture_fulsm")
-}, {
-"duration": 1.1,
-"texture": SubResource("AtlasTexture_4r5pv")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_60mlk")
-}, {
-"duration": 1.2,
-"texture": SubResource("AtlasTexture_i4ail")
-}, {
-"duration": 1.1,
-"texture": SubResource("AtlasTexture_a38lo")
-}],
-"loop": true,
-"name": &"running_up",
-"speed": 8.0
-}]
+[ext_resource type="Script" path="res://scripts/PXArenaPlayer.cs" id="1"]
+[ext_resource type="Texture2D" path="res://assets/tilesets/all-position-V2.png" id="2"]
 
 [sub_resource type="CircleShape2D" id="PlayerShape"]
-radius = 16.0
+radius = 18.0
 
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 collision_layer = 2
 collision_mask = 13
 motion_mode = 1
-script = ExtResource("1_g2els")
+script = ExtResource("1")
 
-[node name="Body" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -18)
-sprite_frames = SubResource("SpriteFrames_fs4d3")
-animation = &"idle_down"
+[node name="Body" type="Sprite2D" parent="."]
+texture = ExtResource("2")
+region_enabled = true
+region_rect = Rect2(28, 26, 64, 64)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("PlayerShape")
 
 [node name="Name" type="Label" parent="."]
-offset_left = -35.0
-offset_top = -74.0
-offset_right = 35.0
-offset_bottom = -52.0
+offset_left = -48.0
+offset_top = -49.0
+offset_right = 48.0
+offset_bottom = -29.0
 mouse_filter = 2
 theme_override_font_sizes/font_size = 14
 text = "YOU"
 horizontal_alignment = 1
-
-[node name="QuestArrow" type="Sprite2D" parent="."]
-position = Vector2(0, -100)
-scale = Vector2(0.02, 0.02)
-texture = ExtResource("3_dqkch")
-script = ExtResource("4_qlg0r")
-target_path = NodePath("../../Boss")

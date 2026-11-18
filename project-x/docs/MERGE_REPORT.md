@@ -1,74 +1,67 @@
-# Lokaal merge-rapport — 13 november 2026
+# Quest-1-v3: lokaal conflictrapport
 
-## Uitgangspunt
+Datum: 18 november 2026. Werkbasis: lokale branch `Quest-1-v3`.
+Er is niets gecommit, gepusht, opgehaald of op GitHub aangepast.
 
-Onderzocht: `project-x`, lokale HEAD `03489d3` op `Merge-Branch-(Prologue-&-JadeDesignV2)`.
-Vergeleken met `8b1e8ac` (`Prologue`, V4.0.0) en de twee squash-commits `9c69c6e` / `03489d3`.
-Bij aanvang was de werkmap schoon. Er waren geen onafgehandelde Git-conflicten en geen conflictmarkers. De problemen zaten in **samengevoegde onderdelen die functioneel niet op elkaar aansluiten**.
+## Behouden
 
-De gewenste verdeling is toegepast: jouw oorspronkelijke C#-gameplay blijft leidend; Jade's kaartdesign, animatieframes en questpijl blijven behouden. Haar NPC-demo blijft afzonderlijk beschikbaar en blokkeert de echte bossfight niet.
+- De C#-gameplay, acht bestaande hackpuzzels en bossfasen blijven C#.
+- De player, animaties, NPC-dialogen, QuestManager en questpijl van de teammate blijven GDScript.
+- Het ontwerp van `main_map.tscn`, de questkamers, sprites, objectposities en de oorspronkelijke vier voorwaarden van deur 2 zijn behouden.
+- De oorspronkelijke drie hits per enemy zijn nu drie **geslaagde puzzels**. Mislukken, annuleren of herhaald E drukken levert geen voortgang op.
+- De zes importbestanden die vóór deze werkzaamheden al gewijzigd waren zijn niet teruggezet.
 
-## Bevindingen en herstel
+## Gevonden conflicten en reparaties
 
-| Ernst | Conflict / incompatibiliteit | Effect | Lokale oplossing |
-| --- | --- | --- | --- |
-| Kritiek | `project.godot` startte het designprototype en verloor C#-feature, assemblynaam en viewportinstellingen | F5 sloeg jouw intro en `World` over; projectconfiguratie sloot niet meer aan op de C#-game | Startscene, ProjectX-assembly en oorspronkelijke viewport hersteld; design-inputacties en QuestManager behouden |
-| Kritiek | Git bevatte zowel `scenes/Player.tscn` als `scenes/player.tscn` | Windows kan deze niet als twee aparte bestanden behandelen; beide verwijzingen kwamen uit op prototype-inhoud | Beide botsende namen vervangen door `CombatPlayer.tscn` en `DesignPlayer.tscn`; sceneverwijzingen aangepast |
-| Kritiek | Gameplay verwachtte een root `PXArenaPlayer`; het prototype had een `Node2D`-root met een GDScript-player eronder | Arena kon de player niet als C#-controller ophalen; prototype mist HP-, dash-, lock- en damagecontract | Speelbare scene heeft weer een `CharacterBody2D`-root met jouw C#-script en oorspronkelijke collision layers |
-| Hoog | Prototype leverde `AnimatedSprite2D` en een eigen camera; C# verwachtte `Sprite2D Body` en de wereldcamera | Rechtstreeks mengen veroorzaakt type-/nodefouten of een concurrerende camera | Jade's SpriteFrames behouden als `Body`, C#-animatieaanroep aangepast, alleen de bestaande wereldcamera gebruikt |
-| Hoog | Questpijl hing uitsluitend af van NPC-queststappen en een decoratieve bossmarker | Geen aanwijzing in jouw gameplay, of aanwijzing naar een marker in plaats van de werkelijke boss | Expliciet `target_path` naar de echte boss; zichtbaar tijdens verkennen, uit bij combat/menu/einde, terug na retry |
-| Middel | Gecachete NPC-/bosstargets konden al vrijgegeven zijn | Pijl kon een verwijderde node gebruiken na een scene-/targetwissel | `is_instance_valid`, opnieuw zoeken en veilig verbergen; positieve schaal en expliciete rotatieoffset voor de pijlrichting |
-| Middel | Twee identieke spritesheet-bestanden hadden dezelfde Godot-UID | Editor meldde een dubbele UID; resourceverwijzingen konden ambigu worden | Beide PNG's behouden, de oorspronkelijke kopie onder `assets/tilesets` heeft nu een unieke UID |
-| Hoog | `main_map.tscn` had opnieuw een atlascel van 33×31 voor een 32×32-sheet | Godot gaf fouten voor de laatste atlaskolom | Uitsluitend de celafmeting gecorrigeerd naar 32×32; geschilderde tegels en designlagen ongewijzigd |
-| Laag | `test_map.tscn` definieerde bush-tile `(0,1)` buiten de texture | Ook deze testscene gaf atlasfouten bij laden | Ongeldige, ongebruikte tiledefinitie verwijderd; test controleert dat er geen cellen naar verwijzen |
-| Middel | NPC-signalen verwezen naar niet-bestaande methods op `NPC1`, terwijl `Area2D` ze al in code verbond | Verkeerde / overbodige signaalbedrading | Twee foutieve editorconnecties verwijderd; bestaande scriptverbindingen behouden |
-| Laag | NPC-roots zaten in de groep `Player` | Onjuist scenecontract voor toekomstige groepsdetectie | Alleen de foutieve groepslabels verwijderd |
-| Middel | Queststap ging verder zonder geldige dialoguebox | Demo kon een gesprek overslaan terwijl niets getoond werd | `start_dialogue()` retourneert succes; alleen dan gaat de quest verder |
+| Probleem | Gevolg | Lokale reparatie |
+| --- | --- | --- |
+| E werd gevraagd, maar `interact` stond op Q | Verkeerde bediening | Eén E-binding in `project.godot` |
+| Enemies telden toetsdrukken als schade | Geen puzzel; E-spam versloeg enemies | `Enemy.cs` verwerkt uitsluitend succesvolle resultaten van `PXHackPanel` |
+| Elk object las afzonderlijk dezelfde toets | Eén toets kon meerdere objecten activeren | `QuestInteraction.cs` kiest één nabijgelegen, zichtbare en beschikbare interactie |
+| Deur telde losse activaties zonder bron | Dubbele callbacks of hergebruik konden voorwaarden omzeilen | `Doors.cs` telt unieke bronobjecten |
+| Player kon doorlopen tijdens een puzzel | Spelerpositie en puzzeldoel liepen uiteen | C# zet de kleine `locked`-property in de bestaande GDScript-player; Continue geeft besturing terug |
+| Quest had geen vloerrandcollision | Speler kon via lege ruimte langs deuren lopen | Bestaande `PXMapBoundary.cs` ook in de questscene gebruikt |
+| Beloning en vervolginteracties hadden geen prerequisites | Quest kon buiten volgorde worden voltooid | Inspector-links `RequiredOpenDoors` bewaken de bestaande kamervolgorde |
+| `Player.tscn` én `player.tscn` stonden in Git | Op Windows hetzelfde bestand; boss verwachtte een ander nodetype | Teammate-scene behouden als `QuestPlayer.tscn`; aparte `CombatPlayer.tscn` voor de bestaande C#-bossbesturing |
+| Assembly-instelling wees naar tweede project; scriptgenerator waarschuwde over `GodotProjectDir` | Compile kon slagen zonder correcte scriptregistratie | `ProjectX.csproj` is de actieve build; projectmap expliciet ingesteld |
+| Dubbele spritesheet-UID | Godot kon naar de andere kopie verwijzen | Kopie onder `assets/images/player` opnieuw van een unieke import-UID voorzien |
+| Kleine bossarena plaatste vier rijen grote obstakels | Sommige random layouts verloren te veel cover bij herstel van routeconnectiviteit | Rij-/kolomafstand afgeleid van obstakelmaat en navigatieruimte; 20 vaste seeds × 3 fasen toegevoegd aan tests |
+| Atlas gebruikte 33×31 waar 32×32 nodig is | Importfouten voor de laatste tilekolom | Alleen de onjuiste atlasmaat hersteld |
+| Testmap bevatte ongeldige bush-tile `(0,1)` | Importfout | Ongeldige atlasdefinitie verwijderd; bestaande `(0,0)`-animatie behouden |
+| NPC-scene verbond signalen met niet-bestaande parenthandlers | Runtimefouten bij contact | Oude editorverbindingen weg; bestaande GDScript-signaalverbindingen blijven |
+| NPC-detectie gebruikte nog laag 1 | Nieuwe collisionlaag van de player werd niet gezien | NPC-Areas op detectielaag 2 gezet; GDScript-dialogen behouden en hun flow getest |
+| NPC-roots zaten ook in groep `Player` | Verkeerde playerdetectie mogelijk | Onjuiste groepen verwijderd |
+| Questpijl kende alleen NPC2/boss | Geen richting naar questconsole/enemy | Bestaande pijl leest het gecachte doel uit C#; NPC-flow blijft beschikbaar |
+| Chip-popup gebruikte leeg FontFile en fout gespelde tekst | Onleesbare/onjuiste melding | Bestaande gamefont en Engelse tekst `Nano.O Chip acquired` |
+| Optionele console in World deelt dezelfde interactiemanager | Quest-HUD kon boss-HUD bedekken | Quest-HUD verborgen buiten nabijgelegen console-interactie; bossgevecht krijgt voorrang |
 
-Daarnaast is de eerder gevraagde Engelse decimale timeropmaak hersteld. Deze ontbrak in de aangeleverde versie. Dit is een herstel ten opzichte van de vorige lokale werksessie; niet alle verschillen ten opzichte van die sessie zijn uitsluitend aan deze squash-merge toe te schrijven.
+Dit waren integratie- en runtimeconflicten; geen onafgehandelde `<<<<<<<`-mergeblokken.
 
-## Bewust behouden
+## Speelvolgorde
 
-- Jade's volledige kaartindeling en decoratielagen. De mapdiff bevat slechts de atlascelcorrectie.
-- Haar animatieframes, timing, PNG-assets en questpijl-afbeelding.
-- Jouw player-snelheid, dash, gezondheid, schade, bescherming en physics layers.
-- Onderste spawn `(3744, 6656)`, boss-spawn `(8256, 1344)`, radius 1200 en kamerinstapdiepte 96.
-- Engelse intro, menu's, HUD en acht hacks.
-- 15 bosshacks, drie fases, twee golven van 3 en 5 minions, lasers, grotere terreinobjecten, pauze en retry.
-- De eigen demo van Jade in `main.tscn` met `DesignPlayer.tscn`. Die is geen tweede gameplayroute onder F5.
+1. F5 start `scenes/quest_map_test.tscn` op de bestaande questspawn.
+2. Loop naar de eerste console en druk E: deur 1 opent.
+3. Activeer beide consoles in de volgende kamer en versla beide enemies. De volgorde binnen deze kamer is vrij.
+4. Iedere enemy vereist drie succesvolle hacks. E start een puzzel; Continue/Enter sluit het resultaat. Bij mislukking kun je opnieuw E gebruiken.
+5. Deur 2 opent na vier unieke signalen: twee consoles en twee enemies.
+6. Druk E bij de hologramterminal om de Nano.O Chip te verzamelen.
 
-## Ordening en uitleg
+`World.tscn`, `BossArena.tscn` en de intro blijven afzonderlijk speelbaar. De World-spawn onderaan, proximity-trigger rechtsboven, grotere bossobstakels en drie fasen blijven intact. De oudere `test-open world.csproj/.sln` zijn nog aanwezig, maar zijn niet de actieve Godot-build; gebruik `ProjectX.csproj`.
 
-Geen brede architectuurherschrijving of massale bestandsverhuizing. De noodzakelijke naambotsing is opgelost, de playercontroller heeft duidelijke code-secties, en comments beschrijven de uitvoervolgorde van player, wereldreset, encountertrigger, terreingeneratie en questpijl.
-Zie [CODE_GUIDE.md](CODE_GUIDE.md) voor de verantwoordelijkheden, scene-flow en pseudocode. [IMPLEMENTATION.md](../IMPLEMENTATION.md) is bijgewerkt naar de nieuwe bestandsnamen.
+## Verificatie
 
-## Tests en resultaten
+Laatste resultaten:
 
-De controle wordt uitgevoerd met `tests/Run-Checks.ps1`. Deze controleert zowel exitcodes als enginefouten/-waarschuwingen in de logs; Godot kan bij een laadfout namelijk toch exitcode 0 retourneren.
+- C#-build: 0 fouten, 0 waarschuwingen.
+- Godot-import: zonder resource- of scriptfouten.
+- Quest: **77 checks geslaagd**.
+- Boss/world/terrain: **538 checks geslaagd**, inclusief 60 reproduceerbare compacte terrainlayouts.
+- Intro: Family -> Storage -> World geslaagd.
+- **21 scenes** geladen en gestart; daarnaast oorspronkelijke NPC-dialogen, queststappen en pijl gecontroleerd.
 
-| Controle | Resultaat |
-| --- | --- |
-| C#-build | Geslaagd; 0 compileerfouten en 0 waarschuwingen |
-| Godot .NET headless editor/import | Geslaagd; geen duplicate-UID-, parse- of atlasfouten in de eindcontrole |
-| Alle 16 `.tscn`-scenes laden én instantiëren | Geslaagd, inclusief de bewaarde design-/NPC-demo |
-| NPC-dialogen en demo-pijl naar NPC2 en bossmarker | Geslaagd; ook vrijgegeven target getest |
-| Kaartbereikbaarheid na het nieuwe design | Doorlopende vloerroute met ruimte rond de route van spawn naar boss gevonden |
-| Player-integratie | Juiste SpriteFrames, één camera, echte bewegings- en Shift-dash-input, goede animatierichting |
-| Questpijl in gameplay | Naar echte boss, correcte zichtbare puntoriëntatie, verborgen in combat en hersteld na retry |
-| Boss-regressie | Activatieradius, kamerdiepte, fysieke poort, pauze, doodgaan, retry, 15 hacks, beide miniongolven, terreinverbindingen en lasers geslaagd |
-| Intro-overgangen via Enter | `IntroFamily` → `IntroSpaceshipStorage` → `World` geslaagd |
-| Gerenderde controle | Spawn met pijl, bosskamer met behouden design en terreinwissel naar fase 2 bekeken |
 
-De gameplaytest simuleert geslaagde hackresultaten om alle gevechtsovergangen te controleren. Dit is geen volledige menselijke playthrough van elk puzzeltype. Het aantal assertions varieert doordat terreingeneratie willekeurig is. Decoratieve gebouwen blijven, net als voorheen, decoratief; vloergrenzen en arena-obstakels hebben botsing. De pijl wijst direct naar het doel, niet langs een berekende route.
+De reproduceerbare testopdracht staat in `QUEST_CODE_GUIDE.md`. Logs staan lokaal onder `.godot/test-results/` en worden door het script ook op runtimefouten gecontroleerd. Een Godot-exitcode 0 alleen is onvoldoende; elke test moet zijn succesmarker produceren.
 
-Een eerste dash-test stuurde input binnen een handmatig aangeroepen tick en miste daardoor `IsActionJustPressed`. De test gebruikt nu echte engineframes en Shift-events; de gameplay-dashcode hoefde niet aangepast te worden. De controle van alle scenes vond ook de bovengenoemde losse testmapfout, die daarna is hersteld.
+De suite controleert echte E-invoer, overlapdetectie, zichtlijn, player-lock tussen C# en GDScript, herhaald input, annuleren, timeout, alle acht puzzelregels, unieke deuractivaties, fysiek gesloten/open doorgangen, beloning en sceneherladen tijdens een puzzel. Daarnaast worden de bestaande boss-/introtests en alle scenes uitgevoerd.
 
-## Lokaal gebruik
-
-Gebruik Godot **.NET**, open `project.godot` en start met F5. Voor direct spelen: open `scenes/World.tscn` en druk F6.
-
-```powershell
-./tests/Run-Checks.ps1 -GodotPath "C:\pad\naar\Godot_mono_console.exe"
-```
-
-Alles is lokaal uitgevoerd. Geen commits, staging, pushes of wijzigingen op GitHub. De backlog en het naastgelegen afzonderlijke project zijn niet aangepast.
+Visueel bekeken: questspawn, kameroverzicht, puzzelvenster en resultaatvenster op 1280×720. De tests verplaatsen de speler tussen interacties; dit is geen volledige handmatige playthrough van alle looproutes. Er is geen formele prestatiebenchmark op meerdere apparaten uitgevoerd.

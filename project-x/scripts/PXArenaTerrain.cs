@@ -44,13 +44,21 @@ public partial class PXArenaTerrain : Node2D
 	{
 		// Flow: clear old cover -> keep safe candidates -> verify paths -> build colliders.
 		Clear(false); _stage = stage;
-		// Jittered, shuffled cells give different layouts while retaining wide corridors.
+		// Reserve two navigation radii, jitter and one grid cell between cover pieces.
+		// The small arena needs three rows; four could create isolated pockets and
+		// make the old connectivity fallback remove almost all of the cover.
+		const float corridor = 2 * 52 + 12 + Cell;
+		int columns = Mathf.Clamp((int)(Bounds.Size.X / (ObstacleSizeRange.X + corridor)), 1, 7);
+		int rows = Mathf.Clamp((int)(Bounds.Size.Y / (ObstacleSizeRange.X + corridor)), 1, 4);
+		Vector2 spacing = Bounds.Size / new Vector2(columns, rows);
+		float maxWidth = Mathf.Max(ObstacleSizeRange.X, Mathf.Min(ObstacleSizeRange.Y, spacing.X - corridor));
+		float maxHeight = Mathf.Max(ObstacleSizeRange.X, Mathf.Min(ObstacleSizeRange.Y, spacing.Y - corridor));
 		var candidates = new List<Rect2>();
-		for (int row = 0; row < 4; row++) for (int col = 0; col < 7; col++)
+		for (int row = 0; row < rows; row++) for (int col = 0; col < columns; col++)
 		{
-			var center = Bounds.Position + new Vector2((col + .5f) * Bounds.Size.X / 7, (row + .5f) * Bounds.Size.Y / 4) + new Vector2(_rng.RandfRange(-6, 6), _rng.RandfRange(-6, 6));
-			var size = new Vector2(_rng.RandfRange(ObstacleSizeRange.X, ObstacleSizeRange.Y),
-				_rng.RandfRange(ObstacleSizeRange.X, ObstacleSizeRange.Y));
+			var center = Bounds.Position + new Vector2((col + .5f) * spacing.X, (row + .5f) * spacing.Y) + new Vector2(_rng.RandfRange(-6, 6), _rng.RandfRange(-6, 6));
+			var size = new Vector2(_rng.RandfRange(ObstacleSizeRange.X, maxWidth),
+				_rng.RandfRange(ObstacleSizeRange.X, maxHeight));
 			var rect = new Rect2(center - size / 2, size);
 			if (!rect.Grow(140).HasPoint(player) && !rect.Grow(140).HasPoint(boss)) candidates.Add(rect);
 		}

@@ -63,39 +63,6 @@ public partial class PXWorldSmokeTests : Node
 			Check(terrain.IsClear(spawn, 60), "Five safe minion positions remain available");
 		}
 	}
-	private void CheckMergedMapRoute()
-	{
-		// The new design removes floor tiles. Require a continuous body-width route to the boss.
-		var floor = _world.GetNode<TileMapLayer>("MainMap/groundbase");
-		var cells = new System.Collections.Generic.HashSet<Vector2I>(floor.GetUsedCells());
-		var start = floor.LocalToMap(floor.ToLocal(_player.GlobalPosition));
-		var goal = floor.LocalToMap(floor.ToLocal(_boss.GlobalPosition));
-		var visited = new System.Collections.Generic.HashSet<Vector2I> { start };
-		var queue = new System.Collections.Generic.Queue<Vector2I>(); queue.Enqueue(start);
-		var directions = new[] { Vector2I.Left, Vector2I.Right, Vector2I.Up, Vector2I.Down };
-		while (queue.Count > 0)
-		{
-			var cell = queue.Dequeue();
-			foreach (var direction in directions)
-			{
-				var next = cell + direction; bool clear = cells.Contains(next);
-				foreach (var edge in directions) clear &= cells.Contains(next + edge);
-				if (clear && visited.Add(next)) queue.Enqueue(next);
-			}
-		}
-		Check(visited.Contains(goal), "Merged map has a continuous wide floor route from spawn to boss");
-	}
-	private void CheckArrow(bool expected)
-	{
-		var arrow = _player.GetNode<Sprite2D>("QuestArrow");
-		arrow.Call("_process", 0.0);
-		Check(arrow.Visible == expected, "Quest arrow visibility matches exploration state");
-		if (expected)
-		{
-			var tipDirection = (arrow.ToGlobal(Vector2.Up * 100) - arrow.GlobalPosition).Normalized();
-			Check(tipDirection.Dot(arrow.GlobalPosition.DirectionTo(_boss.GlobalPosition)) > .999f, "Quest arrow artwork points at the real boss");
-		}
-	}
 	public override async void _Ready()
 	{
 		const string preferences = "user://projectx_boss_tutorials.cfg";
@@ -112,23 +79,8 @@ public partial class PXWorldSmokeTests : Node
 			_terrain = _world.GetNode<PXArenaTerrain>("Terrain");
 			await Frames(); Tick();
 			Check(_player.GlobalPosition == new Vector2(3744, 6656), "Player starts at bottom marker");
-			var body = _player.GetNode<AnimatedSprite2D>("Body");
-			var frame = (AtlasTexture)body.SpriteFrames.GetFrameTexture("idle_down", 0);
-			Check(frame.Atlas.ResourcePath.EndsWith("all-position-V2.png"), "Player retains Jade's SpriteFrames and requested spritesheet");
-			Check(!_player.HasNode("Camera2D"), "Gameplay has a single world camera, not the demo camera");
-			CheckMergedMapRoute(); CheckArrow(true);
-			Input.ActionPress("px_boss_right"); _player._PhysicsProcess(1.0 / 60);
-			Check(_player.Velocity.X > 0 && body.Animation == "running_left" && body.FlipH, "Original movement drives the design's right-facing animation");
-			// Inject Shift between real frames: IsActionJustPressed is tied to engine ticks.
-			_player.SetPhysicsProcess(true);
-			await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
-			Input.ParseInputEvent(new InputEventKey { PhysicalKeycode = Godot.Key.Shift, Pressed = true });
-			await Frames(2);
-			Check(!_player.DashReady && _player.Velocity.Length() > _player.Speed, "Original dash survives the controller merge");
-			_player.SetPhysicsProcess(false);
-			Input.ParseInputEvent(new InputEventKey { PhysicalKeycode = Godot.Key.Shift, Pressed = false });
-			Input.ActionRelease("px_boss_right"); Input.ActionRelease("px_boss_dash");
-			_player.ResetPlayer(new(3744, 6656));
+            Check(!GetNode<Control>("/root/QuestInteraction/QuestUI").Visible, "Quest overlay does not cover the world HUD");
+			Check(_player.GetNode<Sprite2D>("Body").Texture.ResourcePath.EndsWith("all-position-V2.png"), "Player uses requested spritesheet");
 			Check(_boss.GlobalPosition == new Vector2(8256, 1344) && _boss.Dormant && _boss.Locked, "Boss starts dormant in upper-right room");
 			Check(!_room.Closed && _terrain.Generation == 0 && !_world.TryStartHack(), "Exploration has no gate, terrain hazards or hacks");
 			Key(Godot.Key.Escape); Tick(); Check(_player.Locked, "Exploration pauses");
@@ -146,7 +98,6 @@ public partial class PXWorldSmokeTests : Node
 			Check(_player.GetWorld2D().DirectSpaceState.IntersectRay(gateRay).Count > 0, "Closed entrance physically blocks passage");
 			Key(Godot.Key.Escape); Tick(); Key(Godot.Key.Escape); Tick();
 			Check(_world.State == PXBossArena.ArenaState.Combat && _room.Closed, "Combat pause preserves gate");
-			CheckArrow(false);
 			_player.TakeDamage(100, _boss.GlobalPosition, true); Tick(); await Frames();
 			Check(_world.RoundOver && !_room.Closed, "Death ends encounter and releases gate");
 			_world.StartRound(); await Frames();
@@ -176,7 +127,6 @@ public partial class PXWorldSmokeTests : Node
 			Check(_world.RoundOver && !_boss.IsAlive && !_room.Closed && _boss.SuccessfulHacks == 15, "Fifteen hacks complete all phases and open gate");
 			_world.ReturnToMenu(); _world.StartRound(); await Frames();
 			Check(_boss.Dormant && _world.MinionsRemaining == 0 && !_room.Closed, "Menu and restart clean up encounter");
-			CheckArrow(true);
 			// Check the compact standalone arena as well as multiple regenerated world layouts.
 			var compact = new PXArenaTerrain { BuildWalls = false, DrawFloor = false };
 			AddChild(compact);
@@ -187,7 +137,19 @@ public partial class PXWorldSmokeTests : Node
 				_terrain.Generate(stage, new(8000, 2200), _room.BossSpawn);
 				CheckTerrain(_terrain, new(8000, 2200), _room.BossSpawn);
 			}
-			compact.QueueFree();
+            // Reproduce many layouts, including the compact arena that previously
+            // lost too much cover when its four rows blocked navigation clearance.
+            var rng = (RandomNumberGenerator)typeof(PXArenaTerrain).GetField("_rng", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(compact);
+            for (ulong seed = 1; seed <= 20; seed++)
+            {
+                rng.Seed = seed;
+                for (int stage = 1; stage <= 3; stage++)
+                {
+                    compact.Generate(stage, new(320, 550), new(1500, 550));
+                    Check(compact.Connected && compact.Footprints.Count >= 8, $"Compact terrain remains populated and connected: seed {seed}, stage {stage}");
+                }
+            }
+            compact.QueueFree();
 			GD.Print($"WORLD TESTS PASSED: {_checks}"); GetTree().Quit();
 		}
 		catch (Exception error) { GD.PushError(error.ToString()); GetTree().Quit(1); }

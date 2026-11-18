@@ -114,6 +114,8 @@ animation = &"idle"
 frame_progress = 0.874901
 
 [node name="Area2D" type="Area2D" parent="NPC1"]
+collision_layer = 0
+collision_mask = 2
 script = ExtResource("1_hivgg")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NPC1/Area2D"]
