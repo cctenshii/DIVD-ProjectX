@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/PXBossArena.cs" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/main_map.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/CombatPlayer.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/Boss.tscn" id="4"]
 [ext_resource type="Script" path="res://scripts/PXBossHUD.cs" id="5"]
 [ext_resource type="Script" path="res://scripts/PXArenaTerrain.cs" id="6"]

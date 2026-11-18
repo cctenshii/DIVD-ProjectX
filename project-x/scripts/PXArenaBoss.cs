@@ -31,7 +31,7 @@ public partial class PXArenaBoss : CharacterBody2D
 	}
 	public bool CanSeePlayer { get; private set; }
 	public BrainState State { get; private set; } = BrainState.Wandering;
-	public string Intent => !IsAlive ? "DEFEATED" : Dormant ? "DORMANT" : PhaseFrozen ? "INVULNERABLE" : Locked ? "PAUSED" : StunRemaining > 0 ? $"STUN {StunRemaining:0.0}s" :
+	public string Intent => !IsAlive ? "DEFEATED" : Dormant ? "DORMANT" : PhaseFrozen ? "INVULNERABLE" : Locked ? "PAUSED" : StunRemaining > 0 ? System.FormattableString.Invariant($"STUN {StunRemaining:0.0}s") :
 		_windup > 0 ? (_radialAttack ? "RING ATTACK!" : "LASERS!") :
 		State == BrainState.Chasing ? "CHASING" : State == BrainState.Searching ? "SEARCHING..." : "PATROLLING";
 	[Export] public float HackRange { get; set; } = 190f;

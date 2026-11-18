@@ -89,7 +89,7 @@ public partial class PXBossHUD : CanvasLayer
 		_bossText.Text = $"BOSS  {boss.SuccessfulHacks} / 15 HACKS   |   {boss.Intent}";
 		_phase.Text = intermission ? $"MINIONS LEFT: {minions}" : $"PHASE {boss.Stage} / 3";
 		_dash.Text = player.DashReady ? "SHIFT  /  DASH READY" : "DASH RECHARGING";
-		_context.Text = cooldown > 0 ? $"OMNI-TOOL RECHARGING  {cooldown:0.0}s" : context;
+		_context.Text = cooldown > 0 ? FormattableString.Invariant($"OMNI-TOOL RECHARGING  {cooldown:0.0}s") : context;
 	}
 	public void Message(string message) => _message.Text = message;
 	public void ShowMenu() { _menu.Show(); _ending.Hide(); _pause.Hide(); _top.Hide(); HideHack(); HideBanner(); Instructions.CloseSilently(); }

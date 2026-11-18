@@ -3,7 +3,7 @@
 Alle zichtbare gameteksten zijn Engels, inclusief intro, menu's, HUD en de acht hack-minigames.
 
 Start met **F5**: `IntroFamily.tscn` → `IntroSpaceshipStorage.tscn` → `World.tscn`.
-De intro bestaat uit twee korte verhaal-scenes met Verder en Intro overslaan.
+De intro bestaat uit twee korte verhaal-scenes met Continue en Skip Intro.
 Open `scenes/World.tscn` en druk **F6** om direct op de map te beginnen.
 `scenes/BossArena.tscn` blijft beschikbaar als losse arena-test.
 
@@ -11,7 +11,8 @@ Open `scenes/World.tscn` en druk **F6** om direct op de map te beginnen.
 
 - `World.tscn` instantieert de bestaande `main_map.tscn`.
 - `PlayerSpawn` staat onderaan op `(3744, 6656)`. De camera volgt de speler tijdens het verkennen.
-- `Player.tscn` gebruikt `assets/tilesets/all-position-V2.png`, met stilstaande en lopende frames voor voor-, achter- en zijaanzicht. Links wordt gespiegeld.
+- `CombatPlayer.tscn` combineert jouw C#-controller met Jade's SpriteFrames en questpijl. De sprite komt uit `assets/images/player/all-position-V2.png`; de oorspronkelijke kopie onder `assets/tilesets/` blijft bewaard. Beide PNG's zijn identiek.
+- `DesignPlayer.tscn` en `main.tscn` bewaren het losse design-/NPC-prototype. Zij worden niet gestart in de gewone game. De namen `Player.tscn` en `player.tscn` zijn vervangen om Windows-naambotsingen te voorkomen.
 - WASD / pijltjes: lopen; Shift: dash; E: hack tijdens het gevecht; Escape: pauze; F11: fullscreen buiten het embedded gamevenster.
 - `PXMapBoundary` maakt botsingsranden langs de gebruikte vloertegels van `groundbase`. Gebouwen blijven de bestaande decoratieve tilemap-lagen.
 
@@ -37,7 +38,7 @@ Na 15 bosshacks volgt het overwinningsscherm. Bij overwinning, doodgaan of terug
 ## Herstelde projectproblemen
 
 - De zeven ontbrekende kaarttextures zijn teruggezet uit de lokale `.godot/imported`-cache naar `assets/images/tilemaps/nenon-tilemap/`. De herstelde PNG-bestanden staan nu in het project; de cache is niet meer nodig om ze te laden.
-- Verouderde texture-UID-verwijzingen zijn uit de mapresources verwijderd; de bestaande bestandspaden worden gebruikt.
+- De eerdere texture-herstelactie is nu aangevuld door de assets uit Jade's branch. De twee spritesheet-kopieën hebben unieke resource-UID's.
 - Een afwijkende atlascel van 33 × 31 is gecorrigeerd naar 32 × 32, zodat de laatste atlas-kolom geldig is.
 - Het startscene-pad en het pad naar het bestaande PixelifySans-lettertype zijn hersteld.
 
@@ -53,5 +54,10 @@ Voer daarna met de Godot .NET-console executable uit:
 De integratietest controleert de startpositie, sprite, activatievoorwaarden, fysieke poort, pauze, doodgaan, retry, alle 15 bosshacks, beide miniongolven, terreinverbindingen en lasers op wereldcoördinaten. Tutorialvoorkeuren worden na de test hersteld.
 
 Controleer de echte intro-overgangen met `--headless --path . --script res://tests/StoryFlowTests.gd`.
+
+Voor alle controles in één keer: `./tests/Run-Checks.ps1 -GodotPath "<volledig pad naar de Godot .NET console-executable>"`.
+Dit controleert ook de Godot-logs: een proces met exitcode 0 maar enginefouten telt niet als geslaagd.
+
+Zie [het merge-rapport](docs/MERGE_REPORT.md) voor de gevonden conflicten en [de codegids](docs/CODE_GUIDE.md) voor verantwoordelijkheden en pseudocode.
 
 De backlog is niet aangepast. Er zijn geen commits, pushes of GitHub-wijzigingen gemaakt.

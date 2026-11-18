@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://vq4nmswecdhd"]
+[gd_scene format=3 uid="uid://vq4nmswecdhd"]
 
 [ext_resource type="Script" uid="uid://caeflpsuf4dc3" path="res://scripts/quest1-npc.gd" id="1_hivgg"]
 [ext_resource type="Texture2D" uid="uid://dlf57tdtxqph0" path="res://assets/images/player/Player.png" id="2_5cqce"]
@@ -118,6 +118,3 @@ script = ExtResource("1_hivgg")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NPC1/Area2D"]
 shape = SubResource("CircleShape2D_hivgg")
-
-[connection signal="body_entered" from="NPC1/Area2D" to="NPC1" method="_on_area_2d_body_entered"]
-[connection signal="body_exited" from="NPC1/Area2D" to="NPC1" method="_on_area_2d_body_exited"]

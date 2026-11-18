@@ -42,6 +42,7 @@ public partial class PXArenaTerrain : Node2D
 	}
 	public void Generate(int stage, Vector2 player, Vector2 boss)
 	{
+		// Flow: clear old cover -> keep safe candidates -> verify paths -> build colliders.
 		Clear(false); _stage = stage;
 		// Jittered, shuffled cells give different layouts while retaining wide corridors.
 		var candidates = new List<Rect2>();

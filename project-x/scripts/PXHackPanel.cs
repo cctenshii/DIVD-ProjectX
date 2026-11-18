@@ -291,7 +291,7 @@ public partial class PXHackPanel : Control
                 DrawRect(new Rect2(40, 147, 280, 34), Ink);
                 DrawRect(new Rect2(40 + 0.4f * 280, 147, 0.28f * 280, 34), Green);
                 DrawLine(new Vector2(40 + _pressure * 280, 140), new Vector2(40 + _pressure * 280, 189), Colors.White, 4);
-                TextAt(new Vector2(65, 219), $"STABLE: {_stableTime:0.0} / 1.5 s", 20, Ink);
+                TextAt(new Vector2(65, 219), System.FormattableString.Invariant($"STABLE: {_stableTime:0.0} / 1.5 s"), 20, Ink);
                 break;
         }
     }
@@ -369,7 +369,7 @@ public partial class PXHackPanel : Control
             HackKind.Targets or HackKind.Memory or HackKind.Wires => $"{_completed} / 3",
             HackKind.Order => $"{_completed} / 6", _ => "COMPLETE THE HACK"
         };
-        _status.Text = _preview > 0 ? "WATCH CLOSELY..." : $"{Mathf.Max(0, TimeLimit - _elapsed):0.0} s  /  {progress}";
+        _status.Text = _preview > 0 ? "WATCH CLOSELY..." : System.FormattableString.Invariant($"{Mathf.Max(0, TimeLimit - _elapsed):0.0} s  /  {progress}");
     }
 
     public void ResetDeck() { _bag.Clear(); _lastKind = -1; }

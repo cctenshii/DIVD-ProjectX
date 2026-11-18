@@ -4,6 +4,7 @@ namespace ProjectXBossArenaPrototype;
 
 public partial class PXArenaPlayer : CharacterBody2D
 {
+	#region State and input registration
 	[Signal] public delegate void HealthChangedEventHandler(int current, int maximum);
 	[Signal] public delegate void DiedEventHandler();
 
@@ -20,9 +21,8 @@ public partial class PXArenaPlayer : CharacterBody2D
 	private Vector2 _dashDirection = Vector2.Right;
 	private float _invulnerability;
 	private Vector2 _knockback;
-	private Sprite2D _body;
+	private AnimatedSprite2D _body;
 	private int _facing;
-	private float _walkTime;
 
 	public override void _EnterTree()
 	{
@@ -36,28 +36,26 @@ public partial class PXArenaPlayer : CharacterBody2D
 	public override void _Ready()
 	{
 		MotionMode = MotionModeEnum.Floating;
-		_body = GetNode<Sprite2D>("Body");
+		_body = GetNode<AnimatedSprite2D>("Body");
 		GetNode<Label>("Name").AddThemeFontOverride("font", PXRetroUI.Font);
 		GetNode<Label>("Name").AddThemeColorOverride("font_color", PXRetroUI.Accent);
 		ResetPlayer(GlobalPosition);
 	}
+	#endregion
+
+	#region Movement and presentation
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (Locked || !IsAlive) { Velocity = Vector2.Zero; return; }
+		// Flow: reject locked input -> update timers -> animate -> dash/walk -> collide.
+		if (Locked || !IsAlive) { Velocity = Vector2.Zero; _body.Pause(); return; }
 		_dashCooldown = Mathf.Max(0f, _dashCooldown - (float)delta);
 		_invulnerability = Mathf.Max(0f, _invulnerability - (float)delta);
 		_body.Modulate = _invulnerability > 0f && ((int)(_invulnerability * 12f) % 2 == 0)
 			? new Color(1f, 1f, 1f, 0.35f) : Colors.White;
 
-		if (Locked || !IsAlive)
-		{
-			Velocity = Vector2.Zero;
-			return;
-		}
-
 		Vector2 direction = Input.GetVector("px_boss_left", "px_boss_right", "px_boss_up", "px_boss_down");
-		UpdateSprite(direction, (float)delta);
+		UpdateSprite(direction);
 		if (direction.LengthSquared() > 0) _dashDirection = direction;
 		if (Input.IsActionJustPressed("px_boss_dash") && _dashCooldown <= 0 && direction.LengthSquared() > 0)
 		{
@@ -71,20 +69,22 @@ public partial class PXArenaPlayer : CharacterBody2D
 		MoveAndSlide();
 	}
 
-	private void UpdateSprite(Vector2 direction, float dt)
+	// Jade's SpriteFrames supply presentation; movement, HP and dash stay in this controller.
+	private void UpdateSprite(Vector2 direction)
 	{
 		bool moving = direction.LengthSquared() > 0;
 		if (moving)
 		{
 			_facing = Mathf.Abs(direction.X) > Mathf.Abs(direction.Y) ? 1 : direction.Y < 0 ? 2 : 0;
-			_body.FlipH = _facing == 1 && direction.X < 0;
-			_walkTime += dt;
+			_body.FlipH = _facing == 1 && direction.X > 0;
 		}
-		else _walkTime = 0;
-		int frame = moving ? (int)(_walkTime * 10) % 6 : 0;
-		_body.RegionRect = new Rect2(28 + frame * 66, (moving ? 290 : 26) + _facing * 66, 64, 64);
+		string suffix = _facing == 1 ? "left" : _facing == 2 ? "up" : "down";
+		_body.Play((moving ? "running_" : "idle_") + suffix);
 	}
 
+	#endregion
+
+	#region Damage, protection and reset
 	public bool TakeDamage(int amount, Vector2 source, bool ignoreInvulnerability = false)
 	{
 		if (!IsAlive || amount <= 0 || (!ignoreInvulnerability && _invulnerability > 0f))
@@ -119,11 +119,13 @@ public partial class PXArenaPlayer : CharacterBody2D
 		_knockback = Vector2.Zero;
 		_invulnerability = 0f;
 		_dashCooldown = _dashTime = 0f;
-		_facing = 0; _walkTime = 0;
-		if (_body != null) { _body.FlipH = false; UpdateSprite(Vector2.Zero, 0); }
+		_facing = 0;
+		if (_body != null) { _body.FlipH = false; UpdateSprite(Vector2.Zero); }
 		if (_body != null) _body.Modulate = Colors.White;
 		EmitSignal(SignalName.HealthChanged, Health, MaxHealth);
 	}
+
+	#endregion
 
 	private static void RegisterAction(string name, params Key[] keys)
 	{

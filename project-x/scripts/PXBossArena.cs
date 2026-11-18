@@ -5,6 +5,8 @@ namespace ProjectXBossArenaPrototype;
 
 public partial class PXBossArena : Node2D
 {
+	// State flow: explore -> proximity trigger -> combat -> hack -> phase/minions -> end.
+	// Input/signal callbacks queue requests; physics processing applies transitions once.
 	public enum ArenaState { Menu, Intro, Exploring, Combat, Briefing, Hacking, Transition, Paused, Ended }
 	[Export] public int FailedHackDamage { get; set; } = 20;
 	[Export] public float HackCooldownSeconds { get; set; } = 3f;
@@ -23,6 +25,7 @@ public partial class PXBossArena : Node2D
 	private PXArenaTerrain _terrain;
 	private PXBossRoom _room;
 	private Camera2D _camera;
+	private Node _questArrow;
 	private ArenaState _stateBeforePause;
 	public Rect2 CombatBounds => _terrain.Bounds;
 	public bool EncounterStarted { get; private set; }
@@ -47,6 +50,7 @@ public partial class PXBossArena : Node2D
 		if (StartFullscreen && CanUseFullscreen) window.Mode = Window.ModeEnum.Fullscreen;
 		_terrain = GetNodeOrNull<PXArenaTerrain>("Terrain"); _player = GetNodeOrNull<PXArenaPlayer>("Player"); _boss = GetNodeOrNull<PXArenaBoss>("Boss");
 		_room = GetNodeOrNull<PXBossRoom>("BossRoom"); _camera = GetNodeOrNull<Camera2D>("WorldCamera");
+		_questArrow = _player?.GetNodeOrNull("QuestArrow");
 		_hud = GetNodeOrNull<PXBossHUD>("HUD");
 		if (_terrain == null || _player == null || _boss == null || _hud == null || !_hud.Initialized)
 		{ StopWithStartupMessage(); return; }
@@ -132,11 +136,13 @@ public partial class PXBossArena : Node2D
 	}
 	private void ResetWorld()
 	{
+		// Reset order: cancel UI -> clear combat actors -> restore spawns -> reopen the room.
 		_hack.CancelSilently(); _hack.ResetDeck(); _hud.HideHack(); _hud.HideBanner(); _hud.Instructions.CloseSilently();
 		ClearLasers(); ClearMinions();
 		_hackRequested = _introComplete = _beginPrepared = _endRequested = false; _hackResult = null;
 		_nextStage = _defeatedMinions = 0; _hackCooldown = _transitionTime = 0; _endingIntermission = Intermission = false; _hackMinion = null;
 		EncounterStarted = _room == null;
+		_questArrow?.Set("navigation_enabled", !EncounterStarted);
 		_player.ResetPlayer(_room == null ? new(320, 550) : GetNode<Marker2D>("PlayerSpawn").GlobalPosition);
 		_boss.ResetBoss(_room == null ? new(1500, 550) : _room.BossSpawn);
 		_boss.Dormant = !EncounterStarted;
@@ -165,6 +171,8 @@ public partial class PXBossArena : Node2D
 	}
 	private void BeginEncounter()
 	{
+		// Both room depth and boss radius have been checked. Lock once, then enable combat.
+		_questArrow?.Set("navigation_enabled", false);
 		EncounterStarted = true; _room.SetClosed(true); _boss.Dormant = false;
 		_terrain.Generate(1, _player.GlobalPosition, _boss.GlobalPosition);
 		State = ArenaState.Combat; SetLocked(false); _player.ProtectAfterHack(); _boss.Stun(1.5f);
@@ -172,6 +180,7 @@ public partial class PXBossArena : Node2D
 	}
 	public void ReturnToMenu()
 	{
+		_questArrow?.Set("navigation_enabled", false);
 		State = ArenaState.Menu; _hack.CancelSilently(); _hackResult = null; _beginPrepared = _introComplete = false;
 		_nextStage = 0; _endRequested = false; ClearLasers(); SetLocked(true); _hud.ShowMenu();
 		if (_room != null) { _room.SetClosed(false); _boss.Dormant = true; }
@@ -282,6 +291,7 @@ public partial class PXBossArena : Node2D
 	public void NotifyLaserHit(int damage) => _hud.Message($"LASER  -{damage} HP  /  DASH OR FIND COVER");
 	private void EndRound(bool victory)
 	{
+		_questArrow?.Set("navigation_enabled", false);
 		State = ArenaState.Ended; _nextStage = 0; _hack.CancelSilently(); ClearLasers(); SetLocked(true);
 		_boss.SetHackAvailable(false); _hud.End(victory, _boss.SuccessfulHacks, _defeatedMinions);
 		_room?.SetClosed(false);
