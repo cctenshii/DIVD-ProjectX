@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://bqs7mukrcfo7m"]
+
+[ext_resource type="Script" uid="uid://ua6o52abh7jh" path="res://scripts/PXBossArena.cs" id="1"]
+[ext_resource type="Script" uid="uid://c3mjwjg01go7j" path="res://scripts/PXArenaTerrain.cs" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/CombatPlayer.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/Boss.tscn" id="4"]
+[ext_resource type="Script" uid="uid://bvcahwhvmnvk0" path="res://scripts/PXBossHUD.cs" id="5"]
+
+[node name="BossArena" type="Node2D" unique_id=1324208053]
+script = ExtResource("1")
+
+[node name="Terrain" type="Node2D" parent="." unique_id=771360651]
+script = ExtResource("2")
+
+[node name="Player" parent="." unique_id=981804782 instance=ExtResource("3")]
+position = Vector2(320, 550)
+
+[node name="Boss" parent="." unique_id=581234654 instance=ExtResource("4")]
+position = Vector2(1500, 550)
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=2115074286]
+script = ExtResource("5")
