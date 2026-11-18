@@ -33,6 +33,11 @@ var puzzles: Array[Dictionary] = [
 		"title": "Frequency Tuning",
 		"description": "Adjust speed, height, and phase to match the target frequency wave.",
 		"scene": "res://minipuzzles/puzzles/puzzle_05/puzzle_05.tscn"
+	},
+	{
+		"title": "Number Sequence",
+		"description": "Click the numbers from 1 to 9 in ascending order.",
+		"scene": "res://minipuzzles/puzzles/puzzle_06/puzzle_06.tscn"
 	}
 ]
 

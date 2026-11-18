@@ -1,0 +1,73 @@
+[gd_scene format=3 uid="uid://c5jqpa2k2n4d"]
+
+[ext_resource type="Script" uid="uid://o1eew1flytmf" path="res://minipuzzles/puzzles/puzzle_06/puzzle_06.gd" id="1_tw8mj"]
+
+[node name="Puzzle06" type="Control" unique_id=319423101]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tw8mj")
+
+[node name="PuzzleUI" type="PanelContainer" parent="." unique_id=1281712497]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PuzzleUI" unique_id=986090269]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=1263643367]
+layout_mode = 2
+text = "Number Sequence"
+
+[node name="InstructionLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=321400779]
+layout_mode = 2
+text = "Click the numbers from 1 to 9 in order."
+
+[node name="NumberGrid" type="GridContainer" parent="PuzzleUI/VBoxContainer" unique_id=2119075448]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 3
+
+[node name="Btn0" type="Button" parent="PuzzleUI/VBoxContainer/NumberGrid" unique_id=319943780]
+layout_mode = 2
+
+[node name="Btn1" type="Button" parent="PuzzleUI/VBoxContainer/NumberGrid" unique_id=347207363]
+layout_mode = 2
+
+[node name="Btn2" type="Button" parent="PuzzleUI/VBoxContainer/NumberGrid" unique_id=474853960]
+layout_mode = 2
+
+[node name="Btn3" type="Button" parent="PuzzleUI/VBoxContainer/NumberGrid" unique_id=1566810342]
+layout_mode = 2
+
+[node name="Btn4" type="Button" parent="PuzzleUI/VBoxContainer/NumberGrid" unique_id=1478469270]
+layout_mode = 2
+
+[node name="Btn5" type="Button" parent="PuzzleUI/VBoxContainer/NumberGrid" unique_id=859158894]
+layout_mode = 2
+
+[node name="Btn6" type="Button" parent="PuzzleUI/VBoxContainer/NumberGrid" unique_id=2141085955]
+layout_mode = 2
+
+[node name="Btn7" type="Button" parent="PuzzleUI/VBoxContainer/NumberGrid" unique_id=2099353684]
+layout_mode = 2
+
+[node name="Btn8" type="Button" parent="PuzzleUI/VBoxContainer/NumberGrid" unique_id=1361823213]
+layout_mode = 2
+
+[node name="ProgressLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=1796115385]
+layout_mode = 2
+text = "1/9"
+
+[node name="StatusLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=2071092819]
+layout_mode = 2
+text = "Find and click number 1."
+
+[node name="RestartButton" type="Button" parent="PuzzleUI/VBoxContainer" unique_id=777109460]
+layout_mode = 2
+text = "Restart"
