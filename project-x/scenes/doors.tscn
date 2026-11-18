@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://0qu7e510dt1p"]
+
+[ext_resource type="Script" uid="uid://d0tf1nab4kbw6" path="res://scripts/Doors.cs" id="1_ik3nm"]
+[ext_resource type="Texture2D" uid="uid://csvstuwi2fai0" path="res://assets/images/effects/doors-sprite.png" id="2_4ybfh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v8acg"]
+size = Vector2(28, 162)
+
+[node name="Doors" type="StaticBody2D" unique_id=281256552]
+script = ExtResource("1_ik3nm")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1794310186]
+position = Vector2(0, -24)
+shape = SubResource("RectangleShape2D_v8acg")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1392565193]
+position = Vector2(0.99999857, -23.18103)
+rotation = 1.5707964
+scale = Vector2(1.6837286, 1)
+texture = ExtResource("2_4ybfh")

@@ -1,47 +1,56 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene format=3 uid="uid://csjofb6vf1bad"]
 
-[ext_resource type="Script" path="res://scripts/PXBossArena.cs" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/main_map.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="3"]
+[ext_resource type="Script" uid="uid://ua6o52abh7jh" path="res://scripts/PXBossArena.cs" id="1"]
+[ext_resource type="PackedScene" uid="uid://cw17you85qnn" path="res://scenes/main_map.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://bbdkdp4g6wvt5" path="res://scenes/Player.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/Boss.tscn" id="4"]
-[ext_resource type="Script" path="res://scripts/PXBossHUD.cs" id="5"]
-[ext_resource type="Script" path="res://scripts/PXArenaTerrain.cs" id="6"]
+[ext_resource type="Script" uid="uid://bvcahwhvmnvk0" path="res://scripts/PXBossHUD.cs" id="5"]
+[ext_resource type="Script" uid="uid://c3mjwjg01go7j" path="res://scripts/PXArenaTerrain.cs" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/BossRoom.tscn" id="7"]
-[ext_resource type="Script" path="res://scripts/PXMapBoundary.cs" id="8"]
+[ext_resource type="Script" uid="uid://dihwklvq0lthl" path="res://scripts/PXMapBoundary.cs" id="8"]
+[ext_resource type="PackedScene" uid="uid://bcrmkq4rkbd3a" path="res://scenes/door_controllers.tscn" id="9_pdh0q"]
+[ext_resource type="PackedScene" uid="uid://0qu7e510dt1p" path="res://scenes/doors.tscn" id="10_h1bdy"]
 
-[node name="World" type="Node2D"]
+[node name="World" type="Node2D" unique_id=1499141055]
 script = ExtResource("1")
 StartFullscreen = false
 
-[node name="MainMap" parent="." instance=ExtResource("2")]
+[node name="MainMap" parent="." unique_id=1167667432 instance=ExtResource("2")]
 
-[node name="MapBoundary" type="Node2D" parent="."]
+[node name="MapBoundary" type="Node2D" parent="." unique_id=1568503723]
 script = ExtResource("8")
 
-[node name="BossRoom" parent="." instance=ExtResource("7")]
+[node name="BossRoom" parent="." unique_id=29335908 instance=ExtResource("7")]
 position = Vector2(5632, 992)
 
-[node name="Terrain" type="Node2D" parent="."]
+[node name="Terrain" type="Node2D" parent="." unique_id=2038912674]
 script = ExtResource("6")
 Bounds = Rect2(5664, 1024, 2912, 1632)
 BuildWalls = false
 DrawFloor = false
 ObstacleSizeRange = Vector2(180, 234)
 
-[node name="PlayerSpawn" type="Marker2D" parent="."]
+[node name="PlayerSpawn" type="Marker2D" parent="." unique_id=1681178840]
 position = Vector2(3744, 6656)
 
-[node name="Player" parent="." instance=ExtResource("3")]
-position = Vector2(3744, 6656)
+[node name="Player" parent="." unique_id=1176873748 instance=ExtResource("3")]
+position = Vector2(8274, 3576)
 
-[node name="Boss" parent="." instance=ExtResource("4")]
+[node name="Boss" parent="." unique_id=1540628555 instance=ExtResource("4")]
 position = Vector2(8256, 1344)
 
-[node name="WorldCamera" type="Camera2D" parent="."]
+[node name="WorldCamera" type="Camera2D" parent="." unique_id=1283470681]
 position = Vector2(3744, 6656)
 zoom = Vector2(1.25, 1.25)
 position_smoothing_enabled = true
 position_smoothing_speed = 6.0
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=549295080]
 script = ExtResource("5")
+
+[node name="DoorControllers" parent="." unique_id=1250765798 node_paths=PackedStringArray("TargetDoors") instance=ExtResource("9_pdh0q")]
+position = Vector2(8713, 3519)
+TargetDoors = []
+
+[node name="Doors" parent="." unique_id=1438896102 instance=ExtResource("10_h1bdy")]
+position = Vector2(8867, 3622)

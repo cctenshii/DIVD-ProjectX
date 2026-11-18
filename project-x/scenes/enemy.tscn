@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://chq6ykq5rasxb"]
+
+[ext_resource type="Texture2D" uid="uid://dgcrwf447fuli" path="res://assets/images/tilemaps/nenon-tilemap/big-robot10.png" id="1_7p1mj"]
+[ext_resource type="Script" uid="uid://cc2t6lss57e7k" path="res://scripts/Enemy.cs" id="1_md0e3"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_v8acg"]
+radius = 101.8332
+
+[node name="Enemy" type="Area2D" unique_id=1395960353]
+script = ExtResource("1_md0e3")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=533511502]
+texture = ExtResource("1_7p1mj")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=472530152]
+shape = SubResource("CircleShape2D_v8acg")

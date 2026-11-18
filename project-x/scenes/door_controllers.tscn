@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bcrmkq4rkbd3a"]
+
+[ext_resource type="Script" uid="uid://jec4jpadgdk0" path="res://scripts/DoorController.cs" id="1_cjkcr"]
+[ext_resource type="Texture2D" uid="uid://cedte87evbuo3" path="res://assets/images/effects/door-controller.png" id="2_rttff"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mdl7e"]
+size = Vector2(46, 60)
+
+[node name="DoorControllers" type="Area2D" unique_id=908091668]
+script = ExtResource("1_cjkcr")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2005996660]
+position = Vector2(-1, 20)
+shape = SubResource("RectangleShape2D_mdl7e")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=801065529]
+texture = ExtResource("2_rttff")
