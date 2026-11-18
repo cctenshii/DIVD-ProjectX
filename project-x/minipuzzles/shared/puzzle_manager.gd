@@ -38,6 +38,11 @@ var puzzles: Array[Dictionary] = [
 		"title": "Number Sequence",
 		"description": "Click the numbers from 1 to 9 in ascending order.",
 		"scene": "res://minipuzzles/puzzles/puzzle_06/puzzle_06.tscn"
+	},
+	{
+		"title": "Rhythm Clicking",
+		"description": "Click the numbered circles in sequential order along the path.",
+		"scene": "res://minipuzzles/puzzles/puzzle_07/puzzle_07.tscn"
 	}
 ]
 

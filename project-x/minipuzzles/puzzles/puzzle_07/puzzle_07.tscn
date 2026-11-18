@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://clkkorxd48wws"]
 
+[ext_resource type="Script" uid="uid://pnf8t5htco7r" path="res://minipuzzles/puzzles/puzzle_07/puzzle_07.gd" id="1_3awfl"]
+
 [node name="Puzzle07" type="Control" unique_id=46782645]
 layout_mode = 3
 anchors_preset = 15
@@ -7,3 +9,36 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_3awfl")
+
+[node name="PuzzleUI" type="PanelContainer" parent="." unique_id=1807457916]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PuzzleUI" unique_id=2130756411]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=1435228244]
+layout_mode = 2
+text = "Rhythm Clicking"
+
+[node name="InstructionLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=1617728480]
+layout_mode = 2
+text = "Click the numbered circles in sequential order."
+
+[node name="NodeCanvas" type="Control" parent="PuzzleUI/VBoxContainer" unique_id=579540037]
+custom_minimum_size = Vector2(640, 360)
+layout_mode = 2
+mouse_filter = 1
+
+[node name="StatusLabel" type="Label" parent="PuzzleUI/VBoxContainer" unique_id=1210057437]
+layout_mode = 2
+text = "Click circle 1 to begin!"
+
+[node name="RestartButton" type="Button" parent="PuzzleUI/VBoxContainer" unique_id=1184727139]
+layout_mode = 2
+text = "Restart"
+
+[connection signal="draw" from="PuzzleUI/VBoxContainer/NodeCanvas" to="." method="_on_node_canvas_draw"]
+[connection signal="gui_input" from="PuzzleUI/VBoxContainer/NodeCanvas" to="." method="_on_node_canvas_gui_input"]
