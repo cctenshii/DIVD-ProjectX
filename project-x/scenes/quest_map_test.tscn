@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bcrmkq4rkbd3a" path="res://scenes/door_controllers.tscn" id="4_8jlq7"]
 [ext_resource type="PackedScene" uid="uid://chq6ykq5rasxb" path="res://scenes/enemy.tscn" id="5_ix4b4"]
 [ext_resource type="PackedScene" uid="uid://cvesvngas7gwt" path="res://scenes/computer_terminal.tscn" id="6_iolgo"]
+[ext_resource type="PackedScene" uid="uid://cmigi2a684l4p" path="res://scenes/rotation_controller.tscn" id="7_8jlq7"]
 [ext_resource type="Script" uid="uid://dihwklvq0lthl" path="res://scripts/PXMapBoundary.cs" id="7_boundary"]
 
 [node name="quest-map-test" type="Node2D" unique_id=139579945]
@@ -20,36 +21,54 @@ position = Vector2(8860, 3620)
 
 [node name="Doors2" parent="." unique_id=1789777958 instance=ExtResource("3_iolgo")]
 position = Vector2(9540, 3625)
-RequiredActivations = 4
 
 [node name="DoorControllers" parent="." unique_id=908091668 node_paths=PackedStringArray("TargetDoors") instance=ExtResource("4_8jlq7")]
 position = Vector2(8701, 3517)
 TargetDoors = [NodePath("../Doors")]
 
-[node name="DoorControllers2" parent="." unique_id=1972900461 node_paths=PackedStringArray("TargetDoors", "RequiredOpenDoors") instance=ExtResource("4_8jlq7")]
+[node name="DoorControllers2" parent="." unique_id=1972900461 node_paths=PackedStringArray("TargetDoors") instance=ExtResource("4_8jlq7")]
 position = Vector2(9459, 3127)
 TargetDoors = [NodePath("../Doors2")]
-RequiredOpenDoors = [NodePath("../Doors")]
 
-[node name="DoorControllers3" parent="." unique_id=1094371244 node_paths=PackedStringArray("TargetDoors", "RequiredOpenDoors") instance=ExtResource("4_8jlq7")]
+[node name="DoorControllers3" parent="." unique_id=1094371244 node_paths=PackedStringArray("TargetDoors") instance=ExtResource("4_8jlq7")]
 position = Vector2(9508, 4023)
 rotation = -0.0009909146
 TargetDoors = [NodePath("../Doors2")]
-RequiredOpenDoors = [NodePath("../Doors")]
 
-[node name="Enemy" parent="." unique_id=1395960353 node_paths=PackedStringArray("UnlockDoorsOnDefeat", "RequiredOpenDoors") instance=ExtResource("5_ix4b4")]
+[node name="Enemy" parent="." unique_id=1395960353 instance=ExtResource("5_ix4b4")]
 position = Vector2(9359, 3250)
-UnlockDoorsOnDefeat = [NodePath("../Doors2")]
-RequiredOpenDoors = [NodePath("../Doors")]
+HitsToDefeat = 1
 
-[node name="Enemy2" parent="." unique_id=48021086 node_paths=PackedStringArray("UnlockDoorsOnDefeat", "RequiredOpenDoors") instance=ExtResource("5_ix4b4")]
+[node name="Enemy2" parent="." unique_id=48021086 instance=ExtResource("5_ix4b4")]
 position = Vector2(9342, 3925)
-UnlockDoorsOnDefeat = [NodePath("../Doors2")]
-RequiredOpenDoors = [NodePath("../Doors")]
+HitsToDefeat = 1
 
-[node name="ComputerTerminal" parent="." unique_id=2109717602 node_paths=PackedStringArray("RequiredOpenDoors") instance=ExtResource("6_iolgo")]
+[node name="ComputerTerminal" parent="." unique_id=2109717602 node_paths=PackedStringArray("PuzzleControllers") instance=ExtResource("6_iolgo")]
 position = Vector2(10368, 3583)
-RequiredOpenDoors = [NodePath("../Doors2")]
+PuzzleControllers = [NodePath("../RotationController"), NodePath("../RotationController2"), NodePath("../RotationController3"), NodePath("../RotationController4")]
 
 [node name="Player" parent="." unique_id=984035576 instance=ExtResource("2_ix4b4")]
 position = Vector2(8448, 3580)
+
+[node name="RotationController" parent="." unique_id=452575670 node_paths=PackedStringArray("LinkedComputer") instance=ExtResource("7_8jlq7")]
+position = Vector2(9971, 3451)
+CurrentDirection = 2
+TargetDirection = 1
+LinkedComputer = NodePath("../ComputerTerminal")
+
+[node name="RotationController2" parent="." unique_id=858932421 node_paths=PackedStringArray("LinkedComputer") instance=ExtResource("7_8jlq7")]
+position = Vector2(10158, 3448)
+CurrentDirection = 3
+TargetDirection = 2
+LinkedComputer = NodePath("../ComputerTerminal")
+
+[node name="RotationController3" parent="." unique_id=2003773274 node_paths=PackedStringArray("LinkedComputer") instance=ExtResource("7_8jlq7")]
+position = Vector2(9974, 3735)
+CurrentDirection = 2
+LinkedComputer = NodePath("../ComputerTerminal")
+
+[node name="RotationController4" parent="." unique_id=398826066 node_paths=PackedStringArray("LinkedComputer") instance=ExtResource("7_8jlq7")]
+position = Vector2(10164, 3732)
+CurrentDirection = 1
+TargetDirection = 3
+LinkedComputer = NodePath("../ComputerTerminal")

@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cmigi2a684l4p"]
+
+[ext_resource type="Texture2D" uid="uid://ci3nltmnggw7t" path="res://assets/images/effects/arrow-pointer.png" id="1_jgvpf"]
+[ext_resource type="Script" uid="uid://djkb4d47qqct7" path="res://scripts/RotationController.cs" id="1_x05pi"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fqc4m"]
+size = Vector2(64, 84)
+
+[node name="RotationController" type="Area2D" unique_id=452575670]
+script = ExtResource("1_x05pi")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1583330261]
+texture = ExtResource("1_jgvpf")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=51593742]
+position = Vector2(0, -1)
+shape = SubResource("RectangleShape2D_fqc4m")
+one_way_collision = true
