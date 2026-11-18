@@ -1,70 +1,38 @@
 using Godot;
+using ProjectXBossArenaPrototype;
 
-public partial class ComputerTerminal : Area2D
+public partial class ComputerTerminal : QuestInteractable
 {
-	[Export] public float PopupDuration = 2.5f; // How many seconds the popup stays on screen
+    [Export] public float PopupDuration = 2.5f;
+    public bool ChipCollected { get; private set; }
+    public override bool Completed => ChipCollected;
+    public override string Prompt => "[ E ] COLLECT NANO.O CHIP";
+    private CanvasLayer _popupLayer;
+    private double _popupRemaining;
 
-	private bool _playerInRange = false;
-	private bool _chipCollected = false;
-	private CanvasLayer _popupLayer;
-
-	public override void _Ready()
-	{
-		BodyEntered += OnBodyEntered;
-		BodyExited += OnBodyExited;
-
-		_popupLayer = GetNodeOrNull<CanvasLayer>("CanvasLayer");
-		if (_popupLayer != null)
-		{
-			_popupLayer.Visible = false;
-		}
-	}
-
-	public override void _Process(double delta)
-	{
-		if (_playerInRange && !_chipCollected && Input.IsActionJustPressed("interact"))
-		{
-			CollectChip();
-		}
-	}
-
-	private void CollectChip()
-	{
-		_chipCollected = true;
-		GD.Print("Chip Acquired!");
-
-		if (_popupLayer != null)
-		{
-			_popupLayer.Visible = true;
-
-			// Automatically hide the popup after PopupDuration seconds
-			GetTree().CreateTimer(PopupDuration).Timeout += () =>
-			{
-				if (IsInstanceValid(_popupLayer))
-				{
-					_popupLayer.Visible = false;
-				}
-			};
-		}
-	}
-
-	private void OnBodyEntered(Node2D body)
-	{
-		if (body.IsInGroup("Player"))
-		{
-			_playerInRange = true;
-			if (!_chipCollected)
-			{
-				GD.Print("Press Q to collect chip");
-			}
-		}
-	}
-
-	private void OnBodyExited(Node2D body)
-	{
-		if (body.IsInGroup("Player"))
-		{
-			_playerInRange = false;
-		}
-	}
+    public override void _Ready()
+    {
+        base._Ready();
+        _popupLayer = GetNodeOrNull<CanvasLayer>("CanvasLayer");
+        if (_popupLayer != null)
+        {
+            _popupLayer.Hide();
+            var panel = _popupLayer.GetNode<PanelContainer>("PanelContainer");
+            panel.Theme = PXRetroUI.MakeTheme();
+        }
+    }
+    public override void Interact(QuestInteraction interaction)
+    {
+        if (!CanInteract(interaction.Player)) return;
+        ChipCollected = true;
+        _popupRemaining = PopupDuration;
+        _popupLayer?.Show();
+        interaction.Message("NANO.O CHIP ACQUIRED  /  QUEST COMPLETE");
+    }
+    public override void _Process(double delta)
+    {
+        if (_popupRemaining <= 0) return;
+        _popupRemaining -= delta;
+        if (_popupRemaining <= 0) _popupLayer?.Hide();
+    }
 }

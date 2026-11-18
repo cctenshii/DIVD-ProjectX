@@ -3,22 +3,6 @@
 [ext_resource type="Script" uid="uid://cju1fa5vip7gh" path="res://scripts/ComputerTerminal.cs" id="1_7yube"]
 [ext_resource type="Texture2D" uid="uid://ctj5reol2dda7" path="res://assets/images/effects/hologrampprom.png" id="1_jiypw"]
 
-[sub_resource type="FontFile" id="FontFile_7yube"]
-cache/0/variation_coordinates = {}
-cache/0/face_index = 0
-cache/0/embolden = 0.0
-cache/0/transform = Transform2D(1, 0, 0, 1, 0, 0)
-cache/0/spacing_top = 0
-cache/0/spacing_bottom = 0
-cache/0/spacing_space = 0
-cache/0/spacing_glyph = 0
-cache/0/baseline_offset = 0.0
-cache/0/16/0/ascent = 0.0
-cache/0/16/0/descent = 0.0
-cache/0/16/0/underline_position = 0.0
-cache/0/16/0/underline_thickness = 0.0
-cache/0/16/0/scale = 1.0
-
 [sub_resource type="CircleShape2D" id="CircleShape2D_v8acg"]
 radius = 121.004135
 
@@ -47,8 +31,7 @@ grow_vertical = 2
 
 [node name="Label" type="Label" parent="CanvasLayer/PanelContainer" unique_id=1811257618]
 layout_mode = 2
-theme_override_fonts/font = SubResource("FontFile_7yube")
-text = "Nano.o Chip aquired"
+text = "Nano.O Chip acquired"
 horizontal_alignment = 1
 vertical_alignment = 1
 

@@ -79,6 +79,7 @@ public partial class PXWorldSmokeTests : Node
 			_terrain = _world.GetNode<PXArenaTerrain>("Terrain");
 			await Frames(); Tick();
 			Check(_player.GlobalPosition == new Vector2(3744, 6656), "Player starts at bottom marker");
+            Check(!GetNode<Control>("/root/QuestInteraction/QuestUI").Visible, "Quest overlay does not cover the world HUD");
 			Check(_player.GetNode<Sprite2D>("Body").Texture.ResourcePath.EndsWith("all-position-V2.png"), "Player uses requested spritesheet");
 			Check(_boss.GlobalPosition == new Vector2(8256, 1344) && _boss.Dormant && _boss.Locked, "Boss starts dormant in upper-right room");
 			Check(!_room.Closed && _terrain.Generation == 0 && !_world.TryStartHack(), "Exploration has no gate, terrain hazards or hacks");
@@ -136,7 +137,19 @@ public partial class PXWorldSmokeTests : Node
 				_terrain.Generate(stage, new(8000, 2200), _room.BossSpawn);
 				CheckTerrain(_terrain, new(8000, 2200), _room.BossSpawn);
 			}
-			compact.QueueFree();
+            // Reproduce many layouts, including the compact arena that previously
+            // lost too much cover when its four rows blocked navigation clearance.
+            var rng = (RandomNumberGenerator)typeof(PXArenaTerrain).GetField("_rng", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(compact);
+            for (ulong seed = 1; seed <= 20; seed++)
+            {
+                rng.Seed = seed;
+                for (int stage = 1; stage <= 3; stage++)
+                {
+                    compact.Generate(stage, new(320, 550), new(1500, 550));
+                    Check(compact.Connected && compact.Footprints.Count >= 8, $"Compact terrain remains populated and connected: seed {seed}, stage {stage}");
+                }
+            }
+            compact.QueueFree();
 			GD.Print($"WORLD TESTS PASSED: {_checks}"); GetTree().Quit();
 		}
 		catch (Exception error) { GD.PushError(error.ToString()); GetTree().Quit(1); }

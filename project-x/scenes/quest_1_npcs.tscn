@@ -114,10 +114,9 @@ animation = &"idle"
 frame_progress = 0.874901
 
 [node name="Area2D" type="Area2D" parent="NPC1"]
+collision_layer = 0
+collision_mask = 2
 script = ExtResource("1_hivgg")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NPC1/Area2D"]
 shape = SubResource("CircleShape2D_hivgg")
-
-[connection signal="body_entered" from="NPC1/Area2D" to="NPC1" method="_on_area_2d_body_entered"]
-[connection signal="body_exited" from="NPC1/Area2D" to="NPC1" method="_on_area_2d_body_exited"]

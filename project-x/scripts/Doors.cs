@@ -1,35 +1,25 @@
 using Godot;
+using System.Collections.Generic;
 
-public partial class Doors : StaticBody2D 
+public partial class Doors : StaticBody2D
 {
-	[Export] public int RequiredActivations = 1;
-	private int _currentActivations = 0;
-	private bool _isOpen = false;
+    [Export] public int RequiredActivations = 1;
+    private readonly HashSet<ulong> _sources = new();
+    public int CurrentActivations => _sources.Count;
+    public bool IsOpen { get; private set; }
 
-	public void Activate()
-	{
-		if (_isOpen) return;
+    // One console or defeated enemy contributes once, even if a callback is repeated.
+    public bool Activate(Node source)
+    {
+        if (IsOpen || !IsInstanceValid(source) || !_sources.Add(source.GetInstanceId())) return false;
+        if (CurrentActivations >= Mathf.Max(1, RequiredActivations)) OpenDoor();
+        return true;
+    }
 
-		_currentActivations++;
-		GD.Print($"Door progress: {_currentActivations}/{RequiredActivations}");
-
-		if (_currentActivations >= RequiredActivations)
-		{
-			OpenDoor();
-		}
-	}
-
-	private void OpenDoor()
-	{
-		_isOpen = true;
-		GD.Print("Door Unlocked!");
-
-		Visible = false;
-		
-		var collision = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
-		if (collision != null)
-		{
-			collision.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
-		}
-	}
+    private void OpenDoor()
+    {
+        IsOpen = true;
+        Hide();
+        GetNodeOrNull<CollisionShape2D>("CollisionShape2D")?.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+    }
 }
