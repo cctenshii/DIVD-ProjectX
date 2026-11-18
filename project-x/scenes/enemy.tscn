@@ -6,8 +6,9 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_v8acg"]
 radius = 101.8332
 
-[node name="Enemy" type="Area2D" unique_id=1395960353]
+[node name="Enemy" type="Area2D" unique_id=1395960353 node_paths=PackedStringArray("UnlockDoorsOnDefeat")]
 script = ExtResource("1_md0e3")
+UnlockDoorsOnDefeat = []
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=533511502]
 texture = ExtResource("1_7p1mj")

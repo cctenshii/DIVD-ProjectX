@@ -6,8 +6,9 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mdl7e"]
 size = Vector2(46, 60)
 
-[node name="DoorControllers" type="Area2D" unique_id=908091668]
+[node name="DoorControllers" type="Area2D" unique_id=908091668 node_paths=PackedStringArray("TargetDoors")]
 script = ExtResource("1_cjkcr")
+TargetDoors = []
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2005996660]
 position = Vector2(-1, 20)

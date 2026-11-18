@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://ua6o52abh7jh" path="res://scripts/PXBossArena.cs" id="1"]
 [ext_resource type="Script" uid="uid://c3mjwjg01go7j" path="res://scripts/PXArenaTerrain.cs" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://bbdkdp4g6wvt5" path="res://scenes/Player.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/Boss.tscn" id="4"]
 [ext_resource type="Script" uid="uid://bvcahwhvmnvk0" path="res://scripts/PXBossHUD.cs" id="5"]
 
