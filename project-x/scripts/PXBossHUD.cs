@@ -6,13 +6,14 @@ namespace ProjectXBossArenaPrototype;
 public partial class PXBossHUD : CanvasLayer
 {
 	public Action StartPressed, RetryPressed, MenuPressed, ResumePressed;
-	public PXHackPanel Hack { get; private set; }
+	public PXMiniPuzzleHost Hack { get; private set; }
 	public PXInstructionPopup Instructions { get; private set; }
 	public ProgressBar PlayerBar { get; private set; }
 	public Control HackOverlay { get; private set; }
 	public bool Initialized { get; private set; }
+	private Control _baseUI;
 	private Control _menu, _ending, _pause, _banner, _top;
-	private Label _playerText, _bossText, _phase, _dash, _context, _message, _bannerTitle, _bannerBody, _endTitle, _endBody, _hackTarget, _hackCaption;
+	private Label _playerText, _bossText, _phase, _dash, _context, _message, _bannerTitle, _bannerBody, _endTitle, _endBody;
 	private ProgressBar _bossBar;
 	private StyleBoxFlat _healthFill;
 	private Control Root(string name)
@@ -29,21 +30,12 @@ public partial class PXBossHUD : CanvasLayer
 	public override void _Ready()
 	{
 		Layer = 10;
-		var baseUI = Root("Status");
+		var baseUI = Root("Status"); _baseUI = baseUI;
 		_message = PXRetroUI.Label(baseUI, "", new(64, 998, 1350, 40), 26);
 		_context = PXRetroUI.Label(baseUI, "", new(64, 1042, 1400, 30), 22, PXRetroUI.Muted);
 		_dash = PXRetroUI.Label(baseUI, "", new(1480, 1010, 380, 40), 26, PXRetroUI.Accent);
 		HackOverlay = Root("HackOverlay"); HackOverlay.MouseFilter = Control.MouseFilterEnum.Stop;
-		var frame = PXRetroUI.Panel(HackOverlay, new(160, 90, 1600, 900), new Color(.05f, .1f, .16f, .91f));
-		frame.Name = "HackFrame";
-		PXRetroUI.Label(frame, "PROJECT X  /  OMNI-TOOL", new(48, 34, 700, 40), 26, PXRetroUI.Accent);
-		PXRetroUI.Label(frame, "REALITY\nBREACH", new(48, 135, 690, 200), 88);
-		_hackTarget = PXRetroUI.Label(frame, "", new(52, 385, 680, 60), 38, PXRetroUI.Accent);
-		_hackCaption = PXRetroUI.Label(frame, "", new(52, 470, 650, 180), 28, PXRetroUI.Muted);
-		_hackCaption.AutowrapMode = TextServer.AutowrapMode.WordSmart;
-		PXRetroUI.Label(frame, "ARENA FROZEN\nHP REMAINS VISIBLE", new(52, 732, 680, 90), 26, PXRetroUI.Accent);
-		Hack = GD.Load<PackedScene>("res://scenes/HackPanel.tscn").Instantiate<PXHackPanel>();
-		Hack.Position = new(800, 100); Hack.Scale = new(2, 2); frame.AddChild(Hack); HackOverlay.Hide();
+		Hack = new PXMiniPuzzleHost { Position = new(160, 100) }; HackOverlay.AddChild(Hack); HackOverlay.Hide();
 		_banner = Root("StageBanner");
 		var bannerPanel = PXRetroUI.Panel(_banner, new(480, 390, 960, 260), new Color(.05f, .1f, .16f, .94f));
 		_bannerTitle = PXRetroUI.Label(bannerPanel, "", new(40, 38, 880, 70), 52);
@@ -91,13 +83,13 @@ public partial class PXBossHUD : CanvasLayer
 		_dash.Text = player.DashReady ? "SHIFT  /  DASH READY" : "DASH RECHARGING";
 		_context.Text = cooldown > 0 ? FormattableString.Invariant($"OMNI-TOOL RECHARGING  {cooldown:0.0}s") : context;
 	}
+	public void SetExploring(bool exploring) { _baseUI.Visible = !exploring; _top.Visible = !exploring; }
 	public void Message(string message) => _message.Text = message;
 	public void ShowMenu() { _menu.Show(); _ending.Hide(); _pause.Hide(); _top.Hide(); HideHack(); HideBanner(); Instructions.CloseSilently(); }
 	public void HideMenu() { _menu.Hide(); _ending.Hide(); _pause.Hide(); _top.Show(); }
 	public void ShowHack(string target)
 	{
-		_hackTarget.Text = "TARGET  /  " + target;
-		_hackCaption.Text = $"{Hack.InstructionTitle}\n\nSuccess: hack damage.\nFailure: lose 20 HP.\n\nA successful boss hack grants\n1.5 seconds to escape.";
+
 		HackOverlay.Show();
 	}
 	public void HideHack() => HackOverlay.Hide();

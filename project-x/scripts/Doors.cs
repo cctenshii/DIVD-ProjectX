@@ -19,6 +19,7 @@ public partial class Doors : StaticBody2D
     private void OpenDoor()
     {
         IsOpen = true;
+        GetNodeOrNull<QuestInteraction>("/root/QuestInteraction")?.Journal?.Navigator.InvalidateRoute();
         Hide();
         GetNodeOrNull<CollisionShape2D>("CollisionShape2D")?.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
     }

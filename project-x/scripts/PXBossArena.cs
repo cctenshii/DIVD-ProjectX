@@ -21,7 +21,7 @@ public partial class PXBossArena : Node2D
 	private PXArenaPlayer _player;
 	private PXArenaBoss _boss;
 	private PXBossHUD _hud;
-	private PXHackPanel _hack;
+	private PXMiniPuzzleHost _hack;
 	private PXArenaTerrain _terrain;
 	private PXBossRoom _room;
 	private Camera2D _camera;
@@ -31,9 +31,6 @@ public partial class PXBossArena : Node2D
 	public bool EncounterStarted { get; private set; }
 	private Node2D _lasers, _minionRoot;
 	private readonly List<PXArenaMinion> _minions = new();
-	private readonly HashSet<int> _seen = new();
-	private readonly ConfigFile _preferences = new();
-	private const string PreferencesPath = "user://projectx_boss_tutorials.cfg";
 	private PXArenaMinion _hackMinion;
 	private bool _startRequested, _menuRequested, _hackRequested, _resumeRequested, _introComplete, _beginPrepared, _endVictory, _endRequested;
 	private bool? _hackResult;
@@ -68,8 +65,6 @@ public partial class PXBossArena : Node2D
 		_boss.StageChanged += stage => _nextStage = stage;
 		_boss.LaserRequested += SpawnLaser;
 		_boss.ContactHit += damage => _hud.Message($"CONTACT HIT  -{damage} HP");
-		if (_preferences.Load(PreferencesPath) == Error.Ok)
-			for (int i = 0; i < 8; i++) if (_preferences.GetValue("hacks", i.ToString(), false).AsBool()) _seen.Add(i);
 		ResetWorld(); State = ArenaState.Menu; SetLocked(true); _hud.ShowMenu();
 		_initialized = true;
 		if (_room != null) StartRound();
@@ -104,7 +99,7 @@ public partial class PXBossArena : Node2D
 		}
 		if (State == ArenaState.Combat) _hackCooldown = Mathf.Max(0, _hackCooldown - dt);
 		if (_hackRequested) { _hackRequested = false; TryStartHack(); }
-		if (State == ArenaState.Exploring && _room.ShouldActivate(_player.GlobalPosition, _boss.GlobalPosition)) BeginEncounter();
+		if (State == ArenaState.Exploring && CanStartMainQuest() && _room.ShouldActivate(_player.GlobalPosition, _boss.GlobalPosition)) BeginEncounter();
 		if (_camera != null)
 		{
 			_camera.GlobalPosition = EncounterStarted ? _room.WorldBounds.GetCenter() : _player.GlobalPosition;
@@ -116,6 +111,7 @@ public partial class PXBossArena : Node2D
 	{
 		if (!_initialized) return;
 		if (inputEvent is not InputEventKey key || !key.Pressed || key.Echo) return;
+		if (GetNodeOrNull<QuestInteraction>("/root/QuestInteraction")?.Busy == true && State == ArenaState.Exploring) return;
 		Key code = key.PhysicalKeycode != Key.None ? key.PhysicalKeycode : key.Keycode;
 		if (code == Key.F11)
 		{
@@ -203,12 +199,8 @@ public partial class PXBossArena : Node2D
 		if (_hackMinion == null && !canBoss) { _hud.Message("APPROACH A HACKABLE TARGET WITH A CLEAR LINE OF SIGHT."); return false; }
 		State = ArenaState.Briefing; SetLocked(true); _boss.SetHackAvailable(false);
 		_hack.PrepareRandomHack(_boss.Stage);
-		int kind = (int)_hack.CurrentKind;
-		if (!_seen.Contains(kind))
-			_hud.Instructions.ShowPages(new[] { _hack.InstructionTitle }, new[] { _hack.InstructionBody }, () => {
-				_seen.Add(kind); _preferences.SetValue("hacks", kind.ToString(), true); _preferences.Save(PreferencesPath); _beginPrepared = true;
-			});
-		else BeginPreparedHack();
+		// The supplied puzzle flow includes its own instructions and Start button.
+		BeginPreparedHack();
 		return true;
 	}
 	private void BeginPreparedHack()
@@ -289,15 +281,29 @@ public partial class PXBossArena : Node2D
 	private void ClearMinions()
 	{ foreach (var minion in _minions) { _minionRoot.RemoveChild(minion); minion.QueueFree(); } _minions.Clear(); }
 	public void NotifyLaserHit(int damage) => _hud.Message($"LASER  -{damage} HP  /  DASH OR FIND COVER");
+    private bool CanStartMainQuest()
+    {
+        var journal = GetNodeOrNull<QuestJournal>("QuestJournal");
+        var interaction = GetNodeOrNull<QuestInteraction>("/root/QuestInteraction");
+        return interaction?.Busy != true && (journal == null || journal.MainAccepted && !journal.MainCompleted && journal.SelectedQuest == QuestJournal.Quest.Main);
+    }
 	private void EndRound(bool victory)
 	{
 		_questArrow?.Set("navigation_enabled", false);
+        var journal = GetNodeOrNull<QuestJournal>("QuestJournal");
+        if (victory && journal != null)
+        {
+            _nextStage = 0; _hack.CancelSilently(); ClearLasers(); ClearMinions(); _terrain.Clear(); _hud.HideHack(); _hud.HideBanner();
+            _room.SetClosed(false); _boss.Dormant = true; EncounterStarted = false;
+            State = ArenaState.Exploring; SetLocked(false); _questArrow?.Set("navigation_enabled", true); journal.CompleteMain(); return;
+        }
 		State = ArenaState.Ended; _nextStage = 0; _hack.CancelSilently(); ClearLasers(); SetLocked(true);
 		_boss.SetHackAvailable(false); _hud.End(victory, _boss.SuccessfulHacks, _defeatedMinions);
 		_room?.SetClosed(false);
 	}
 	private void RefreshHUD()
 	{
+		_hud.SetExploring(State == ArenaState.Exploring && GetNodeOrNull<QuestJournal>("QuestJournal") != null);
 		bool ready = State == ArenaState.Combat && _hackCooldown <= 0;
 		var nearby = Intermission && ready ? NearestMinion() : null;
 		bool bossReady = ready && !Intermission && !_boss.PhaseFrozen && _boss.IsAlive && _player.GlobalPosition.DistanceTo(_boss.GlobalPosition) <= _boss.HackRange && _boss.HasClearSight(_player.GlobalPosition);

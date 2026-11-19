@@ -6,12 +6,16 @@ using ProjectXBossArenaPrototype;
 // C# owns quest state; the existing GDScript player exposes only its movement lock.
 public partial class QuestInteraction : CanvasLayer
 {
-    public enum InteractionState { Exploring, Hacking, Result }
+    public enum InteractionState { Exploring, Hacking, Result, Journal }
     public InteractionState State { get; private set; }
     public bool Busy => State != InteractionState.Exploring;
+    public QuestJournal Journal { get; private set; }
+    private Control _journalPanel;
+    private Label _mainStatus, _sideStatus;
+    private bool _toggleJournal;
     public Node2D Player { get; private set; }
-    public PXHackPanel Hack { get; private set; }
-    public QuestInteractable NavigationTarget { get; private set; }
+    public PXMiniPuzzleHost Hack { get; private set; }
+    public Node2D NavigationTarget { get; private set; }
     public QuestInteractable NearbyTarget { get; private set; }
     private readonly List<QuestInteractable> _targets = new();
     private readonly List<Doors> _doors = new();
@@ -37,10 +41,7 @@ public partial class QuestInteraction : CanvasLayer
         _overlay = new Control { Name = "PuzzleOverlay", Size = _root.Size, MouseFilter = Control.MouseFilterEnum.Stop };
         _root.AddChild(_overlay);
         _overlay.AddChild(new ColorRect { Size = _root.Size, Color = new Color(.02f, .04f, .07f, .88f), MouseFilter = Control.MouseFilterEnum.Ignore });
-        PXRetroUI.Label(_overlay, "OMNI-TOOL  /  ENEMY SECURITY", new(400, 130, 1120, 64), 42);
-        PXRetroUI.Label(_overlay, "SOLVE THE PUZZLE TO DAMAGE THE ENEMY", new(400, 210, 1120, 40), 26, new Color("55ead4"));
-        Hack = GD.Load<PackedScene>("res://scenes/HackPanel.tscn").Instantiate<PXHackPanel>();
-        Hack.Position = new(636, 300); Hack.Scale = new(1.8f, 1.8f); _overlay.AddChild(Hack);
+        Hack = new PXMiniPuzzleHost { Position = new(160, 100) }; _overlay.AddChild(Hack);
         Hack.Finished += success => _hackResult = success;
         _overlay.Hide();
         _result = PXRetroUI.Panel(_root, new(420, 300, 1080, 480));
@@ -48,7 +49,17 @@ public partial class QuestInteraction : CanvasLayer
         _resultBody = PXRetroUI.Label(_result, "", new(48, 140, 984, 160), 30, new Color("55ead4"));
         _resultBody.AutowrapMode = TextServer.AutowrapMode.WordSmart;
         PXRetroUI.Button(_result, "CONTINUE  /  ENTER", new(48, 340, 984, 84), () => _continueRequested = true);
-        _result.Hide(); _root.Hide();
+        _result.Hide();
+        PXRetroUI.Button(_root, "QUESTS / TAB", new(1568, 24, 320, 64), () => _toggleJournal = true);
+        _journalPanel = PXRetroUI.Panel(_root, new(320, 180, 1280, 680));
+        PXRetroUI.Label(_journalPanel, "QUEST JOURNAL", new(48, 28, 1184, 70), 48);
+        PXRetroUI.Label(_journalPanel, "Track one quest. The arrow follows its route; both quests keep their progress.", new(48, 106, 1184, 48), 24);
+        _mainStatus = PXRetroUI.Label(_journalPanel, "", new(48, 194, 1140, 70), 30);
+        PXRetroUI.Button(_journalPanel, "TRACK MAIN QUEST", new(48, 278, 550, 70), () => SelectQuest(0));
+        _sideStatus = PXRetroUI.Label(_journalPanel, "", new(48, 390, 1140, 70), 30);
+        PXRetroUI.Button(_journalPanel, "TRACK SIDE QUEST", new(48, 474, 550, 70), () => SelectQuest(1));
+        PXRetroUI.Button(_journalPanel, "CLOSE / TAB", new(800, 570, 420, 64), () => _toggleJournal = true);
+        _journalPanel.Hide(); _root.Hide();
     }
 
     public void Register(QuestInteractable target)
@@ -62,8 +73,8 @@ public partial class QuestInteraction : CanvasLayer
         if (target == _enemy) ResetInteraction();
         if (_targets.Count == 0)
         {
-            _doors.Clear(); Player = null; _root?.Hide();
-            NavigationTarget = NearbyTarget = null;
+            _doors.Clear(); Player = null; Journal = null; _root?.Hide();
+            NavigationTarget = null; NearbyTarget = null;
             if (_message != null) Message("WASD / ARROWS = MOVE   /   E = INTERACT");
         }
         _refreshRemaining = 0;
@@ -80,10 +91,17 @@ public partial class QuestInteraction : CanvasLayer
                 if (node is CharacterBody2D body) { Player = body; break; }
         }
         if (!IsInstanceValid(Player)) return;
+        if (!IsInstanceValid(Journal)) Journal = GetTree().GetFirstNodeInGroup("QuestJournal") as QuestJournal;
         // The optional World console must not overlay or interrupt the boss HUD.
         if (Player.GetParent() is PXBossArena arena && arena.State != PXBossArena.ArenaState.Exploring)
         {
-            _root.Hide(); _interactRequested = false; return;
+            _root.Hide(); _interactRequested = _toggleJournal = _continueRequested = false; return;
+        }
+        if (_toggleJournal)
+        {
+            _toggleJournal = false;
+            if (State == InteractionState.Journal) ResetInteraction();
+            else if (!Busy && Journal != null) { State = InteractionState.Journal; SetPlayerLocked(true); _journalPanel.Show(); }
         }
         if (_continueRequested) { _continueRequested = false; if (State == InteractionState.Result) ResetInteraction(); }
         if (_hackResult.HasValue)
@@ -104,7 +122,10 @@ public partial class QuestInteraction : CanvasLayer
     public override void _UnhandledInput(InputEvent input)
     {
         if (_targets.Count == 0 || input is not InputEventKey key || !key.Pressed || key.Echo) return;
-        if (State == InteractionState.Result && key.Keycode == Key.Enter)
+        if (IsInstanceValid(Player) && Player.GetParent() is PXBossArena arena && arena.State != PXBossArena.ArenaState.Exploring) return;
+        if (key.Keycode == Key.Tab || (key.Keycode == Key.Escape && State == InteractionState.Journal))
+        { _toggleJournal = true; GetViewport().SetInputAsHandled(); }
+        else if (State == InteractionState.Result && key.Keycode == Key.Enter)
         { _continueRequested = true; GetViewport().SetInputAsHandled(); }
         else if (input.IsActionPressed("interact"))
         {
@@ -115,7 +136,7 @@ public partial class QuestInteraction : CanvasLayer
 
     private void RefreshTargets()
     {
-        NearbyTarget = NavigationTarget = null;
+        NearbyTarget = null; NavigationTarget = null;
         float nearest = float.MaxValue, navigationDistance = float.MaxValue;
         _doors.Clear();
         bool chipCollected = false;
@@ -130,13 +151,22 @@ public partial class QuestInteraction : CanvasLayer
             if (distance < navigationDistance) { navigationDistance = distance; NavigationTarget = target; }
             if (distance < nearest && target.CanInteract(Player)) { nearest = distance; NearbyTarget = target; }
         }
-        _root.Visible = Player is not PXArenaPlayer || Busy || NearbyTarget != null;
+        _root.Visible = Journal != null || Player is not PXArenaPlayer || Busy || NearbyTarget != null;
+        if (Journal != null)
+        {
+            NavigationTarget = Busy ? null : Journal.Navigator.Guide(Player.GlobalPosition, Journal.Objective());
+            _mainStatus.Text = (Journal.SelectedQuest == QuestJournal.Quest.Main ? "[TRACKED] " : "") + "MAIN / " + Journal.Status(QuestJournal.Quest.Main);
+            _sideStatus.Text = (Journal.SelectedQuest == QuestJournal.Quest.Side ? "[TRACKED] " : "") + "SIDE / " + Journal.Status(QuestJournal.Quest.Side);
+        }
         if (Busy) NavigationTarget = null;
-        _prompt.Text = Busy ? "MOVEMENT PAUSED DURING THE HACK" : NearbyTarget?.Prompt ?? "FOLLOW THE ARROW TO THE NEXT OBJECTIVE";
+        _prompt.Text = State == InteractionState.Journal ? "SELECT A QUEST TO TRACK / TAB TO CLOSE"
+            : Busy ? "MOVEMENT PAUSED DURING THE HACK" : NearbyTarget?.Prompt ?? "FOLLOW THE ARROW TO THE NEXT OBJECTIVE";
         var pending = _doors.Find(door => !door.IsOpen);
         _objective.Text = chipCollected ? "QUEST COMPLETE  /  NANO.O CHIP ACQUIRED" : pending != null
             ? $"DOOR SIGNALS  {pending.CurrentActivations}/{Mathf.Max(1, pending.RequiredActivations)}  /  ACTIVATE CONSOLES AND DISABLE ENEMIES"
             : "DOORS OPEN  /  COLLECT THE NANO.O CHIP";
+        if (Journal != null)
+            _objective.Text = (Journal.SelectedQuest == QuestJournal.Quest.Main ? "MAIN / " : "SIDE / ") + Journal.Status(Journal.SelectedQuest).ToUpperInvariant();
     }
 
     public void StartHack(Enemy enemy)
@@ -145,7 +175,6 @@ public partial class QuestInteraction : CanvasLayer
         _enemy = enemy; State = InteractionState.Hacking;
         SetPlayerLocked(true);
         Hack.StartRandomHack();
-        Hack.GetNode<Label>("CancelHint").Text = "ESC = cancel / no damage dealt / retry with E";
         _overlay.Show(); _result.Hide();
         NavigationTarget = null;
     }
@@ -157,7 +186,7 @@ public partial class QuestInteraction : CanvasLayer
         _overlay.Hide(); State = InteractionState.Result;
         _resultTitle.Text = _enemy.IsDefeated ? "ENEMY DISABLED" : success ? "HACK SUCCESSFUL" : "HACK FAILED";
         _resultBody.Text = _enemy.IsDefeated
-            ? "Enemy disabled. Its door signal has been registered.\nContinue to the remaining consoles or the reward terminal."
+            ? "Enemy disabled. Its door signal has been registered.\nContinue to the remaining consoles or the chip terminal."
             : success ? $"Security layers disabled: {_enemy.SuccessfulHacks}/{Mathf.Max(1, _enemy.HitsToDefeat)}.\nContinue, then press E near this enemy to hack again."
             : "No security layer was disabled.\nContinue, then press E near the enemy to retry.";
         _result.Show(); _refreshRemaining = 0;
@@ -171,12 +200,17 @@ public partial class QuestInteraction : CanvasLayer
     }
     private void ResetInteraction()
     {
-        Hack?.CancelSilently(); _overlay?.Hide(); _result?.Hide();
+        Hack?.CancelSilently(); _overlay?.Hide(); _result?.Hide(); _journalPanel?.Hide();
         SetPlayerLocked(false);
         State = InteractionState.Exploring;
         _enemy = null; _hackResult = null;
-        _interactRequested = _continueRequested = false;
+        _interactRequested = _continueRequested = _toggleJournal = false;
         _refreshRemaining = 0;
+    }
+    private void SelectQuest(int quest)
+    {
+        if (Journal == null || State != InteractionState.Journal) return;
+        Journal.SelectQuest(quest); ResetInteraction();
     }
     // Narrow bridge for the teammate's GDScript arrow.
     public Node2D GetNavigationTarget() => NavigationTarget;

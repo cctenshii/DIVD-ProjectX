@@ -16,13 +16,14 @@ if ($LASTEXITCODE -ne 0) { throw 'C# build failed.' }
 $checks = @(
     @{ Name = 'import'; Args = @('--editor', '--import', '--quit'); Marker = '' },
     @{ Name = 'quest'; Args = @('res://tests/QuestFlowTests.tscn'); Marker = 'QUEST TESTS PASSED:' },
+    @{ Name = 'minipuzzles'; Args = @('--script', 'res://tests/MiniPuzzleTests.gd'); Marker = 'MINIPUZZLE TESTS PASSED:' },
     @{ Name = 'world'; Args = @('res://tests/WorldSmokeTests.tscn'); Marker = 'WORLD TESTS PASSED:' },
     @{ Name = 'story'; Args = @('--script', 'res://tests/StoryFlowTests.gd'); Marker = 'STORY FLOW PASSED:' },
     @{ Name = 'scenes'; Args = @('--script', 'res://tests/SceneResourceTests.gd'); Marker = 'SCENE RESOURCE CHECKS PASSED:' }
 )
 foreach ($check in $checks) {
     $log = Join-Path $logRoot ($check.Name + '.log')
-    $arguments = @('--headless', '--path', $projectRoot, '--quit-after', '2400', '--log-file', $log) + $check.Args
+    $arguments = @('--headless', '--path', $projectRoot, '--quit-after', '7200', '--log-file', $log) + $check.Args
     $output = & $GodotPath @arguments 2>&1 | Out-String
     $code = $LASTEXITCODE
     $record = if (Test-Path -LiteralPath $log) { Get-Content -LiteralPath $log -Raw } else { $output }

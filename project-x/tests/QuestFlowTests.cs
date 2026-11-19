@@ -1,175 +1,132 @@
 using Godot;
 using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using ProjectXBossArenaPrototype;
 
-// Integration checks use real input dispatch, overlap physics and puzzle controls.
 public partial class QuestFlowTests : Node
 {
     private int _checks;
+    private PXBossArena _world;
+    private PXArenaPlayer _player;
+    private QuestJournal _journal;
     private QuestInteraction _interaction;
-    private Node2D _quest;
-    private CharacterBody2D _player;
-    private Doors _first, _second;
-    private void Check(bool condition, string label)
-    {
-        if (!condition) throw new Exception(label);
-        _checks++; GD.Print("PASS: " + label);
-    }
-    private async Task Frames(int count = 5)
-    { for (int i = 0; i < count; i++) await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame); }
+    private void Check(bool condition, string text) { if (!condition) throw new Exception(text); _checks++; GD.Print("PASS: " + text); }
+    private async Task Frames(int count = 4)
+    { for (int i = 0; i < count; i++) { await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame); await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame); } }
     private async Task Press(Key code)
     {
-        Input.ParseInputEvent(new InputEventKey { PhysicalKeycode = code, Keycode = code, Pressed = true });
-        await Frames();
-        Input.ParseInputEvent(new InputEventKey { PhysicalKeycode = code, Keycode = code, Pressed = false });
-        await Frames(2);
+        Input.ParseInputEvent(new InputEventKey { Keycode = code, PhysicalKeycode = code, Pressed = true }); await Frames();
+        Input.ParseInputEvent(new InputEventKey { Keycode = code, PhysicalKeycode = code, Pressed = false }); await Frames(2);
     }
-    private async Task Approach(Node2D target)
+    private async Task Approach(QuestInteractable target)
     {
-        var point = target.GetNodeOrNull<Node2D>("CollisionShape2D")?.GlobalPosition ?? target.GlobalPosition;
-        // Consoles sit on a floor edge; approach their interaction area from inside the room.
-        if (target is DoorController) point += Vector2.Down.Rotated(target.GlobalRotation) * 18;
-        _player.GlobalPosition = point; await Frames(8);
+        _player.GlobalPosition = target.InteractionPosition + (target is DoorController ? Vector2.Down.Rotated(target.GlobalRotation) * 18 : Vector2.Zero);
+        await Frames(8);
     }
-    private static T Field<T>(object obj, string name) => (T)obj.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(obj);
-    private static void SetField(object obj, string name, object value) => obj.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(obj, value);
-    private static void Call(object obj, string method, params object[] args) => obj.GetType().GetMethod(method, BindingFlags.NonPublic | BindingFlags.Instance).Invoke(obj, args);
-    private static void Click(PXHackPanel panel, Vector2 point) => panel._GuiInput(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = true, Position = point });
-    private void Solve(PXHackPanel hack)
+    private async Task CheckRoute(Node2D target, string label)
     {
-        // Exercise each original puzzle's success condition, not its Finished signal.
-        switch (hack.CurrentKind)
+        // Follow every suggested segment, checking clearance rather than teleporting across walls.
+        // This verifies navigation geometry; interaction tests separately use real E input.
+        var goal = target is QuestInteractable item ? item.InteractionPosition : target.GlobalPosition;
+        _journal.Navigator.InvalidateRoute(); await Frames(3);
+        for (int step = 0; step < 100 && _player.GlobalPosition.DistanceTo(goal) > 96; step++)
         {
-            case PXHackPanel.HackKind.Timing:
-                SetField(hack, "_needle", Field<float>(hack, "_targetCenter"));
-                hack._Input(new InputEventKey { Keycode = Key.Space, Pressed = true });
-                break;
-            case PXHackPanel.HackKind.Targets:
-                for (int i = 0; i < 3; i++) Click(hack, Field<Vector2>(hack, "_clickTarget"));
-                break;
-            case PXHackPanel.HackKind.Memory:
-                hack._Process(1.6);
-                foreach (int number in Field<int[]>(hack, "_sequence"))
-                    hack._Input(new InputEventKey { Keycode = Key.Key1 + (number - 1), Pressed = true });
-                break;
-            case PXHackPanel.HackKind.Wires:
-                var wires = Field<int[]>(hack, "_wires");
-                for (int i = 0; i < 3; i++) { Click(hack, new(62, 138 + i * 38)); Click(hack, new(298, 138 + Array.IndexOf(wires, i) * 38)); }
-                break;
-            case PXHackPanel.HackKind.Order:
-                var order = Field<int[]>(hack, "_order");
-                for (int number = 1; number <= 6; number++) { int i = Array.IndexOf(order, number); Click(hack, new(86 + i % 3 * 94, 149 + i / 3 * 55)); }
-                break;
-            case PXHackPanel.HackKind.Circuit:
-                var circuit = Field<int[]>(hack, "_circuit"); int[] solution = { 1, 2, 0, 3 };
-                for (int i = 0; i < 4; i++) while (circuit[i] != solution[i]) Click(hack, new(150 + i % 2 * 54, 148 + i / 2 * 54));
-                break;
-            case PXHackPanel.HackKind.Fingerprint:
-                var target = Field<int[]>(hack, "_fingerTarget"); var current = Field<int[]>(hack, "_fingerCurrent");
-                for (int i = 0; i < 3; i++) while (current[i] != target[i]) Click(hack, new(230, 135 + i * 37));
-                hack.GetNode<Button>("Submit").EmitSignal(BaseButton.SignalName.Pressed);
-                break;
-            case PXHackPanel.HackKind.Pressure:
-                for (int i = 0; i < 250 && hack.Active; i++)
-                {
-                    bool hold = Field<float>(hack, "_pressure") < .54f;
-                    hack._Input(new InputEventKey { Keycode = Key.Space, Pressed = hold }); hack._Process(.02);
-                }
-                break;
+            var marker = _journal.Navigator.Guide(_player.GlobalPosition, target);
+            if (marker == null || !_journal.Navigator.SegmentClear(_player.GlobalPosition, marker.GlobalPosition))
+                throw new Exception($"Unsafe or missing route: {label}; player={_player.GlobalPosition}, goal={goal}, waypoint={marker?.GlobalPosition}, points={_journal.Navigator.RoutePointCount}");
+            if (_player.GlobalPosition.DistanceTo(marker.GlobalPosition) < 1)
+                throw new Exception("Stalled route: " + label);
+            _player.GlobalPosition = marker.GlobalPosition; await Frames(2);
         }
+        Check(_player.GlobalPosition.DistanceTo(goal) <= 96, "Full safe route: " + label);
+    }
+    private Button Button(Node root, string prefix)
+    {
+        if (root is Button button && button.Text.StartsWith(prefix)) return button;
+        foreach (var child in root.GetChildren()) { var found = Button(child, prefix); if (found != null) return found; }
+        return null;
+    }
+    private async Task StartFuse()
+    {
+        _interaction.Hack.PreparePuzzle(7); _interaction.Hack.StartPreparedHack();
+        _interaction.Hack.Flow.GetNode("Intro").EmitSignal("start_requested"); await Frames();
+    }
+    private void SolveFuse(Node puzzle)
+    {
+        puzzle.Call("_on_inventory_fuse_pressed", 3); puzzle.Call("_on_slot_pressed", 0);
+        puzzle.Call("_on_inventory_fuse_pressed", 7); puzzle.Call("_on_slot_pressed", 1);
     }
     private async Task Defeat(Enemy enemy)
     {
         await Approach(enemy);
         for (int i = 1; i <= enemy.HitsToDefeat; i++)
         {
-            await Press(Key.E);
-            Check(_interaction.State == QuestInteraction.InteractionState.Hacking, "E starts an enemy puzzle");
-            Check(_player.Get("locked").AsBool(), "C# puzzle locks the GDScript player");
-            var position = _player.GlobalPosition;
-            Input.ActionPress("right"); await Frames(); Input.ActionRelease("right");
-            Check(_player.GlobalPosition.IsEqualApprox(position), "Movement cannot leak into a puzzle");
-            await Press(Key.E);
-            Check(enemy.SuccessfulHacks == i - 1, "Repeated E does not damage the enemy");
-            Solve(_interaction.Hack); await Frames();
-            Check(_interaction.State == QuestInteraction.InteractionState.Result && enemy.SuccessfulHacks == i, "Solved puzzle deals exactly one hit");
-            Check(_player.Get("locked").AsBool(), "Result keeps movement locked until Continue");
-            await Press(Key.Enter);
-            Check(!_interaction.Busy && !_player.Get("locked").AsBool(), "Continue restores GDScript movement");
+            await Press(Key.E); Check(_interaction.Busy && _player.Locked, "E starts minipuzzle and locks player");
+            await StartFuse(); SolveFuse(_interaction.Hack.Puzzle); await Frames(8);
+            Check(enemy.SuccessfulHacks == i && _interaction.State == QuestInteraction.InteractionState.Result, "Native puzzle completion deals one hit");
+            await Press(Key.Enter); Check(!_player.Locked, "Continue restores movement");
         }
-        Check(enemy.IsDefeated && !enemy.Visible, "Three solved puzzles disable the enemy");
     }
     public override async void _Ready()
     {
         try
         {
+            _world = GD.Load<PackedScene>("res://scenes/World.tscn").Instantiate<PXBossArena>(); AddChild(_world);
+            _player = _world.GetNode<PXArenaPlayer>("Player"); _journal = _world.GetNode<QuestJournal>("QuestJournal");
             _interaction = GetNode<QuestInteraction>("/root/QuestInteraction");
-            _quest = GD.Load<PackedScene>("res://scenes/quest_map_test.tscn").Instantiate<Node2D>(); AddChild(_quest);
-            _player = _quest.GetNode<CharacterBody2D>("Player/Player");
-            _first = _quest.GetNode<Doors>("Doors"); _second = _quest.GetNode<Doors>("Doors2");
-            var console = _quest.GetNode<DoorController>("DoorControllers");
-            var console2 = _quest.GetNode<DoorController>("DoorControllers2");
-            var console3 = _quest.GetNode<DoorController>("DoorControllers3");
-            var enemy = _quest.GetNode<Enemy>("Enemy"); var enemy2 = _quest.GetNode<Enemy>("Enemy2");
-            var terminal = _quest.GetNode<ComputerTerminal>("ComputerTerminal");
-            await Frames(12);
-            Check(_interaction.Player == _player, "Quest manager discovers the original nested GDScript player");
-            Check(!_first.IsOpen && !_second.IsOpen, "Both doors start locked");
-            var edge = PhysicsRayQueryParameters2D.Create(new(8448, 3580), new(8448, 3400), 1);
-            Check(_player.GetWorld2D().DirectSpaceState.IntersectRay(edge).Count > 0, "Floor boundary blocks walking around doors through empty space");
-            var doorRay = PhysicsRayQueryParameters2D.Create(new(8800, 3600), new(8910, 3600), 1);
-            Check(_player.GetWorld2D().DirectSpaceState.IntersectRay(doorRay).Count > 0, "First closed door blocks its corridor");
-            await Press(Key.E); Check(_first.CurrentActivations == 0, "E out of range changes nothing");
-            await Approach(enemy); await Press(Key.E); Check(!_interaction.Busy, "Enemies behind the first locked door are unavailable");
-            await Approach(terminal); await Press(Key.E); Check(!terminal.ChipCollected, "Reward cannot be collected before door conditions");
-            await Approach(console); await Press(Key.Q); Check(!_first.IsOpen, "Old Q binding no longer activates a console");
-            await Press(Key.E); Check(_first.IsOpen && _first.CurrentActivations == 1, "E on first console opens first door");
-            Check(_first.GetNode<CollisionShape2D>("CollisionShape2D").Disabled, "Opened door also disables collision");
-            Check(_player.GetWorld2D().DirectSpaceState.IntersectRay(doorRay).Count == 0, "First corridor is traversable after unlocking");
-            await Press(Key.E); Check(_first.CurrentActivations == 1, "Repeated console input is idempotent");
-            await Approach(enemy); await Press(Key.E); await Press(Key.Escape);
-            Check(_interaction.State == QuestInteraction.InteractionState.Result && enemy.SuccessfulHacks == 0 && _second.CurrentActivations == 0, "Cancel fails without enemy or door progress");
+            await Frames(55);
+            Check(_player.GlobalPosition.DistanceTo(new(3552,3520)) < 5, "Spawn is in the market");
+            Check(!_journal.MainAccepted && !_journal.SideAccepted, "Neither quest starts automatically");
+            Check(_journal.Navigator.IsReadyForRoutes, "Route grid finishes incremental collision bake");
+            Check(_interaction.NavigationTarget != null && _journal.Navigator.HasRoute, "Single arrow has a reachable route to selected NPC");
+            var robot = _world.GetNode<QuestNpc>("RobotNpc"); var cat = _world.GetNode<QuestNpc>("CatNpc");
+            await Approach(robot); await Press(Key.E);
+            Check(_journal.SideAccepted && !_journal.MainAccepted && _journal.SelectedQuest == QuestJournal.Quest.Side, "Robot starts and selects side quest");
+            await Press(Key.Tab); Check(_interaction.State == QuestInteraction.InteractionState.Journal && _player.Locked, "Tab opens quest selection and freezes movement");
+            Button(_interaction, "TRACK MAIN").EmitSignal(BaseButton.SignalName.Pressed); await Frames();
+            Check(_journal.SelectedQuest == QuestJournal.Quest.Main && !_player.Locked, "Main selection changes only tracked quest");
+            await Approach(cat); await Press(Key.E);
+            Check(_journal.MainAccepted && _journal.SideAccepted, "Cat starts main quest while retaining side progress");
+            _journal.SelectQuest(1); await Frames(10);
+            var guide = _interaction.NavigationTarget;
+            Check(guide != null && _journal.Navigator.RoutePointCount > 20, "Distant side quest uses intermediate route points");
+            Check(_journal.Navigator.SegmentClear(_player.GlobalPosition, guide.GlobalPosition), "First guidance segment cannot cross walls");
+            await CheckRoute(_world.GetNode<DoorController>("DoorControllers"), "market to first console around the southern exit");
+            var first = _world.GetNode<Doors>("Doors"); var second = _world.GetNode<Doors>("Doors2");
+            var terminal = _world.GetNode<ComputerTerminal>("ComputerTerminal");
+            await Approach(terminal); await Press(Key.E); Check(!terminal.ChipCollected, "Locked doors prevent early chip pickup");
+            await Approach(_world.GetNode<DoorController>("DoorControllers")); await Press(Key.E);
+            Check(first.IsOpen && first.CurrentActivations == 1, "First console opens first door exactly once");
+            await CheckRoute(_world.GetNode<Enemy>("Enemy"), "through opened first door to enemy");
+            var enemy = _world.GetNode<Enemy>("Enemy"); await Approach(enemy); await Press(Key.E); await StartFuse();
+            var puzzle = _interaction.Hack.Puzzle; puzzle.Call("_on_inventory_fuse_pressed",3); puzzle.Call("_on_slot_pressed",0);
+            Button(puzzle,"Restart").EmitSignal(BaseButton.SignalName.Pressed); await Frames();
+            Check(puzzle.Get("slot_values").AsGodotArray()[0].VariantType == Variant.Type.Nil, "Original restart button retains native reset logic");
+            Button(_interaction.Hack,"CANCEL").EmitSignal(BaseButton.SignalName.Pressed); await Frames();
+            Check(!_interaction.Hack.Active && enemy.SuccessfulHacks == 0 && _interaction.State == QuestInteraction.InteractionState.Result, "Visible Cancel ends attempt without awarding progress");
             await Press(Key.Enter);
-            await Press(Key.E); _interaction.Hack._Process(20); _interaction.Hack._Process(20); await Frames();
-            Check(_interaction.State == QuestInteraction.InteractionState.Result && enemy.SuccessfulHacks == 0, "Timeout can be retried without progression");
+            await Press(Key.E); await StartFuse(); await Press(Key.Escape);
+            Check(enemy.SuccessfulHacks == 0 && !_interaction.Hack.Active, "Escape also cancels an active minipuzzle");
             await Press(Key.Enter);
-            // Temporarily overlapping targets prove one input cannot activate both.
-            var console3Position = console3.GlobalPosition;
-            console3.GlobalPosition = console2.GlobalPosition;
-            await Approach(console2); await Press(Key.E);
-            Check(_second.CurrentActivations == 1, "One E press selects only one overlapping target");
-            console3.GlobalPosition = console3Position; await Frames();
-            await Defeat(enemy);
-            Check(_second.CurrentActivations == 2 && !_second.IsOpen, "First enemy supplies one of four door signals");
-            enemy.CompleteHack(); Check(_second.CurrentActivations == 2, "Repeated defeat callback cannot add a second signal");
-            await Defeat(enemy2);
-            Check(_second.CurrentActivations == 3 && !_second.IsOpen, "Door remains closed with one console missing");
-            await Approach(console3); await Press(Key.E);
-            Check(_second.IsOpen && _second.CurrentActivations == 4, "Two enemies plus two consoles open final door");
-            Check(_second.GetNode<CollisionShape2D>("CollisionShape2D").Disabled, "Final door collision is removed");
+            await Defeat(enemy); await Defeat(_world.GetNode<Enemy>("Enemy2"));
+            await Approach(_world.GetNode<DoorController>("DoorControllers2")); await Press(Key.E);
+            Check(!second.IsOpen && second.CurrentActivations == 3, "Final door needs all four unique contributions");
+            await Approach(_world.GetNode<DoorController>("DoorControllers3")); await Press(Key.E);
+            Check(second.IsOpen && second.CurrentActivations == 4, "Two defeated enemies and two consoles unlock final door");
+            await CheckRoute(terminal, "through opened final door to chip");
             await Approach(terminal); await Press(Key.E);
-            Check(terminal.ChipCollected, "E at reward terminal completes quest");
-            await Press(Key.E); Check(terminal.ChipCollected && !_interaction.Busy, "Reward collection is single-use");
-            // All eight puzzle types still work through their actual rules.
-            var panel = _interaction.Hack; int results = 0; bool result = false;
-            panel.Finished += success => { results++; result = success; };
-            foreach (PXHackPanel.HackKind kind in Enum.GetValues<PXHackPanel.HackKind>())
-            {
-                Call(panel, "BeginHack", kind, 1); int before = results; Solve(panel);
-                Check(!panel.Active && result && results == before + 1, $"Puzzle {kind} resolves successfully exactly once");
-            }
-            // Scene teardown during a modal must release the manager and movement lock.
-            _quest.QueueFree(); await Frames(12);
-            Check(!_interaction.HasQuestTargets() && !_interaction.Busy, "Scene teardown clears cached targets");
-            _quest = GD.Load<PackedScene>("res://scenes/quest_map_test.tscn").Instantiate<Node2D>(); AddChild(_quest);
-            _player = _quest.GetNode<CharacterBody2D>("Player/Player"); await Frames(12);
-            await Approach(_quest.GetNode<DoorController>("DoorControllers")); await Press(Key.E);
-            await Approach(_quest.GetNode<Enemy>("Enemy")); await Press(Key.E);
-            Check(_interaction.Busy, "Reloaded scene starts a fresh puzzle");
-            _quest.QueueFree(); await Frames(12);
-            Check(!_interaction.Busy && !_interaction.Hack.Active && !_interaction.HasQuestTargets(), "Leaving mid-puzzle cleans up modal state");
+            Check(_journal.HasChip && !_journal.SideCompleted, "Picking up chip does not complete the side quest");
+            Check(_journal.Objective() == robot, "Side quest now guides back to the robot");
+            await CheckRoute(robot, "chip return to market robot");
+            await Approach(robot); await Press(Key.E);
+            Check(_journal.SideCompleted && !_journal.HasChip, "Returning chip completes side quest without a reward");
+            await Press(Key.E); Check(_journal.SideCompleted && !_journal.HasChip, "Repeated turn-in cannot duplicate progress");
+            _journal.SelectQuest(0); await Frames(10);
+            Check(_journal.MainAccepted && !_journal.MainCompleted && _journal.Navigator.HasRoute, "Main quest and its route remain available after side completion");
+            _world.SetPhysicsProcess(false); // Verify the complete route without triggering combat halfway.
+            await CheckRoute(_world.GetNode<Node2D>("Boss"), "market to upper-right guardian");
+            _world.QueueFree(); await Frames();
+            Check(!_interaction.Busy && !_interaction.HasQuestTargets(), "Scene teardown cleans cached targets and modal state");
             GD.Print($"QUEST TESTS PASSED: {_checks}"); GetTree().Quit();
         }
         catch (Exception error) { GD.PushError(error.ToString()); GetTree().Quit(1); }

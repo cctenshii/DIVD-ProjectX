@@ -1,67 +1,66 @@
-# Quest-1-v3: lokaal conflictrapport
+# Lokaal conflictrapport na drie merges
 
-Datum: 18 november 2026. Werkbasis: lokale branch `Quest-1-v3`.
-Er is niets gecommit, gepusht, opgehaald of op GitHub aangepast.
+Afgerond: 19 november 2026. Werkbasis: `Merge-2.0-(Puzzels,-Prologue,-Design-en-Quest)`, na de lokale merges met onder andere Quest-1-v3. Alle wijzigingen zijn lokaal in de bestanden uitgevoerd; geen commits, pushes of GitHub-wijzigingen.
 
-## Behouden
+## Behouden en samengebracht
 
-- De C#-gameplay, acht bestaande hackpuzzels en bossfasen blijven C#.
-- De player, animaties, NPC-dialogen, QuestManager en questpijl van de teammate blijven GDScript.
-- Het ontwerp van `main_map.tscn`, de questkamers, sprites, objectposities en de oorspronkelijke vier voorwaarden van deur 2 zijn behouden.
-- De oorspronkelijke drie hits per enemy zijn nu drie **geslaagde puzzels**. Mislukken, annuleren of herhaald E drukken levert geen voortgang op.
-- De zes importbestanden die vóór deze werkzaamheden al gewijzigd waren zijn niet teruggezet.
+De bestaande C#-gameplay, bossfasen, dash, schade, deurvoorwaarden en questkamerposities blijven de basis. De map en NPC-art van de teammate, de animatieframes, de GDScript-questpijl en de oorspronkelijke minipuzzels zijn behouden. De oude design-/NPC-scene en intro blijven afzonderlijk beschikbaar. F5 start nu de samengevoegde World-scene in de market.
 
-## Gevonden conflicten en reparaties
+De actieve World-player gebruikt C# met `AnimatedSprite2D` en de bestaande `all-position-V2.png`-frames. De GDScript-player blijft beschikbaar in de design-/questtestscenes. Er zijn geen algemene conversies van `.gd` naar `.cs` of omgekeerd uitgevoerd.
 
-| Probleem | Gevolg | Lokale reparatie |
+## Integratieproblemen en reparaties
+
+| Probleem na samenvoegen | Gevolg | Lokale reparatie |
 | --- | --- | --- |
-| E werd gevraagd, maar `interact` stond op Q | Verkeerde bediening | Eén E-binding in `project.godot` |
-| Enemies telden toetsdrukken als schade | Geen puzzel; E-spam versloeg enemies | `Enemy.cs` verwerkt uitsluitend succesvolle resultaten van `PXHackPanel` |
-| Elk object las afzonderlijk dezelfde toets | Eén toets kon meerdere objecten activeren | `QuestInteraction.cs` kiest één nabijgelegen, zichtbare en beschikbare interactie |
-| Deur telde losse activaties zonder bron | Dubbele callbacks of hergebruik konden voorwaarden omzeilen | `Doors.cs` telt unieke bronobjecten |
-| Player kon doorlopen tijdens een puzzel | Spelerpositie en puzzeldoel liepen uiteen | C# zet de kleine `locked`-property in de bestaande GDScript-player; Continue geeft besturing terug |
-| Quest had geen vloerrandcollision | Speler kon via lege ruimte langs deuren lopen | Bestaande `PXMapBoundary.cs` ook in de questscene gebruikt |
-| Beloning en vervolginteracties hadden geen prerequisites | Quest kon buiten volgorde worden voltooid | Inspector-links `RequiredOpenDoors` bewaken de bestaande kamervolgorde |
-| `Player.tscn` én `player.tscn` stonden in Git | Op Windows hetzelfde bestand; boss verwachtte een ander nodetype | Teammate-scene behouden als `QuestPlayer.tscn`; aparte `CombatPlayer.tscn` voor de bestaande C#-bossbesturing |
-| Assembly-instelling wees naar tweede project; scriptgenerator waarschuwde over `GodotProjectDir` | Compile kon slagen zonder correcte scriptregistratie | `ProjectX.csproj` is de actieve build; projectmap expliciet ingesteld |
-| Dubbele spritesheet-UID | Godot kon naar de andere kopie verwijzen | Kopie onder `assets/images/player` opnieuw van een unieke import-UID voorzien |
-| Kleine bossarena plaatste vier rijen grote obstakels | Sommige random layouts verloren te veel cover bij herstel van routeconnectiviteit | Rij-/kolomafstand afgeleid van obstakelmaat en navigatieruimte; 20 vaste seeds × 3 fasen toegevoegd aan tests |
-| Atlas gebruikte 33×31 waar 32×32 nodig is | Importfouten voor de laatste tilekolom | Alleen de onjuiste atlasmaat hersteld |
-| Testmap bevatte ongeldige bush-tile `(0,1)` | Importfout | Ongeldige atlasdefinitie verwijderd; bestaande `(0,0)`-animatie behouden |
-| NPC-scene verbond signalen met niet-bestaande parenthandlers | Runtimefouten bij contact | Oude editorverbindingen weg; bestaande GDScript-signaalverbindingen blijven |
-| NPC-detectie gebruikte nog laag 1 | Nieuwe collisionlaag van de player werd niet gezien | NPC-Areas op detectielaag 2 gezet; GDScript-dialogen behouden en hun flow getest |
-| NPC-roots zaten ook in groep `Player` | Verkeerde playerdetectie mogelijk | Onjuiste groepen verwijderd |
-| Questpijl kende alleen NPC2/boss | Geen richting naar questconsole/enemy | Bestaande pijl leest het gecachte doel uit C#; NPC-flow blijft beschikbaar |
-| Chip-popup gebruikte leeg FontFile en fout gespelde tekst | Onleesbare/onjuiste melding | Bestaande gamefont en Engelse tekst `Nano.O Chip acquired` |
-| Optionele console in World deelt dezelfde interactiemanager | Quest-HUD kon boss-HUD bedekken | Quest-HUD verborgen buiten nabijgelegen console-interactie; bossgevecht krijgt voorrang |
+| Startscene en questkamer stonden los van de bedoelde marktflow | Geen gezamenlijke start voor beide quests | `World.tscn` is F5-startscene, met marktspawn, cat en robot |
+| Oud eigen hackpaneel was nog de gameplay-puzzel | Nieuwe minipuzzels werden niet gebruikt | `PXMiniPuzzleHost.cs` laadt de oorspronkelijke acht `minipuzzles`-scenes |
+| Memory en Rhythm hebben geen definitieve native overwinning | Hack kon niet vanzelf worden voltooid | Externe eindvoorwaarden: 3 rondes / 500 punten, zoals bevestigd |
+| Tijdens een puzzel ontbrak een terugweg naar de game | Alleen opnieuw beginnen was beschikbaar | Externe Cancel-knop en Escape beëindigen de poging zonder succes |
+| Native puzzelpanelen hebben verschillende afmetingen en krappe sliders | Bediening kon te klein of onhandig geplaatst zijn | Layout van de geladen instantie aangepast; bronbestanden behouden |
+| Gecombineerde player verwachtte een ander Body-nodetype | C# en playerscene sloten niet op elkaar aan | `CombatPlayer.tscn` gebruikt het verwachte AnimatedSprite2D met bestaande frames |
+| Pijl kende geen gezamenlijke questselectie | Tegenstrijdige doelen of richting door leegte/muren | Journal kiest één quest; navigator levert één bereikbaar tussenpunt |
+| Deurcollider wordt later in de physics-stap uitgeschakeld | Een lege route kon na het openen gecachet blijven | Collisiongrid na twee physics-frames verversen en daarna de route opnieuw berekenen, ook bij stilstaande speler |
+| Tab tijdens combat kon een journal-verzoek achterlaten | Questvenster opende onverwacht na het gevecht | Questinvoer buiten verkennen afwijzen en achtergebleven verzoeken wissen |
+| Pijlscript miste de property die de arena gebruikte | Boss kon de navigatie niet betrouwbaar uitschakelen | `navigation_enabled` toegevoegd aan het bestaande GDScript |
+| Bosskamercoördinaten pasten niet bij de gemergde kaartvloer | Boss en kamer konden buiten hun bedoelde vloer liggen | Kamer, boss, ingang en terrainbounds uitgelijnd op de bestaande kaart |
+| Boss kon onafhankelijk van de gekozen quest starten | Side quest en main quest konden elkaar onderbreken | Main quest moet aangenomen, onvoltooid en geselecteerd zijn |
+| Een definitief overwinningsscherm blokkeerde vervolgverkenning | Geen side quest na main quest | Main voltooit, poort opent, tijdelijke cover wordt opgeruimd en verkennen hervat |
+| Chip ophalen was het eindpunt | Geen terugbrengen naar robot | Apart carried-chip/turn-in-verloop; voltooiing pas bij robot, nog geen reward |
+| Meerdere project-/playerscenevarianten | Onduidelijke build en dubbele resource-UID | Eén actief `ProjectX.csproj`; dubbele designplayerscene verwijderd |
+| Oude documentatie wees naar eerdere starts en puzzels | Instructies pasten niet bij de gemergde game | Implementatie-, code- en questgids bijgewerkt |
 
-Dit waren integratie- en runtimeconflicten; geen onafgehandelde `<<<<<<<`-mergeblokken.
+De bestaande bescherming tegen E-spam en dubbele deursignalen blijft gelden: uitsluitend geslaagde puzzels tellen als enemyhit; een deur telt unieke bronobjecten. De tweede deur heeft nog steeds de oorspronkelijke vier bijdragen: twee consoles en twee enemies. Beschikbaarheid, interactieafstand en zichtlijn blijven voorwaarden.
 
-## Speelvolgorde
+## Opruiming
 
-1. F5 start `scenes/quest_map_test.tscn` op de bestaande questspawn.
-2. Loop naar de eerste console en druk E: deur 1 opent.
-3. Activeer beide consoles in de volgende kamer en versla beide enemies. De volgorde binnen deze kamer is vrij.
-4. Iedere enemy vereist drie succesvolle hacks. E start een puzzel; Continue/Enter sluit het resultaat. Bij mislukking kun je opnieuw E gebruiken.
-5. Deur 2 opent na vier unieke signalen: twee consoles en twee enemies.
-6. Druk E bij de hologramterminal om de Nano.O Chip te verzamelen.
+Verwijderd omdat ze vervangen, dubbel of zonder referenties waren:
 
-`World.tscn`, `BossArena.tscn` en de intro blijven afzonderlijk speelbaar. De World-spawn onderaan, proximity-trigger rechtsboven, grotere bossobstakels en drie fasen blijven intact. De oudere `test-open world.csproj/.sln` zijn nog aanwezig, maar zijn niet de actieve Godot-build; gebruik `ProjectX.csproj`.
+- `scripts/PXHackPanel.cs`, bijbehorende UID en `scenes/HackPanel.tscn`: oude eigen minipuzzels.
+- `scenes/DesignPlayer.tscn`: dubbele scene; het originele designprototype gebruikt `QuestPlayer.tscn`.
+- `test-open world.csproj` en `test-open world.sln`: dubbele projectconfiguratie; `ProjectX.csproj/.sln` blijven.
+- `ProjectXLowFidelityPlayer.cs` en bijbehorende UID: ongebruikte tijdelijke controller.
+- Verouderde tutorialvoorkeuren uit de bosscontroller: de originele puzzelintro verzorgt nu de uitleg.
+
+`minipuzzles/`, `main_map.tscn`, originele art, intro, compacte arena, designprototype en bruikbare testscenes blijven behouden. De backlog is niet aangepast.
 
 ## Verificatie
 
-Laatste resultaten:
+**Status: volledige lokale suite geslaagd op 19 november 2026.** De wisselende routefout na het openen van een deur is hersteld; de complete routecontrole slaagt.
 
-- C#-build: 0 fouten, 0 waarschuwingen.
-- Godot-import: zonder resource- of scriptfouten.
-- Quest: **77 checks geslaagd**.
-- Boss/world/terrain: **538 checks geslaagd**, inclusief 60 reproduceerbare compacte terrainlayouts.
-- Intro: Family -> Storage -> World geslaagd.
-- **21 scenes** geladen en gestart; daarnaast oorspronkelijke NPC-dialogen, queststappen en pijl gecontroleerd.
+| Controle | Resultaat |
+| --- | --- |
+| C#-build | 0 fouten, 0 waarschuwingen |
+| Godot-import | Geslaagd, geen script-/resourcefouten |
+| Questflow | 46 checks, inclusief routes, questselectie, annuleren en chip terugbrengen |
+| Acht originele minipuzzels | 37 checks, inclusief uitleg/Start, layout, native overwinning, timeout en Cancel |
+| Boss/world/terrain | 538 checks, inclusief beide questvolgordes, terugkeer naar verkennen en 60 vaste compacte terreinlayouts |
+| Intro | Family → Storage → World geslaagd |
+| Scenes | 20 scenes geladen/gestart; originele NPC-dialogen en pijl geslaagd |
+| Bronbehoud minipuzzels | Alle 35 bestanden SHA-256-identiek aan de beginsituatie; geen toevoegingen of verwijderingen |
+| Lokale diff | Geen whitespacefouten; geen wijzigingen onder `minipuzzles/` |
 
+De bosstest simuleert succesvolle hackresultaten om alle fasen te doorlopen; de aparte minipuzzeltest controleert de daadwerkelijke regels van alle acht originele spellen. Routecontroles volgen veilige segmenten vanaf de market, door geopende deuren naar de chip, terug naar de robot en naar de boss.
 
-De reproduceerbare testopdracht staat in `QUEST_CODE_GUIDE.md`. Logs staan lokaal onder `.godot/test-results/` en worden door het script ook op runtimefouten gecontroleerd. Een Godot-exitcode 0 alleen is onvoldoende; elke test moet zijn succesmarker produceren.
+De runner is `tests/Run-Checks.ps1`; de opdracht staat in [de questgids](QUEST_CODE_GUIDE.md). Hij controleert build, Godot-import, quests, minipuzzels, boss/terrain, intro en scenes. Logs staan in `.godot/test-results/`. Engine-/scriptfouten en ontbrekende succesmarkers laten de run falen, ook als het proces exitcode 0 teruggeeft.
 
-De suite controleert echte E-invoer, overlapdetectie, zichtlijn, player-lock tussen C# en GDScript, herhaald input, annuleren, timeout, alle acht puzzelregels, unieke deuractivaties, fysiek gesloten/open doorgangen, beloning en sceneherladen tijdens een puzzel. Daarnaast worden de bestaande boss-/introtests en alle scenes uitgevoerd.
-
-Visueel bekeken: questspawn, kameroverzicht, puzzelvenster en resultaatvenster op 1280×720. De tests verplaatsen de speler tussen interacties; dit is geen volledige handmatige playthrough van alle looproutes. Er is geen formele prestatiebenchmark op meerdere apparaten uitgevoerd.
+Visueel bekeken zijn de marketspawn, het questjournal en de acht puzzelvensters op 1280×720. De tests volgen routepunten en gebruiken echte E-invoer, maar zijn geen volledige handmatige playthrough. Er is geen prestatiebenchmark op meerdere apparaten uitgevoerd. De genoemde optimalisaties zijn beperkte caches, registraties, verversfrequenties en batches; geen claim dat de gehele game maximaal is geoptimaliseerd.

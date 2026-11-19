@@ -45,7 +45,7 @@ public partial class PXWorldSmokeTests : Node
 		Tick();
 		Check(_world.State == PXBossArena.ArenaState.Hacking && _player.Locked && _boss.Locked, "Hack freezes combat");
 		_hud.Hack.CancelSilently();
-		_hud.Hack.EmitSignal(PXHackPanel.SignalName.Finished, true);
+		_hud.Hack.EmitSignal(PXMiniPuzzleHost.SignalName.Finished, true);
 		Tick(); await Frames();
 	}
 	private void CheckTerrain(PXArenaTerrain terrain, Vector2 player, Vector2 boss)
@@ -65,9 +65,6 @@ public partial class PXWorldSmokeTests : Node
 	}
 	public override async void _Ready()
 	{
-		const string preferences = "user://projectx_boss_tutorials.cfg";
-		bool hadPreferences = FileAccess.FileExists(preferences);
-		string savedPreferences = hadPreferences ? FileAccess.GetFileAsString(preferences) : null;
 		try
 		{
 			_world = GD.Load<PackedScene>("res://scenes/World.tscn").Instantiate<PXBossArena>();
@@ -77,21 +74,30 @@ public partial class PXWorldSmokeTests : Node
 			_boss = _world.GetNode<PXArenaBoss>("Boss"); _boss.SetPhysicsProcess(false);
 			_room = _world.GetNode<PXBossRoom>("BossRoom"); _hud = _world.GetNode<PXBossHUD>("HUD");
 			_terrain = _world.GetNode<PXArenaTerrain>("Terrain");
-			await Frames(); Tick();
-			Check(_player.GlobalPosition == new Vector2(3744, 6656), "Player starts at bottom marker");
-            Check(!GetNode<Control>("/root/QuestInteraction/QuestUI").Visible, "Quest overlay does not cover the world HUD");
-			Check(_player.GetNode<Sprite2D>("Body").Texture.ResourcePath.EndsWith("all-position-V2.png"), "Player uses requested spritesheet");
-			Check(_boss.GlobalPosition == new Vector2(8256, 1344) && _boss.Dormant && _boss.Locked, "Boss starts dormant in upper-right room");
+            // Normal travel from market finishes the startup bake before reaching the boss.
+            await Frames(55); Tick();
+			Check(_player.GlobalPosition == new Vector2(3552, 3520), "Player starts in the market");
+            Check(GetNode<Control>("/root/QuestInteraction/QuestUI").Visible, "Quest HUD is available in the market");
+			Check(((AtlasTexture)_player.GetNode<AnimatedSprite2D>("Body").SpriteFrames.GetFrameTexture("idle_down", 0)).Atlas.ResourcePath.EndsWith("all-position-V2.png"), "Player uses requested spritesheet");
+			Check(_boss.GlobalPosition == new Vector2(8256, 1920) && _boss.Dormant && _boss.Locked, "Boss starts dormant in upper-right room");
 			Check(!_room.Closed && _terrain.Generation == 0 && !_world.TryStartHack(), "Exploration has no gate, terrain hazards or hacks");
 			Key(Godot.Key.Escape); Tick(); Check(_player.Locked, "Exploration pauses");
 			Key(Godot.Key.Escape); Tick(); Check(_world.State == PXBossArena.ArenaState.Exploring && !_player.Locked && _boss.Locked, "Resume keeps boss dormant");
+            _player.GlobalPosition = new(8000, 2200); Tick();
+            Check(!_world.EncounterStarted, "Boss waits until main quest is accepted");
+            var journal = _world.GetNode<QuestJournal>("QuestJournal");
+            journal.TalkTo(_world.GetNode<QuestNpc>("CatNpc"));
+            journal.SelectQuest(1); Tick();
+            Check(!_world.EncounterStarted, "Tracking side quest does not start main fight");
+            journal.SelectQuest(0);
 			_player.GlobalPosition = new(8256, 900); Tick();
 			Check(!_world.EncounterStarted, "Outside-room proximity cannot activate boss");
 			_player.GlobalPosition = new(7504, 2624); Tick();
 			Check(!_world.EncounterStarted, "Entrance requires three tiles of clearance");
-			_player.GlobalPosition = new(5800, 2400); Tick();
+			_player.GlobalPosition = new(6350, 2300); Tick();
 			Check(!_world.EncounterStarted, "Being inside room but outside radius is insufficient");
 			await Activate();
+            GetNode<QuestInteraction>("/root/QuestInteraction")._UnhandledInput(new InputEventKey { Keycode = Godot.Key.Tab, Pressed = true });
 			Check(_terrain.Connected && _terrain.Generation == 1, "Encounter terrain is connected");
 			CheckTerrain(_terrain, _player.GlobalPosition, _boss.GlobalPosition);
 			var gateRay = PhysicsRayQueryParameters2D.Create(new(7504, 2600), new(7504, 2800), 1);
@@ -107,7 +113,10 @@ public partial class PXWorldSmokeTests : Node
 			{
 				for (int i = 0; i < 5; i++) await Hack(_boss);
 				if (stage == 3) break;
-				Tick(2); await Frames();
+				Tick(2);
+                // Inspect spawn positions before any minion has walked toward the player.
+                foreach (var actor in _world.GetNode("Minions").GetChildren()) actor.SetPhysicsProcess(false);
+                await Frames();
 				int expected = stage == 1 ? 3 : 5;
 				Check(_world.Intermission && _world.MinionsRemaining == expected && _boss.PhaseFrozen, "Phase change creates correct minion wave");
 				Check(_terrain.Generation == stage + 1 && _terrain.Connected, "Phase rebuild stays connected in boss room");
@@ -124,7 +133,14 @@ public partial class PXWorldSmokeTests : Node
 				await Frames();
 				Check(_world.GetNode("Lasers").GetChildCount() > 0, "Lasers survive at world-map coordinates");
 			}
-			Check(_world.RoundOver && !_boss.IsAlive && !_room.Closed && _boss.SuccessfulHacks == 15, "Fifteen hacks complete all phases and open gate");
+			Check(_world.GetNode<QuestJournal>("QuestJournal").MainCompleted && _world.State == PXBossArena.ArenaState.Exploring && !_boss.IsAlive && !_room.Closed && _boss.SuccessfulHacks == 15, "Fifteen hacks complete main quest and return to exploration");
+            Check(_terrain.Footprints.Count == 0, "Victory clears combat cover so exploration routes remain accurate");
+            journal.SelectQuest(1); await Frames(55);
+            Check(!GetNode<QuestInteraction>("/root/QuestInteraction").Busy && !_player.Locked, "Tab during combat cannot queue a journal after victory");
+            Check(journal.Objective() == _world.GetNode<QuestNpc>("RobotNpc") && journal.Navigator.Guide(_player.GlobalPosition, journal.Objective()) != null,
+                "Main-first completion leaves a return route to start side quest");
+            journal.TalkTo(_world.GetNode<QuestNpc>("RobotNpc"));
+            Check(journal.MainCompleted && journal.SideAccepted && !journal.SideCompleted, "Side quest can start after completing main quest");
 			_world.ReturnToMenu(); _world.StartRound(); await Frames();
 			Check(_boss.Dormant && _world.MinionsRemaining == 0 && !_room.Closed, "Menu and restart clean up encounter");
 			// Check the compact standalone arena as well as multiple regenerated world layouts.
@@ -153,10 +169,5 @@ public partial class PXWorldSmokeTests : Node
 			GD.Print($"WORLD TESTS PASSED: {_checks}"); GetTree().Quit();
 		}
 		catch (Exception error) { GD.PushError(error.ToString()); GetTree().Quit(1); }
-		finally
-		{
-			if (hadPreferences) { using var file = FileAccess.Open(preferences, FileAccess.ModeFlags.Write); file.StoreString(savedPreferences); }
-			else DirAccess.RemoveAbsolute(ProjectSettings.GlobalizePath(preferences));
-		}
 	}
 }

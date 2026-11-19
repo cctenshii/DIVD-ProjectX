@@ -1,12 +1,17 @@
 extends Sprite2D
 
 
+@export var navigation_enabled: bool = true
+
 @export var rotation_offset_degrees: float = 90.0
 
 var npc2_node: Node2D
 var boss_node: Node2D
 
 func _process(_delta: float) -> void:
+	if not navigation_enabled:
+		hide()
+		return
 	var target: Node2D = null
 	# Keep the original arrow artwork and NPC flow; C# supplies quest-room targets.
 	if QuestInteraction.HasQuestTargets():

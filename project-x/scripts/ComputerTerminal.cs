@@ -27,7 +27,7 @@ public partial class ComputerTerminal : QuestInteractable
         ChipCollected = true;
         _popupRemaining = PopupDuration;
         _popupLayer?.Show();
-        interaction.Message("NANO.O CHIP ACQUIRED  /  QUEST COMPLETE");
+        interaction.Message("NANO.O CHIP ACQUIRED  /  RETURN IT TO THE ROBOT");
     }
     public override void _Process(double delta)
     {

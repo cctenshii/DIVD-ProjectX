@@ -1,83 +1,99 @@
 # Codegids en pseudocode
 
-## Speelbare flow
+F5: `project.godot` → `scenes/World.tscn` → market. De gameplay blijft C#; de oorspronkelijke minipuzzels, questpijl en bewaarde design-/NPC-code blijven GDScript.
 
-`project.godot` → `IntroFamily.tscn` → `IntroSpaceshipStorage.tscn` → `World.tscn`.
+## Verantwoordelijkheden
 
 | Onderdeel | Bestand | Verantwoordelijkheid |
 | --- | --- | --- |
-| Intro | `scripts/PXStoryScene.cs` | Verhaalpagina's en scene-overgangen |
-| Wereld en gevechtsflow | `scripts/PXBossArena.cs` | Statusovergangen, pauze, hacks, miniongolven, retry |
-| Speler | `scripts/PXArenaPlayer.cs` | Jouw beweging, dash, HP, schade en bescherming |
-| Spelerdesign | `scenes/CombatPlayer.tscn` | Jade's animatieframes en pijl; oorspronkelijke collision layers |
-| Questpijl | `scripts/quest_arrow.gd` | Visuele richting naar de echte boss tijdens verkennen |
-| Mapdesign | `scenes/main_map.tscn` | Jade's tegelkaart, gebouwen en decoraties |
-| Kaartgrenzen | `scripts/PXMapBoundary.cs` | Colliders langs de vloertegels |
-| Bosskamer | `scripts/PXBossRoom.cs` | Radius + instapdiepte en fysieke poort |
-| Boss | `scripts/PXArenaBoss.cs` | Bestaande AI, schade, stun en aanvallen |
-| Terrein | `scripts/PXArenaTerrain.cs` | Grotere obstakels, verbonden routes, veilige minion-spawns |
+| Wereld | `scenes/World.tscn` | Bestaande map, marktspawn, NPC's, questkamers en boss samenbrengen |
+| Main quest / gevecht | `scripts/PXBossArena.cs` | Toegangsvoorwaarden, pauze, hacks, fasen, minions, overwinning en retry |
+| Speler | `scripts/PXArenaPlayer.cs`, `scenes/CombatPlayer.tscn` | C#-beweging, dash, HP en bestaande animatieframes |
+| Queststatus | `scripts/QuestJournal.cs` | Main/side-voortgang, geselecteerde quest, chip terugbrengen |
+| NPC's | `scripts/QuestNpc.cs`, `scripts/RoamingCat.cs` | Cat/robot-interactie en rondlopende ball cats |
+| Interacties / journal | `scripts/QuestInteraction.cs` | Eén E-doel, spelervergrendeling, resultaat, Tab-selectie en quest-HUD |
+| Route | `scripts/QuestNavigator.cs` | Vloer-/collisiongrid, route zoeken, zichtbaar bereikbaar tussenpunt |
+| Pijl | `scripts/quest_arrow.gd` | Bestaande pijl richten op het door C# gekozen tussenpunt |
+| Mapdesign | `scenes/main_map.tscn` | Bestaande tegelkaart, gebouwen en decoraties |
+| Vloerranden | `scripts/PXMapBoundary.cs` | Collision langs de gebruikte vloertegels |
+| Bosskamer | `scripts/PXBossRoom.cs`, `scenes/BossRoom.tscn` | Radius, instapdiepte en fysieke poort |
+| Boss / terrein | `scripts/PXArenaBoss.cs`, `scripts/PXArenaTerrain.cs` | Bestaande AI, aanvallen, grotere cover, verbonden arena en veilige spawns |
 | Minions / lasers | `scripts/PXArenaMinion.cs`, `scripts/PXArenaLaser.cs` | Bestaand vijand- en projectielgedrag |
-| Interface / hacks | `scripts/PXBossHUD.cs`, `scripts/PXHackPanel.cs`, `scripts/PXInstructionPopup.cs`, `scripts/PXRetroUI.cs` | Engelse UI, uitleg en acht minigames |
+| Puzzelkoppeling | `scripts/PXMiniPuzzleHost.cs` | Originele minipuzzels laden, Cancel, voltooiing en layout van de instantie |
+| Puzzelregels | `minipuzzles/` | Oorspronkelijke GDScript-logica, uitleg, Restart en countdown |
+| Bossinterface | `scripts/PXBossHUD.cs`, `scripts/PXInstructionPopup.cs`, `scripts/PXRetroUI.cs` | Engelse HUD, gevechtsuitleg en gedeelde stijl |
+| Intro | `scripts/PXStoryScene.cs` | Bestaande verhaalpagina's en scene-overgangen |
 
-Er is geen grote bestandsverhuizing uitgevoerd: bestaande `res://`-paden blijven zoveel mogelijk intact. In de controller zijn secties toegevoegd; comments beschrijven de belangrijkste uitvoervolgorde.
-
-## Pseudocode: wereld
-
-```text
-on start or retry:
-    cancel open hacks and instructions
-    remove lasers and minions
-    restore the player at the bottom spawn
-    restore the dormant boss in the upper-right room
-    clear terrain, open the gate, show the quest arrow
-    enter Exploring
-
-each physics tick:
-    process queued UI / input / combat events
-    if Exploring AND inside room by 96 px AND within boss radius:
-        hide the arrow
-        close the entrance and generate cover
-        activate the boss and enter Combat
-
-on a successful boss hack:
-    apply the existing hack damage and stun
-    after hack 5 / 10:
-        freeze the boss, rebuild cover, spawn 3 / 5 minions
-        after the last minion: resume the next boss phase
-    after hack 15: show victory and open the gate
-
-on death: show defeat and open the gate
-on retry: perform the full reset above
-```
-
-## Pseudocode: speler en pijl
+## Pseudocode: quests en route
 
 ```text
-player tick:
-    if locked or dead: stop movement and pause animation
-    otherwise: update timers, read movement, choose a SpriteFrames animation
-    apply the original dash or walking velocity
-    move using the original collision rules
+on World start:
+    spawn player in market
+    keep both quests unaccepted
+    track main quest -> guide to cat
 
-arrow tick:
-    if navigation is disabled: hide
-    otherwise use target_path to find the actual boss
-    only in the separate design demo: fall back to NPC quest-step targets
-    if the target was freed: reacquire it or hide safely
-    rotate the visible arrow tip towards the target
+on E near quest NPC:
+    cat -> accept main quest, select it
+    robot -> accept side quest, select it
+    robot + collected chip -> complete side quest, consume carried-chip state
+
+on Tab selection:
+    change selected quest only
+    keep progress in both quests
+    invalidate cached route
+
+navigation setup:
+    collect original floor cells
+    check a bounded batch against collision each physics frame
+
+when selected objective or door state changes:
+    find connected floor path
+    choose a visible next point along that path, with player clearance
+    expose only this point to the original quest arrow
 ```
 
-## Bewaard designprototype
+De navigatie controleert uitsluitend de bestaande collisiongeometrie en vloerranden. Decoratieve tegels krijgen hierdoor niet automatisch nieuwe gebouwcollision. Objectposities en mapdesign zijn zoveel mogelijk behouden.
 
-`scenes/main.tscn` + `scenes/DesignPlayer.tscn` gebruiken `scripts/player.gd`, `scripts/npc.gd`, `scripts/quest1-npc.gd`, `scripts/QuestManager.gd` en `chat_box.gd`.
-Deze code blijft beschikbaar voor designwerk. De NPC-quest met Q is **geen voorwaarde** voor de echte bossfight; die werkt zoals voorheen met nabijheid. De pijl gebruikt in de speelbare game een expliciet pad naar de echte boss, zodat het prototype geen gameplaystatus kan overschrijven.
+## Pseudocode: boss
 
-## Starten en testen
+```text
+while exploring:
+    require main quest accepted, incomplete and selected
+    require no open quest modal
+    require player at least 96 px inside room and within boss radius
+    close gate, generate cover, enable boss, enter Combat
 
-- F5: de complete game vanaf de intro.
-- F6 met `World.tscn`: direct verkennen vanaf de onderste spawn.
-- F6 met `BossArena.tscn`: bestaande compacte gevechtstest.
-- F6 met `main.tscn`: afzonderlijk design-/NPC-prototype.
-- `tests/Run-Checks.ps1 -GodotPath "<Godot .NET console-executable>"`: build, imports, alle scenes, gameplay en intro. Logs staan standaard in `%TEMP%/ProjectX-checks`.
+on successful boss hack:
+    apply existing damage and stun
+    at hack 5 / 10:
+        rebuild cover, freeze boss, spawn 3 / 5 minions
+        resume next phase after all minions are disabled
+    at hack 15:
+        mark main quest complete
+        open gate, clear temporary combat cover and projectiles
+        return to exploration with quest journal available
 
-Gebruik geen bestandsnamen die uitsluitend in hoofdletters verschillen. Houd gameplaylogica in C# en de presentatie in scenes/SpriteFrames; voorkom twee actieve playercontrollers of camera's in één speelbare scene.
+on death:
+    open gate, show defeat
+on retry:
+    restore player at market, reset boss encounter and generated terrain
+```
+
+## C# en GDScript
+
+`PXMiniPuzzleHost` leest de bestaande puzzelstatus en laat de originele scripts de invoer en regels uitvoeren. `QuestInteraction` levert via `GetNavigationTarget()` het routepunt aan de bestaande GDScript-pijl. De actieve World-player gebruikt C#; het bewaarde designprototype gebruikt `player.gd`, met de bestaande `locked`-property voor interacties.
+
+`scenes/main.tscn` en `QuestPlayer.tscn` bewaren de oorspronkelijke NPC-dialogen met `QuestManager.gd`, `npc.gd`, `quest1-npc.gd` en `chat_box.gd`. Hun afzonderlijke queststappen zijn geen tweede voortgangssysteem voor de speelbare World-scene. De pijl houdt de oude NPC-fallback voor dit prototype.
+
+## Verwerking en onderhoud
+
+- Interactieobjecten registreren zichzelf; de spelerreferentie wordt hergebruikt.
+- Nabijheid en quest-HUD verversen tien keer per seconde; E doet een actuele bereikbaarheidscontrole.
+- Het navigatiegrid wordt in batches opgebouwd. Bestaande routes worden gecachet en bij voortgang/deurwijzigingen ongeldig gemaakt.
+- De minipuzzelkoppeling controleert voltooiing twintig keer per seconde; regels en timer blijven bij de originele puzzel.
+- Unieke deurbronnen voorkomen dubbele activaties.
+- Quest- en boss-HUD krijgen om de beurt de invoer en spelervergrendeling.
+
+Dit beschrijft concrete besparingen in verwerking; er is geen prestatiebenchmark op meerdere apparaten uitgevoerd. Vermijd bestanden waarvan alleen de hoofdletters verschillen. Houd bestaande `res://`-paden stabiel en voeg geen tweede actieve playercontroller of camera aan World toe.
+
+Zie [de questgids](QUEST_CODE_GUIDE.md) voor Inspector-koppelingen en de testopdracht.
