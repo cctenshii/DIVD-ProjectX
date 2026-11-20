@@ -10,21 +10,21 @@
 [ext_resource type="Script" uid="uid://dihwklvq0lthl" path="res://scripts/PXMapBoundary.cs" id="8"]
 [ext_resource type="PackedScene" uid="uid://bcrmkq4rkbd3a" path="res://scenes/door_controllers.tscn" id="9_pdh0q"]
 [ext_resource type="PackedScene" uid="uid://0qu7e510dt1p" path="res://scenes/doors.tscn" id="10_h1bdy"]
-
-[ext_resource type="Script" path="res://scripts/QuestJournal.cs" id="11_journal"]
-[ext_resource type="Script" path="res://scripts/QuestNavigator.cs" id="12_nav"]
-[ext_resource type="Script" path="res://scripts/QuestNpc.cs" id="13_npc"]
-[ext_resource type="Script" path="res://scripts/RoamingCat.cs" id="14_roam"]
-[ext_resource type="Texture2D" path="res://assets/images/npcs/cat-npc.png" id="15_cat"]
-[ext_resource type="Texture2D" path="res://assets/images/npcs/npc-robot.png" id="16_robot"]
-[ext_resource type="Texture2D" path="res://assets/images/npcs/yellow-ball-cat.png" id="17_yellow"]
-[ext_resource type="Texture2D" path="res://assets/images/npcs/red-ball-cat.png" id="18_red"]
-[ext_resource type="Texture2D" path="res://assets/images/npcs/purple-ball-cat.png" id="19_purple"]
-[ext_resource type="PackedScene" path="res://scenes/enemy.tscn" id="20_enemy"]
-[ext_resource type="PackedScene" path="res://scenes/computer_terminal.tscn" id="21_terminal"]
+[ext_resource type="Script" uid="uid://dvwsin3cornw" path="res://scripts/QuestJournal.cs" id="11_journal"]
+[ext_resource type="Script" uid="uid://b5tsoq4c0smr3" path="res://scripts/QuestNavigator.cs" id="12_nav"]
+[ext_resource type="Script" uid="uid://dlsc2hn3qcqbb" path="res://scripts/QuestNpc.cs" id="13_npc"]
+[ext_resource type="Script" uid="uid://jx20j2ron4re" path="res://scripts/RoamingCat.cs" id="14_roam"]
+[ext_resource type="Texture2D" uid="uid://ecvq7b82oqvd" path="res://assets/images/npcs/cat-npc.png" id="15_cat"]
+[ext_resource type="Texture2D" uid="uid://djx51d8ctwot7" path="res://assets/images/npcs/npc-robot.png" id="16_robot"]
+[ext_resource type="Texture2D" uid="uid://0hb21iuhjdub" path="res://assets/images/npcs/yellow-ball-cat.png" id="17_yellow"]
+[ext_resource type="Texture2D" uid="uid://bqnhvi38lf72u" path="res://assets/images/npcs/red-ball-cat.png" id="18_red"]
+[ext_resource type="Texture2D" uid="uid://bla5p6u27ebo5" path="res://assets/images/npcs/purple-ball-cat.png" id="19_purple"]
+[ext_resource type="PackedScene" uid="uid://chq6ykq5rasxb" path="res://scenes/enemy.tscn" id="20_enemy"]
+[ext_resource type="PackedScene" uid="uid://cvesvngas7gwt" path="res://scenes/computer_terminal.tscn" id="21_terminal"]
 
 [sub_resource type="CircleShape2D" id="NpcRange"]
 radius = 110.0
+
 [sub_resource type="CircleShape2D" id="CatBody"]
 radius = 16.0
 
@@ -89,11 +89,13 @@ RequiredOpenDoors = [NodePath("../Doors")]
 
 [node name="Enemy" parent="." unique_id=1395960353 node_paths=PackedStringArray("UnlockDoorsOnDefeat", "RequiredOpenDoors") instance=ExtResource("20_enemy")]
 position = Vector2(9359, 3250)
+HitsToDefeat = 1
 UnlockDoorsOnDefeat = [NodePath("../Doors2")]
 RequiredOpenDoors = [NodePath("../Doors")]
 
 [node name="Enemy2" parent="." unique_id=48021086 node_paths=PackedStringArray("UnlockDoorsOnDefeat", "RequiredOpenDoors") instance=ExtResource("20_enemy")]
 position = Vector2(9342, 3925)
+HitsToDefeat = 1
 UnlockDoorsOnDefeat = [NodePath("../Doors2")]
 RequiredOpenDoors = [NodePath("../Doors")]
 
@@ -101,89 +103,85 @@ RequiredOpenDoors = [NodePath("../Doors")]
 position = Vector2(10368, 3583)
 RequiredOpenDoors = [NodePath("../Doors2")]
 
-[node name="QuestNavigator" type="Node2D" parent="."]
+[node name="QuestNavigator" type="Node2D" parent="." unique_id=66454800]
 script = ExtResource("12_nav")
 
-[node name="QuestJournal" type="Node" parent="."]
+[node name="QuestJournal" type="Node" parent="." unique_id=500698625]
 script = ExtResource("11_journal")
 
-[node name="CatNpc" type="Area2D" parent="."]
+[node name="CatNpc" type="Area2D" parent="." unique_id=411981843]
 position = Vector2(3344, 3456)
 script = ExtResource("13_npc")
 StartsMainQuest = true
 
-[node name="Sprite2D" type="Sprite2D" parent="CatNpc"]
-texture = ExtResource("15_cat")
+[node name="Sprite2D" type="Sprite2D" parent="CatNpc" unique_id=1175433078]
 scale = Vector2(0.16, 0.16)
+texture = ExtResource("15_cat")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CatNpc"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CatNpc" unique_id=611055008]
 shape = SubResource("NpcRange")
 
-[node name="Label" type="Label" parent="CatNpc"]
+[node name="Label" type="Label" parent="CatNpc" unique_id=411034799]
 offset_left = -130.0
 offset_top = -80.0
 offset_right = 130.0
 offset_bottom = -52.0
+theme_override_font_sizes/font_size = 18
 text = "CAT / MAIN QUEST"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 18
 
-[node name="RobotNpc" type="Area2D" parent="."]
+[node name="RobotNpc" type="Area2D" parent="." unique_id=1295809313]
 position = Vector2(3776, 3520)
 script = ExtResource("13_npc")
-StartsMainQuest = false
 
-[node name="Sprite2D" type="Sprite2D" parent="RobotNpc"]
-texture = ExtResource("16_robot")
+[node name="Sprite2D" type="Sprite2D" parent="RobotNpc" unique_id=121962977]
 scale = Vector2(0.27, 0.27)
+texture = ExtResource("16_robot")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RobotNpc"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RobotNpc" unique_id=1022177684]
 shape = SubResource("NpcRange")
 
-[node name="Label" type="Label" parent="RobotNpc"]
+[node name="Label" type="Label" parent="RobotNpc" unique_id=1042438054]
 offset_left = -130.0
 offset_top = -80.0
 offset_right = 130.0
 offset_bottom = -52.0
+theme_override_font_sizes/font_size = 18
 text = "ROBOT / SIDE QUEST"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 18
 
-[node name="YellowCat" type="CharacterBody2D" parent="."]
+[node name="YellowCat" type="CharacterBody2D" parent="." unique_id=856617925]
 position = Vector2(3152, 3584)
 collision_layer = 8
-collision_mask = 1
 script = ExtResource("14_roam")
 
-[node name="Sprite2D" type="Sprite2D" parent="YellowCat"]
-texture = ExtResource("17_yellow")
+[node name="Sprite2D" type="Sprite2D" parent="YellowCat" unique_id=1650535175]
 scale = Vector2(0.11, 0.11)
+texture = ExtResource("17_yellow")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="YellowCat"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="YellowCat" unique_id=1958375924]
 shape = SubResource("CatBody")
 
-[node name="RedCat" type="CharacterBody2D" parent="."]
+[node name="RedCat" type="CharacterBody2D" parent="." unique_id=540579596]
 position = Vector2(3792, 3680)
 collision_layer = 8
-collision_mask = 1
 script = ExtResource("14_roam")
 
-[node name="Sprite2D" type="Sprite2D" parent="RedCat"]
-texture = ExtResource("18_red")
+[node name="Sprite2D" type="Sprite2D" parent="RedCat" unique_id=1798118762]
 scale = Vector2(0.11, 0.11)
+texture = ExtResource("18_red")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="RedCat"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RedCat" unique_id=1260825631]
 shape = SubResource("CatBody")
 
-[node name="PurpleCat" type="CharacterBody2D" parent="."]
+[node name="PurpleCat" type="CharacterBody2D" parent="." unique_id=693556257]
 position = Vector2(4000, 3616)
 collision_layer = 8
-collision_mask = 1
 script = ExtResource("14_roam")
 
-[node name="Sprite2D" type="Sprite2D" parent="PurpleCat"]
-texture = ExtResource("19_purple")
+[node name="Sprite2D" type="Sprite2D" parent="PurpleCat" unique_id=305871630]
 scale = Vector2(0.11, 0.11)
+texture = ExtResource("19_purple")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PurpleCat"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PurpleCat" unique_id=1882497304]
 shape = SubResource("CatBody")
