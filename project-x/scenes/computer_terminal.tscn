@@ -6,8 +6,9 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_v8acg"]
 radius = 121.004135
 
-[node name="ComputerTerminal" type="Area2D" unique_id=2109717602]
+[node name="ComputerTerminal" type="Area2D" unique_id=2109717602 node_paths=PackedStringArray("PuzzleControllers")]
 script = ExtResource("1_7yube")
+PuzzleControllers = []
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=703042016]
 scale = Vector2(1.5, 1.5)

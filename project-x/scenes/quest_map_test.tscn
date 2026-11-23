@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://cvesvngas7gwt" path="res://scenes/computer_terminal.tscn" id="6_iolgo"]
 [ext_resource type="PackedScene" uid="uid://cmigi2a684l4p" path="res://scenes/rotation_controller.tscn" id="7_8jlq7"]
 [ext_resource type="Script" uid="uid://dihwklvq0lthl" path="res://scripts/PXMapBoundary.cs" id="7_boundary"]
+[ext_resource type="PackedScene" uid="uid://c11j5rfaojpod" path="res://scenes/quest_entrance.tscn" id="9_cdu4k"]
 
 [node name="quest-map-test" type="Node2D" unique_id=139579945]
 
@@ -17,58 +18,80 @@
 script = ExtResource("7_boundary")
 
 [node name="Doors" parent="." unique_id=281256552 instance=ExtResource("3_iolgo")]
-position = Vector2(8860, 3620)
+position = Vector2(11787, 4733)
+rotation = 1.5707964
 
 [node name="Doors2" parent="." unique_id=1789777958 instance=ExtResource("3_iolgo")]
-position = Vector2(9540, 3625)
+position = Vector2(11788, 4037)
+rotation = 1.5707964
+RequiredActivations = 2
 
 [node name="DoorControllers" parent="." unique_id=908091668 node_paths=PackedStringArray("TargetDoors") instance=ExtResource("4_8jlq7")]
-position = Vector2(8701, 3517)
+position = Vector2(11871, 4783)
 TargetDoors = [NodePath("../Doors")]
 
 [node name="DoorControllers2" parent="." unique_id=1972900461 node_paths=PackedStringArray("TargetDoors") instance=ExtResource("4_8jlq7")]
-position = Vector2(9459, 3127)
+position = Vector2(11569, 4062)
 TargetDoors = [NodePath("../Doors2")]
 
 [node name="DoorControllers3" parent="." unique_id=1094371244 node_paths=PackedStringArray("TargetDoors") instance=ExtResource("4_8jlq7")]
-position = Vector2(9508, 4023)
+position = Vector2(12015, 4060)
 rotation = -0.0009909146
 TargetDoors = [NodePath("../Doors2")]
 
 [node name="Enemy" parent="." unique_id=1395960353 instance=ExtResource("5_ix4b4")]
-position = Vector2(9359, 3250)
+position = Vector2(11571, 4196)
+collision_mask = 3
 HitsToDefeat = 1
 
 [node name="Enemy2" parent="." unique_id=48021086 instance=ExtResource("5_ix4b4")]
-position = Vector2(9342, 3925)
+position = Vector2(12018, 4199)
+collision_mask = 3
 HitsToDefeat = 1
 
 [node name="ComputerTerminal" parent="." unique_id=2109717602 node_paths=PackedStringArray("PuzzleControllers") instance=ExtResource("6_iolgo")]
-position = Vector2(10368, 3583)
+position = Vector2(11811, 3256)
 PuzzleControllers = [NodePath("../RotationController"), NodePath("../RotationController2"), NodePath("../RotationController3"), NodePath("../RotationController4")]
 
-[node name="Player" parent="." unique_id=984035576 instance=ExtResource("2_ix4b4")]
-position = Vector2(8448, 3580)
+[node name="Player" parent="." unique_id=984035576 groups=["Player"] instance=ExtResource("2_ix4b4")]
+position = Vector2(7280, 4574)
 
 [node name="RotationController" parent="." unique_id=452575670 node_paths=PackedStringArray("LinkedComputer") instance=ExtResource("7_8jlq7")]
-position = Vector2(9971, 3451)
+position = Vector2(11618, 3473)
 CurrentDirection = 2
 TargetDirection = 1
 LinkedComputer = NodePath("../ComputerTerminal")
 
 [node name="RotationController2" parent="." unique_id=858932421 node_paths=PackedStringArray("LinkedComputer") instance=ExtResource("7_8jlq7")]
-position = Vector2(10158, 3448)
+position = Vector2(11970, 3474)
 CurrentDirection = 3
 TargetDirection = 2
 LinkedComputer = NodePath("../ComputerTerminal")
 
 [node name="RotationController3" parent="." unique_id=2003773274 node_paths=PackedStringArray("LinkedComputer") instance=ExtResource("7_8jlq7")]
-position = Vector2(9974, 3735)
+position = Vector2(11619, 3663)
 CurrentDirection = 2
 LinkedComputer = NodePath("../ComputerTerminal")
 
 [node name="RotationController4" parent="." unique_id=398826066 node_paths=PackedStringArray("LinkedComputer") instance=ExtResource("7_8jlq7")]
-position = Vector2(10164, 3732)
+position = Vector2(11973, 3667)
 CurrentDirection = 1
 TargetDirection = 3
 LinkedComputer = NodePath("../ComputerTerminal")
+
+[node name="QuestEntrance" parent="." unique_id=1472357477 node_paths=PackedStringArray("DestinationMarker") instance=ExtResource("9_cdu4k")]
+position = Vector2(7670, 4515)
+collision_mask = 2
+DestinationMarker = NodePath("../quest-location-entrance")
+
+[node name="QuestExist" parent="." unique_id=726692855 node_paths=PackedStringArray("DestinationMarker") instance=ExtResource("9_cdu4k")]
+position = Vector2(11892, 5108)
+rotation = 1.5707964
+collision_mask = 2
+DestinationMarker = NodePath("../quest-location-exist")
+
+[node name="quest-location-entrance" type="Marker2D" parent="." unique_id=1018498651]
+position = Vector2(11807, 5006)
+
+[node name="quest-location-exist" type="Marker2D" parent="." unique_id=1496896882]
+position = Vector2(7490, 4585)
