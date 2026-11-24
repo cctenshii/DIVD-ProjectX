@@ -24,19 +24,40 @@ layout_mode = 2
 theme_override_constants/separation = 15
 alignment = 1
 
-[node name="LaneW" type="Panel" parent="PuzzleUI/VBoxContainer/LaneContainer" unique_id=60146420]
+[node name="LaneQ" type="Panel" parent="PuzzleUI/VBoxContainer/LaneContainer" unique_id=60146420]
 custom_minimum_size = Vector2(90, 400)
 clip_contents = true
 layout_mode = 2
 
-[node name="TargetMarker" type="ColorRect" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneW" unique_id=927028559]
+[node name="TargetMarker" type="ColorRect" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneQ" unique_id=927028559]
 custom_minimum_size = Vector2(90, 0)
 layout_mode = 0
 offset_top = 360.0
 offset_right = 90.0
 offset_bottom = 400.0
 
-[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneW" unique_id=1955300481]
+[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneQ" unique_id=1955300481]
+layout_mode = 0
+offset_left = 25.0
+offset_right = 65.0
+offset_bottom = 23.0
+text = "Q"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LaneW" type="Panel" parent="PuzzleUI/VBoxContainer/LaneContainer" unique_id=660295184]
+custom_minimum_size = Vector2(90, 400)
+clip_contents = true
+layout_mode = 2
+
+[node name="TargetMarker" type="ColorRect" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneW" unique_id=1640980609]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 0
+offset_top = 360.0
+offset_right = 90.0
+offset_bottom = 400.0
+
+[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneW" unique_id=1047755666]
 layout_mode = 0
 offset_left = 25.0
 offset_right = 65.0
@@ -45,66 +66,45 @@ text = "W"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="LaneA" type="Panel" parent="PuzzleUI/VBoxContainer/LaneContainer" unique_id=660295184]
+[node name="LaneE" type="Panel" parent="PuzzleUI/VBoxContainer/LaneContainer" unique_id=15738678]
 custom_minimum_size = Vector2(90, 400)
 clip_contents = true
 layout_mode = 2
 
-[node name="TargetMarker" type="ColorRect" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneA" unique_id=1640980609]
+[node name="TargetMarker" type="ColorRect" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneE" unique_id=1067152992]
 custom_minimum_size = Vector2(90, 0)
 layout_mode = 0
 offset_top = 360.0
 offset_right = 90.0
 offset_bottom = 400.0
 
-[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneA" unique_id=1047755666]
+[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneE" unique_id=691425159]
 layout_mode = 0
 offset_left = 25.0
 offset_right = 65.0
 offset_bottom = 23.0
-text = "A"
+text = "E"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="LaneS" type="Panel" parent="PuzzleUI/VBoxContainer/LaneContainer" unique_id=15738678]
+[node name="LaneR" type="Panel" parent="PuzzleUI/VBoxContainer/LaneContainer" unique_id=840883303]
 custom_minimum_size = Vector2(90, 400)
 clip_contents = true
 layout_mode = 2
 
-[node name="TargetMarker" type="ColorRect" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneS" unique_id=1067152992]
+[node name="TargetMarker" type="ColorRect" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneR" unique_id=153126610]
 custom_minimum_size = Vector2(90, 0)
 layout_mode = 0
 offset_top = 360.0
 offset_right = 90.0
 offset_bottom = 400.0
 
-[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneS" unique_id=691425159]
+[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneR" unique_id=357502590]
 layout_mode = 0
 offset_left = 25.0
 offset_right = 65.0
 offset_bottom = 23.0
-text = "S"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="LaneD" type="Panel" parent="PuzzleUI/VBoxContainer/LaneContainer" unique_id=840883303]
-custom_minimum_size = Vector2(90, 400)
-clip_contents = true
-layout_mode = 2
-
-[node name="TargetMarker" type="ColorRect" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneD" unique_id=153126610]
-custom_minimum_size = Vector2(90, 0)
-layout_mode = 0
-offset_top = 360.0
-offset_right = 90.0
-offset_bottom = 400.0
-
-[node name="Label" type="Label" parent="PuzzleUI/VBoxContainer/LaneContainer/LaneD" unique_id=357502590]
-layout_mode = 0
-offset_left = 25.0
-offset_right = 65.0
-offset_bottom = 23.0
-text = "D"
+text = "R"
 horizontal_alignment = 1
 vertical_alignment = 1
 

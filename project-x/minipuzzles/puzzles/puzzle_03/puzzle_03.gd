@@ -6,7 +6,7 @@ extends Control
 @onready var equalizer_container = $PuzzleUI/VBoxContainer/EqualizerContainer
 
 const NUM_CHANNELS: int = 8
-const TOLERANCE: float = 3.0 # How close the player needs to be (in %)
+const TOLERANCE: float = 8.0 # How close the player needs to be (in %)
 
 var target_values: Array[float] = []
 var player_sliders: Array[VSlider] = []
