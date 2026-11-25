@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://c11j5rfaojpod"]
+
+[ext_resource type="Script" uid="uid://cd27gbkq5bp8i" path="res://scripts/QuestEntrance.cs" id="1_lduis"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v8acg"]
+size = Vector2(57, 220)
+
+[node name="QuestEntrance" type="Area2D" unique_id=1472357477]
+script = ExtResource("1_lduis")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1161843807]
+position = Vector2(-2.5, 77)
+shape = SubResource("RectangleShape2D_v8acg")

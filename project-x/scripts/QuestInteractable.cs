@@ -5,7 +5,6 @@ public abstract partial class QuestInteractable : Area2D
 {
 	[Export] public Doors[] RequiredOpenDoors = System.Array.Empty<Doors>();
 	private Node2D _interactionPoint;
-	public Vector2 InteractionPosition => IsInstanceValid(_interactionPoint) ? _interactionPoint.GlobalPosition : GlobalPosition;
 	public abstract bool Completed { get; }
 	public abstract string Prompt { get; }
 	public bool Available
@@ -13,8 +12,6 @@ public abstract partial class QuestInteractable : Area2D
 		get
 		{
 			if (Completed || IsQueuedForDeletion()) return false;
-			var journal = GetNodeOrNull<QuestInteraction>("/root/QuestInteraction")?.Journal;
-			if (this is not QuestNpc && journal != null && (!journal.SideAccepted || journal.SideCompleted)) return false;
 			foreach (var door in RequiredOpenDoors)
 				if (IsInstanceValid(door) && !door.IsOpen) return false;
 			return true;
