@@ -45,7 +45,7 @@ script = ExtResource("6")
 Bounds = Rect2(6240, 1696, 2272, 960)
 BuildWalls = false
 DrawFloor = false
-ObstacleSizeRange = Vector2(180, 234)
+ObstacleSizeRange = Vector2(100, 180)
 
 [node name="PlayerSpawn" type="Marker2D" parent="." unique_id=1681178840]
 position = Vector2(3552, 3520)
@@ -163,7 +163,7 @@ texture = ExtResource("17_yellow")
 shape = SubResource("CatBody")
 
 [node name="RedCat" type="CharacterBody2D" parent="." unique_id=540579596]
-position = Vector2(3792, 3680)
+position = Vector2(3900, 3480)
 collision_layer = 8
 script = ExtResource("14_roam")
 
@@ -175,7 +175,7 @@ texture = ExtResource("18_red")
 shape = SubResource("CatBody")
 
 [node name="PurpleCat" type="CharacterBody2D" parent="." unique_id=693556257]
-position = Vector2(4000, 3616)
+position = Vector2(4100, 3520)
 collision_layer = 8
 script = ExtResource("14_roam")
 

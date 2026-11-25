@@ -3,13 +3,30 @@ using System.Collections.Generic;
 
 namespace ProjectXBossArenaPrototype;
 
-// Merge exposed floor edges into walls; editing the painted floor updates collision too.
+// Builds the world collision for main_map at startup.
+// 1) Exposed floor edges of the ground layer become thin walls (map border).
+// 2) Every painted tile on a "solid" layer (buildings, raised platforms, walls,
+//    market stalls) becomes part of a merged rectangle collider.
+// 3) Tiles on a "walkable" layer (streets) cut through solid layers.
+// Editing the painted map automatically updates the collision on the next run.
 public partial class PXMapBoundary : Node2D
 {
 	[Export] public NodePath GroundPath { get; set; } = new("../MainMap/groundbase");
+	[Export] public string[] SolidLayers { get; set; } = { "plateu", "decor-poor-area", "building", "bg-buildings" };
+	[Export] public string[] WalkableLayers { get; set; } = { "streets" };
+	/// <summary>Number of rectangle colliders created for solid layers (used by tests).</summary>
+	public int SolidColliderCount { get; private set; }
+
 	public override void _Ready()
 	{
 		var floor = GetNode<TileMapLayer>(GroundPath);
+		BuildFloorEdges(floor);
+		BuildSolidLayers(floor.GetParent());
+	}
+
+	// --- 1. Map border -------------------------------------------------------
+	private void BuildFloorEdges(TileMapLayer floor)
+	{
 		var cells = new HashSet<Vector2I>(floor.GetUsedCells());
 		var edges = new Dictionary<(bool Horizontal, int Line), List<int>>();
 		void Edge(bool horizontal, int line, int start)
@@ -40,5 +57,80 @@ public partial class PXMapBoundary : Node2D
 				AddChild(wall);
 			}
 		}
+	}
+
+	// --- 2. Buildings, platforms and walls ------------------------------------
+	private void BuildSolidLayers(Node map)
+	{
+		// Pseudocode:
+		//   walkable = all cells of the street layers
+		//   for each solid layer:
+		//     cells = painted cells whose centre is NOT on a street
+		//     merge neighbouring cells into as few rectangles as possible
+		//     add one StaticBody2D per rectangle on collision layer 1
+		var walkable = new List<(TileMapLayer Layer, HashSet<Vector2I> Cells)>();
+		foreach (string name in WalkableLayers)
+			if (map.GetNodeOrNull<TileMapLayer>(name) is { } street)
+				walkable.Add((street, new HashSet<Vector2I>(street.GetUsedCells())));
+
+		foreach (string name in SolidLayers)
+		{
+			if (map.GetNodeOrNull<TileMapLayer>(name) is not { } layer || layer.TileSet == null) continue;
+			Vector2 tile = layer.TileSet.TileSize;
+			var solid = new HashSet<Vector2I>();
+			foreach (var cell in layer.GetUsedCells())
+			{
+				Vector2 center = layer.ToGlobal((cell + new Vector2(.5f, .5f)) * tile);
+				if (!OnWalkable(walkable, center)) solid.Add(cell);
+			}
+			foreach (var rect in MergeCells(solid))
+			{
+				// Convert the cell rectangle to world space (handles layer offset and scale).
+				Vector2 a = ToLocal(layer.ToGlobal(rect.Position * tile));
+				Vector2 b = ToLocal(layer.ToGlobal(rect.End * tile));
+				var body = new StaticBody2D { Name = $"Solid_{name}_{SolidColliderCount}", Position = (a + b) / 2, CollisionLayer = 1, CollisionMask = 14 };
+				body.AddChild(new CollisionShape2D { Shape = new RectangleShape2D { Size = (b - a).Abs() } });
+				AddChild(body);
+				SolidColliderCount++;
+			}
+		}
+	}
+
+	private static bool OnWalkable(List<(TileMapLayer Layer, HashSet<Vector2I> Cells)> walkable, Vector2 world)
+	{
+		foreach (var (layer, cells) in walkable)
+			if (cells.Contains(layer.LocalToMap(layer.ToLocal(world)))) return true;
+		return false;
+	}
+
+	// Greedy merge: grow each rectangle to the right, then downwards while the
+	// whole row below is solid. Turns thousands of tiles into a few hundred boxes.
+	private static List<Rect2I> MergeCells(HashSet<Vector2I> cells)
+	{
+		var result = new List<Rect2I>();
+		var used = new HashSet<Vector2I>();
+		var ordered = new List<Vector2I>(cells);
+		ordered.Sort((p, q) => p.Y != q.Y ? p.Y.CompareTo(q.Y) : p.X.CompareTo(q.X));
+		foreach (var start in ordered)
+		{
+			if (used.Contains(start)) continue;
+			int width = 1;
+			while (cells.Contains(start + new Vector2I(width, 0)) && !used.Contains(start + new Vector2I(width, 0))) width++;
+			int height = 1;
+			while (true)
+			{
+				bool fullRow = true;
+				for (int x = 0; x < width && fullRow; x++)
+				{
+					var next = start + new Vector2I(x, height);
+					fullRow = cells.Contains(next) && !used.Contains(next);
+				}
+				if (!fullRow) break;
+				height++;
+			}
+			for (int y = 0; y < height; y++) for (int x = 0; x < width; x++) used.Add(start + new Vector2I(x, y));
+			result.Add(new Rect2I(start, new Vector2I(width, height)));
+		}
+		return result;
 	}
 }

@@ -99,6 +99,7 @@ public partial class PXBossArena : Node2D
 		}
 		if (State == ArenaState.Combat) _hackCooldown = Mathf.Max(0, _hackCooldown - dt);
 		if (_hackRequested) { _hackRequested = false; TryStartHack(); }
+		if (State == ArenaState.Exploring) UpdateBossPresence();
 		if (State == ArenaState.Exploring && CanStartMainQuest() && _room.ShouldActivate(_player.GlobalPosition, _boss.GlobalPosition)) BeginEncounter();
 		if (_camera != null)
 		{
@@ -142,6 +143,7 @@ public partial class PXBossArena : Node2D
 		_player.ResetPlayer(_room == null ? new(320, 550) : GetNode<Marker2D>("PlayerSpawn").GlobalPosition);
 		_boss.ResetBoss(_room == null ? new(1500, 550) : _room.BossSpawn);
 		_boss.Dormant = !EncounterStarted;
+		UpdateBossPresence();
 		if (_room == null) _terrain.Generate(1, _player.GlobalPosition, _boss.GlobalPosition);
 		else { _room.SetClosed(false); _terrain.Clear(); }
 		if (_camera != null) { _camera.GlobalPosition = _player.GlobalPosition; _camera.ResetSmoothing(); }
@@ -155,13 +157,13 @@ public partial class PXBossArena : Node2D
 			return;
 		}
 		ResetWorld(); State = ArenaState.Intro; SetLocked(true); _hud.HideMenu();
-		_hud.Message("15 BOSS HACKS  /  3 PHASES  /  2 MINION WAVES");
+		_hud.Message($"{PXArenaBoss.RequiredHacks} BOSS HACKS  /  {PXArenaBoss.Phases} PHASES  /  2 MINION WAVES");
 		_hud.Instructions.ShowPages(
 			new[] { "MOVE & DODGE", "OMNI-TOOL", "THREE PHASES", "HACK SAFELY" },
 			new[] {
 				"WASD = move.\nSHIFT + movement = dash.\nObstacles block the boss and lasers.\nESC = pause. F11 = fullscreen / windowed.",
 				"Approach a target and press E with a clear line of sight to start a random hack.\n\nSuccess deals damage. Failing or cancelling costs 20 HP. The tool then recharges for 3 seconds.",
-				"Defeat the boss with 15 successful hacks. The terrain changes after every 5 hacks.\n\nWave 1: 3 minions. Wave 2: 5 minions. Each minion takes 1 hack. The boss is invulnerable during these waves.",
+				$"Defeat the boss with {PXArenaBoss.RequiredHacks} successful hacks. The terrain changes after every {PXArenaBoss.HacksPerPhase} hacks.\n\nWave 1: 3 minions. Wave 2: 5 minions. Each minion takes 1 hack. The boss is invulnerable during these waves.",
 				"The arena freezes during instructions and hacks. Your HP remains visible at the top.\n\nA successful boss hack stuns the boss for 1.5 seconds. Use that time to escape!" },
 			() => _introComplete = true);
 	}
@@ -169,7 +171,8 @@ public partial class PXBossArena : Node2D
 	{
 		// Both room depth and boss radius have been checked. Lock once, then enable combat.
 		_questArrow?.Set("navigation_enabled", false);
-		EncounterStarted = true; _room.SetClosed(true); _boss.Dormant = false;
+		EncounterStarted = true; _room.SetClosed(true); _boss.Dormant = false; _boss.SetPresent(true);
+		GetNodeOrNull<QuestJournal>("QuestJournal")?.SelectQuest(0);
 		_terrain.Generate(1, _player.GlobalPosition, _boss.GlobalPosition);
 		State = ArenaState.Combat; SetLocked(false); _player.ProtectAfterHack(); _boss.Stun(1.5f);
 		_hud.Message("SECTOR LOCKED  /  APPROACH THE BOSS AND PRESS E TO HACK");
@@ -216,7 +219,7 @@ public partial class PXBossArena : Node2D
 			if (_hackMinion != null)
 			{ _minions.Remove(_hackMinion); _hackMinion.Defeat(); _defeatedMinions++; _hud.Message("MINION DISABLED  /  +1 HACK"); }
 			else
-			{ _boss.CompleteHack(); _boss.Stun(BossStunSeconds); _hud.Message($"HACK SUCCESSFUL  {_boss.SuccessfulHacks}/15  /  BOSS STUNNED FOR 1.5s"); }
+			{ _boss.CompleteHack(); _boss.Stun(BossStunSeconds); _hud.Message($"HACK SUCCESSFUL  {_boss.SuccessfulHacks}/{PXArenaBoss.RequiredHacks}  /  BOSS STUNNED FOR 1.5s"); }
 			_player.ProtectAfterHack(BossStunSeconds);
 		}
 		else
@@ -285,8 +288,20 @@ public partial class PXBossArena : Node2D
     {
         var journal = GetNodeOrNull<QuestJournal>("QuestJournal");
         var interaction = GetNodeOrNull<QuestInteraction>("/root/QuestInteraction");
-        return interaction?.Busy != true && (journal == null || journal.MainAccepted && !journal.MainCompleted && journal.SelectedQuest == QuestJournal.Quest.Main);
+        // The fight only exists after talking to the cat (main quest accepted).
+        // Tracking the side quest with Tab no longer blocks it.
+        return interaction?.Busy != true && (journal == null || journal.MainAccepted && !journal.MainCompleted);
     }
+	// Boss is invisible and non-solid until the cat gives the main quest, and
+	// disappears again after the main quest is completed.
+	private void UpdateBossPresence()
+	{
+		var journal = GetNodeOrNull<QuestJournal>("QuestJournal");
+		bool present = EncounterStarted || journal == null || journal.MainAccepted && !journal.MainCompleted;
+		if (_boss.Present == present) return;
+		_boss.SetPresent(present);
+		if (present && State == ArenaState.Exploring) _hud.Message("GUARDIAN DETECTED  /  FOLLOW THE ARROW TO THE UPPER-RIGHT SECTOR");
+	}
 	private void EndRound(bool victory)
 	{
 		_questArrow?.Set("navigation_enabled", false);
@@ -295,7 +310,7 @@ public partial class PXBossArena : Node2D
         {
             _nextStage = 0; _hack.CancelSilently(); ClearLasers(); ClearMinions(); _terrain.Clear(); _hud.HideHack(); _hud.HideBanner();
             _room.SetClosed(false); _boss.Dormant = true; EncounterStarted = false;
-            State = ArenaState.Exploring; SetLocked(false); _questArrow?.Set("navigation_enabled", true); journal.CompleteMain(); return;
+            State = ArenaState.Exploring; SetLocked(false); _questArrow?.Set("navigation_enabled", true); journal.CompleteMain(); UpdateBossPresence(); return;
         }
 		State = ArenaState.Ended; _nextStage = 0; _hack.CancelSilently(); ClearLasers(); SetLocked(true);
 		_boss.SetHackAvailable(false); _hud.End(victory, _boss.SuccessfulHacks, _defeatedMinions);

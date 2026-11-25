@@ -78,8 +78,8 @@ public partial class PXBossHUD : CanvasLayer
 		_healthFill.BgColor = _healthFill.BorderColor = player.Health <= 30 ? new Color("f27777") : PXRetroUI.Accent;
 		_playerText.Text = $"PLAYER  {player.Health} / {player.MaxHealth} HP";
 		_bossBar.MaxValue = boss.MaxHealth; _bossBar.Value = boss.Health;
-		_bossText.Text = $"BOSS  {boss.SuccessfulHacks} / 15 HACKS   |   {boss.Intent}";
-		_phase.Text = intermission ? $"MINIONS LEFT: {minions}" : $"PHASE {boss.Stage} / 3";
+		_bossText.Text = $"BOSS  {boss.SuccessfulHacks} / {PXArenaBoss.RequiredHacks} HACKS   |   {boss.Intent}";
+		_phase.Text = intermission ? $"MINIONS LEFT: {minions}" : $"PHASE {boss.Stage} / {PXArenaBoss.Phases}";
 		_dash.Text = player.DashReady ? "SHIFT  /  DASH READY" : "DASH RECHARGING";
 		_context.Text = cooldown > 0 ? FormattableString.Invariant($"OMNI-TOOL RECHARGING  {cooldown:0.0}s") : context;
 	}
@@ -99,7 +99,7 @@ public partial class PXBossHUD : CanvasLayer
 	public void End(bool win, int hacks, int minions)
 	{
 		_endTitle.Text = win ? "BOSS DISABLED" : "SIGNAL LOST";
-		_endBody.Text = $"{hacks} / 15 BOSS HACKS\n{minions} MINIONS DISABLED";
+		_endBody.Text = $"{hacks} / {PXArenaBoss.RequiredHacks} BOSS HACKS\n{minions} MINIONS DISABLED";
 		HideHack(); HideBanner(); Instructions.CloseSilently(); _ending.Show();
 	}
 }

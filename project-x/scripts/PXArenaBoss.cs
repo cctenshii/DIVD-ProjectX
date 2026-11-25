@@ -11,13 +11,18 @@ public partial class PXArenaBoss : CharacterBody2D
 	[Signal] public delegate void DiedEventHandler();
 	[Signal] public delegate void LaserRequestedEventHandler(Vector2 origin, Vector2 direction, float speed, int damage);
 
-	public const int RequiredHacks = 15;
+	// Playtest feedback: 15 hacks felt too long. Now 3 phases x 3 hacks = 9 hacks.
+	public const int Phases = 3;
+	public const int HacksPerPhase = 3;
+	public const int RequiredHacks = Phases * HacksPerPhase;
 	public const int DamagePerHack = 40;
 	public int MaxHealth => RequiredHacks * DamagePerHack;
 	public int Health => (RequiredHacks - SuccessfulHacks) * DamagePerHack;
 	public int SuccessfulHacks { get; private set; }
-	public int Stage => Mathf.Min(3, SuccessfulHacks / 5 + 1);
+	public int Stage => Mathf.Min(Phases, SuccessfulHacks / HacksPerPhase + 1);
 	public bool IsAlive => SuccessfulHacks < RequiredHacks;
+	/// <summary>False while the boss is hidden (main quest not accepted yet).</summary>
+	public bool Present { get; private set; } = true;
 	public bool Locked { get; set; }
 	public bool Dormant { get; set; }
 	public bool PhaseFrozen { get; set; }
@@ -26,7 +31,7 @@ public partial class PXArenaBoss : CharacterBody2D
 	public void Stun(float seconds)
 	{
 		StunRemaining = Mathf.Max(StunRemaining, seconds);
-		_windup = _secondWave = _thirdWave = 0;
+		_windup = _secondWave = _thirdWave = 0; _attackPlaying = false;
 		Velocity = Vector2.Zero; _attackCooldown = .65f;
 	}
 	public bool CanSeePlayer { get; private set; }
@@ -51,6 +56,14 @@ public partial class PXArenaBoss : CharacterBody2D
 	private float _ringAngle;
 	private int _attackNumber;
 	private bool _canHack, _radialAttack;
+	// Robot cowboy artwork: one SpriteFrames resource per phase (movement + attacks).
+	private static readonly string[] PhaseFrames = {
+		"res://assets/images/bosses/robot-cowboy-pack-v2/phase1.tres",
+		"res://assets/images/bosses/robot-cowboy-pack-v2/phase2.tres",
+		"res://assets/images/bosses/robot-cowboy-pack-v2/phase3.tres" };
+	private readonly SpriteFrames[] _frames = new SpriteFrames[3];
+	private AnimatedSprite2D _sprite;
+	private bool _attackPlaying;
 
 	public override void _Ready()
 	{
@@ -58,6 +71,14 @@ public partial class PXArenaBoss : CharacterBody2D
 		_random.Randomize();
 		_contact = GetNode<Area2D>("ContactArea");
 		_body = GetNode<Polygon2D>("Body");
+		_sprite = GetNodeOrNull<AnimatedSprite2D>("Sprite");
+		if (_sprite != null)
+		{
+			for (int i = 0; i < PhaseFrames.Length; i++) _frames[i] = GD.Load<SpriteFrames>(PhaseFrames[i]);
+			// The old square stays in the scene as a fallback when the artwork is missing.
+			_body.Visible = false;
+			_sprite.AnimationFinished += () => _attackPlaying = false;
+		}
 		_prompt = GetNode<Label>("HackPrompt");
 		_name = GetNode<Label>("Name");
 		_name.AddThemeFontOverride("font", PXRetroUI.Font);
@@ -71,6 +92,14 @@ public partial class PXArenaBoss : CharacterBody2D
 	}
 
 	public void SetTarget(PXArenaPlayer player) => _player = player;
+
+	/// <summary>Shows or hides the boss completely (visual, body collision and contact damage).</summary>
+	public void SetPresent(bool present)
+	{
+		Present = present; Visible = present;
+		GetNode<CollisionShape2D>("CollisionShape2D").SetDeferred(CollisionShape2D.PropertyName.Disabled, !present);
+		_contact.SetDeferred(Area2D.PropertyName.Monitoring, present);
+	}
 
 	public bool HasClearSight(Vector2 target)
 	{
@@ -89,7 +118,14 @@ public partial class PXArenaBoss : CharacterBody2D
 		_body.Modulate = _flash > 0 ? new Color(1.8f, 1.8f, 1.8f) : Colors.White;
 		_name.Text = Intent;
 		QueueRedraw();
-		if (Dormant || Locked || PhaseFrozen || !IsAlive || _player == null || !_player.IsAlive)
+		StepBrain(dt);
+		UpdateSprite();
+	}
+
+	// Flow: frozen? -> stunned? -> pick chase/search/wander -> attacks -> move -> contact damage.
+	private void StepBrain(float dt)
+	{
+		if (Dormant || Locked || PhaseFrozen || !IsAlive || _player == null || !_player.IsAlive || !Present)
 		{
 			Velocity = Vector2.Zero;
 			return;
@@ -158,6 +194,34 @@ public partial class PXArenaBoss : CharacterBody2D
 		}
 	}
 
+	// Picks the robot cowboy animation: attack while winding up, otherwise walk/idle
+	// in the direction the boss moves or looks. Each phase uses its own damaged artwork.
+	private void UpdateSprite()
+	{
+		if (_sprite == null) return;
+		var frames = _frames[Stage - 1];
+		if (frames != null && _sprite.SpriteFrames != frames) { _sprite.SpriteFrames = frames; _attackPlaying = false; }
+		_sprite.Modulate = !IsAlive ? new Color(.45f, .45f, .5f) : _flash > 0 ? new Color(1.8f, 1.8f, 1.8f)
+			: StunRemaining > 0 || PhaseFrozen ? new Color(.7f, .9f, 1.15f) : Colors.White;
+		if (!IsAlive) { _sprite.Stop(); return; }
+		if (_attackPlaying) return;
+		if (_windup > 0 && !Locked && !PhaseFrozen && StunRemaining <= 0)
+		{
+			// Fire frame (index 3) lands when the wind-up ends: 3 frames / 8 fps = 0.375 s.
+			string attack = _radialAttack && Stage == 3 ? "ground_shot" : "attack_" + Facing(_aim);
+			_sprite.SpeedScale = Mathf.Clamp(.375f / Mathf.Max(.1f, _windup), .5f, 2.5f);
+			_sprite.Play(attack); _attackPlaying = true;
+			return;
+		}
+		bool moving = Velocity.LengthSquared() > 25;
+		string name = (moving ? "walk_" : "idle_") + Facing(moving ? Velocity : Vector2.Right.Rotated(_lookAngle));
+		_sprite.SpeedScale = 1;
+		if (_sprite.Animation != name || !_sprite.IsPlaying()) _sprite.Play(name);
+	}
+
+	private static string Facing(Vector2 v) =>
+		Mathf.Abs(v.X) > Mathf.Abs(v.Y) ? (v.X < 0 ? "left" : "right") : (v.Y < 0 ? "up" : "down");
+
 	private void TickAttacks(float dt)
 	{
 		_attackCooldown -= dt;
@@ -208,7 +272,7 @@ public partial class PXArenaBoss : CharacterBody2D
 
 	public void AfterFailedHack()
 	{
-		_windup = _secondWave = _thirdWave = 0;
+		_windup = _secondWave = _thirdWave = 0; _attackPlaying = false;
 		_recovery = 0.45f;
 		_attackCooldown = 0.9f;
 	}
@@ -245,14 +309,15 @@ public partial class PXArenaBoss : CharacterBody2D
 	{
 		if (!IsAlive) return;
 		if (_canHack) DrawArc(Vector2.Zero, HackRange, 0, Mathf.Tau, 70, new Color(0.12f, 0.51f, 0.62f, 0.5f), 2, true);
-		DrawLine(Vector2.Zero, Vector2.Right.Rotated(_lookAngle) * 51, new Color("fff0bc"), 3, true);
+		// The square fallback still shows a facing line; the sprite shows facing itself.
+		if (_sprite == null) DrawLine(Vector2.Zero, Vector2.Right.Rotated(_lookAngle) * 51, new Color("fff0bc"), 3, true);
 		if (State == BrainState.Searching && !Locked)
 			DrawArc(Vector2.Zero, 61, _lookAngle - 0.55f, _lookAngle + 0.55f, 20, new Color("c79f33"), 4, true);
 		if (StunRemaining > 0 || PhaseFrozen)
 		{
-			DrawArc(Vector2.Zero, 55, 0, Mathf.Tau, 48, PXRetroUI.Accent, 3);
-			DrawLine(new(-12, -14), new(-12, 14), PXRetroUI.Accent, 5);
-			DrawLine(new(12, -14), new(12, 14), PXRetroUI.Accent, 5);
+			DrawArc(Vector2.Zero, 62, 0, Mathf.Tau, 48, PXRetroUI.Accent, 3);
+			DrawLine(new(-12, -132), new(-12, -118), PXRetroUI.Accent, 5);
+			DrawLine(new(12, -132), new(12, -118), PXRetroUI.Accent, 5);
 		}
 		if (_windup <= 0 || Locked || PhaseFrozen || StunRemaining > 0) return;
 		Color warning = _radialAttack ? new Color(0.63f, 0.2f, 0.65f, 0.55f) : new Color(0.8f, 0.42f, 0.05f, 0.65f);
@@ -263,7 +328,7 @@ public partial class PXArenaBoss : CharacterBody2D
 				: _aim.Rotated((i - (rays - 1) * 0.5f) * 0.14f);
 			for (int j = 55; j < 450; j += 28) DrawLine(direction * j, direction * (j + 16), warning, 3, true);
 		}
-		DrawArc(Vector2.Zero, 46, 0, Mathf.Tau, 50, warning, 5, true);
+		DrawArc(Vector2.Zero, 52, 0, Mathf.Tau, 50, warning, 5, true);
 	}
 
 	public void ResetBoss(Vector2 spawn)
@@ -277,7 +342,7 @@ public partial class PXArenaBoss : CharacterBody2D
 		Velocity = Vector2.Zero;
 		_flash = _windup = _recovery = _secondWave = _thirdWave = _avoidTime = 0;
 		_attackCooldown = 1.5f;
-		_attackNumber = 0;
+		_attackNumber = 0; _attackPlaying = false;
 		SetHackAvailable(false);
 		PickWanderDirection();
 		EmitSignal(SignalName.HealthChanged, Health, MaxHealth);

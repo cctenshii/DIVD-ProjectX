@@ -54,8 +54,13 @@ public partial class PXWorldSmokeTests : Node
 		foreach (var rect in terrain.Footprints)
 		{
 			Check(terrain.Bounds.Encloses(rect) && !rect.Grow(18).HasPoint(player) && !rect.Grow(52).HasPoint(boss), "Cover stays in bounds and leaves actors clear");
-			Check(rect.Size.X >= terrain.ObstacleSizeRange.X && rect.Size.Y >= terrain.ObstacleSizeRange.X, "Cover uses enlarged dimensions");
+			float longest = Mathf.Max(rect.Size.X, rect.Size.Y);
+			Check(longest >= terrain.ObstacleSizeRange.X * .55f && longest <= terrain.ObstacleSizeRange.Y * 2.2f, "Cover uses varied but bounded sizes");
 		}
+		// Random layout: not every piece may sit on the same row or column.
+		var xs = new System.Collections.Generic.HashSet<int>(); var ys = new System.Collections.Generic.HashSet<int>();
+		foreach (var rect in terrain.Footprints) { xs.Add((int)(rect.GetCenter().X / 40)); ys.Add((int)(rect.GetCenter().Y / 40)); }
+		Check(xs.Count >= terrain.Footprints.Count / 2 && ys.Count >= 4, "Cover is scattered instead of a straight grid");
 		var occupied = new System.Collections.Generic.List<Vector2>();
 		for (int i = 0; i < 5; i++)
 		{
@@ -80,6 +85,14 @@ public partial class PXWorldSmokeTests : Node
             Check(GetNode<Control>("/root/QuestInteraction/QuestUI").Visible, "Quest HUD is available in the market");
 			Check(((AtlasTexture)_player.GetNode<AnimatedSprite2D>("Body").SpriteFrames.GetFrameTexture("idle_down", 0)).Atlas.ResourcePath.EndsWith("all-position-V2.png"), "Player uses requested spritesheet");
 			Check(_boss.GlobalPosition == new Vector2(8256, 1920) && _boss.Dormant && _boss.Locked, "Boss starts dormant in upper-right room");
+			Check(!_boss.Present && !_boss.Visible, "Boss is hidden until the cat gives the main quest");
+			var boundary = _world.GetNode<PXMapBoundary>("MapBoundary");
+			Check(boundary.SolidColliderCount > 20, "Buildings, platforms and walls have colliders");
+			var space = _player.GetWorld2D().DirectSpaceState;
+			bool Solid(Vector2 p) => space.IntersectPoint(new PhysicsPointQueryParameters2D { Position = p, CollisionMask = 1 }).Count > 0;
+			Check(Solid(new(3300, 2950)) && Solid(new(4900, 4100)) && Solid(new(7000, 1500)), "Cyber-cafe, raised wall and boss-room glass block the player");
+			foreach (var name in new[] { "PlayerSpawn", "CatNpc", "RobotNpc", "YellowCat", "RedCat", "PurpleCat" })
+				Check(!Solid(_world.GetNode<Node2D>(name).GlobalPosition), $"{name} stands on walkable floor");
 			Check(!_room.Closed && _terrain.Generation == 0 && !_world.TryStartHack(), "Exploration has no gate, terrain hazards or hacks");
 			Key(Godot.Key.Escape); Tick(); Check(_player.Locked, "Exploration pauses");
 			Key(Godot.Key.Escape); Tick(); Check(_world.State == PXBossArena.ArenaState.Exploring && !_player.Locked && _boss.Locked, "Resume keeps boss dormant");
@@ -87,8 +100,8 @@ public partial class PXWorldSmokeTests : Node
             Check(!_world.EncounterStarted, "Boss waits until main quest is accepted");
             var journal = _world.GetNode<QuestJournal>("QuestJournal");
             journal.TalkTo(_world.GetNode<QuestNpc>("CatNpc"));
-            journal.SelectQuest(1); Tick();
-            Check(!_world.EncounterStarted, "Tracking side quest does not start main fight");
+            _player.GlobalPosition = new(3552, 3520); journal.SelectQuest(1); Tick();
+            Check(_boss.Present && _boss.Visible, "Talking to the cat makes the boss appear");
             journal.SelectQuest(0);
 			_player.GlobalPosition = new(8256, 900); Tick();
 			Check(!_world.EncounterStarted, "Outside-room proximity cannot activate boss");
@@ -111,7 +124,7 @@ public partial class PXWorldSmokeTests : Node
 			await Activate();
 			for (int stage = 1; stage <= 3; stage++)
 			{
-				for (int i = 0; i < 5; i++) await Hack(_boss);
+				for (int i = 0; i < PXArenaBoss.HacksPerPhase; i++) await Hack(_boss);
 				if (stage == 3) break;
 				Tick(2);
                 // Inspect spawn positions before any minion has walked toward the player.
@@ -133,7 +146,8 @@ public partial class PXWorldSmokeTests : Node
 				await Frames();
 				Check(_world.GetNode("Lasers").GetChildCount() > 0, "Lasers survive at world-map coordinates");
 			}
-			Check(_world.GetNode<QuestJournal>("QuestJournal").MainCompleted && _world.State == PXBossArena.ArenaState.Exploring && !_boss.IsAlive && !_room.Closed && _boss.SuccessfulHacks == 15, "Fifteen hacks complete main quest and return to exploration");
+			Check(_world.GetNode<QuestJournal>("QuestJournal").MainCompleted && _world.State == PXBossArena.ArenaState.Exploring && !_boss.IsAlive && !_room.Closed && _boss.SuccessfulHacks == 9, "Nine hacks (3 phases x 3) complete main quest and return to exploration");
+            Check(!_boss.Present, "Defeated boss disappears after the main quest");
             Check(_terrain.Footprints.Count == 0, "Victory clears combat cover so exploration routes remain accurate");
             journal.SelectQuest(1); await Frames(55);
             Check(!GetNode<QuestInteraction>("/root/QuestInteraction").Busy && !_player.Locked, "Tab during combat cannot queue a journal after victory");

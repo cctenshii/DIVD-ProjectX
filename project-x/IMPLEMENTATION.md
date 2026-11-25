@@ -24,7 +24,7 @@ De bevestigde eindvoorwaarden zijn **3 voltooide Memory-rondes** en **500 Rhythm
 
 De boss staat rechtsboven op `(8256, 1920)`. De kamer begint op `(6208, 1664)` en sluit pas wanneer de main quest is aangenomen en geselecteerd, de speler minstens 96 pixels binnen de kamer staat en de boss binnen een radius van 1000 pixels is.
 
-Het bestaande gevecht behoudt 15 bosshacks, drie fasen, miniongolven van 3 en 5, lasers en wisselend terrein. De cover in World is 180–234 pixels groot; de losse arena houdt 120–156 pixels. Na overwinning opent de poort, wordt tijdelijke gevechtscover opgeruimd en kun je verder verkennen of de side quest doen.
+Het gevecht heeft 9 bosshacks: drie fasen van elk 3 hacks (playtestfeedback: 15 was te lang), miniongolven van 3 en 5, lasers en wisselend terrein. De boss is de robot-cowboy (`assets/images/bosses/robot-cowboy-pack-v2`, eigen artwork per fase) en verschijnt pas nadat de cat de main quest geeft. Het terrain wordt per fase willekeurig verspreid met verschillende vormen (fase 1 rotsen/pilaren/kratten, fase 2 kratten/barrières/hoekmuren, fase 3 scherven en puin); basisgrootte in World 100–180 pixels, losse arena 70–130. Gebouwen, platforms, muren en kramen in `main_map` krijgen automatisch collision via `PXMapBoundary.cs` (straten blijven beloopbaar). Na overwinning opent de poort, wordt tijdelijke gevechtscover opgeruimd en kun je verder verkennen of de side quest doen.
 
 ## Bewaarde scenes en code
 

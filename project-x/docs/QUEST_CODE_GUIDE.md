@@ -94,7 +94,7 @@ Of stel `GODOT_PATH` in en voer `./tests/Run-Checks.ps1` uit. De runner bouwt `P
 | --- | --- |
 | `QuestFlowTests.tscn` | Marktspawn, NPC's, Tab, questprogressie, volledige routegeometrie, deuren, Cancel/Restart en chip teruggeven |
 | `MiniPuzzleTests.gd` | Alle acht originele puzzels, uitleg/Start, layout, succes, timeout en annuleren |
-| `WorldSmokeTests.tscn` | Main-questvoorwaarden, bossradius, poort, 15 hacks, minions, grote cover, 60 vaste compacte terrainlayouts en verder spelen na overwinning |
+| `WorldSmokeTests.tscn` | Main-questvoorwaarden, bossradius, verborgen boss tot cat-gesprek, map-collision, poort, 9 hacks (3x3), minions, willekeurige cover, 60 vaste compacte terrainlayouts en verder spelen na overwinning |
 | `StoryFlowTests.gd` | Family → Storage → World |
 | `SceneResourceTests.gd` | Scenes laden/starten/opruimen en de oorspronkelijke NPC-dialogen/pijl |
 
