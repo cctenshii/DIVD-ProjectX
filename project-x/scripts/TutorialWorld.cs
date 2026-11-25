@@ -4,12 +4,29 @@ public partial class TutorialWorld : Node2D
 {
 	[Export] public string MainGameScenePath { get; set; } = "res://scenes/World.tscn";
 	[Export] public float MoveSpeed { get; set; } = 220.0f;
+	[Export] public float DashSpeedMultiplier { get; set; } = 2.6f;
+	[Export] public float DashDuration { get; set; } = 0.16f;
 	[Export] public int PromptFontSize { get; set; } = 36;
 	[Export] public int ButtonFontSize { get; set; } = 40;
+
+	private enum TutorialStep
+	{
+		PressW,
+		PressA,
+		PressS,
+		PressD,
+		PressShift,
+		Completed
+	}
 
 	private CharacterBody2D? _player;
 	private Label _promptLabel = null!;
 	private Button _startGameButton = null!;
+
+	private TutorialStep _currentStep = TutorialStep.PressW;
+	private float _dashTimer = 0.0f;
+	private Vector2 _dashDirection = Vector2.Down;
+	private Vector2 _lastMoveDirection = Vector2.Down;
 
 	public override void _Ready()
 	{
@@ -49,9 +66,44 @@ public partial class TutorialWorld : Node2D
 
 		_startGameButton.Pressed += OnStartGamePressed;
 
-		_promptLabel.Text =
-			"Move with WASD to explore! Dash with LSHIFT!\n" +
-			"Puzzles use Q / W / E / R (rhythm) and mouse/slider controls.";
+		UpdateStepPrompt();
+	}
+
+	public override void _UnhandledInput(InputEvent @event)
+	{
+		if (@event is not InputEventKey keyEvent || !keyEvent.Pressed || keyEvent.Echo)
+		{
+			return;
+		}
+
+		switch (_currentStep)
+		{
+			case TutorialStep.PressW when keyEvent.Keycode == Key.W:
+				_currentStep = TutorialStep.PressA;
+				UpdateStepPrompt();
+				break;
+
+			case TutorialStep.PressA when keyEvent.Keycode == Key.A:
+				_currentStep = TutorialStep.PressS;
+				UpdateStepPrompt();
+				break;
+
+			case TutorialStep.PressS when keyEvent.Keycode == Key.S:
+				_currentStep = TutorialStep.PressD;
+				UpdateStepPrompt();
+				break;
+
+			case TutorialStep.PressD when keyEvent.Keycode == Key.D:
+				_currentStep = TutorialStep.PressShift;
+				UpdateStepPrompt();
+				break;
+
+			case TutorialStep.PressShift when keyEvent.Keycode == Key.Shift:
+				TriggerDash();
+				_currentStep = TutorialStep.Completed;
+				UpdateStepPrompt();
+				break;
+		}
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -61,10 +113,28 @@ public partial class TutorialWorld : Node2D
 			return;
 		}
 
+		float dt = (float)delta;
+
+		// Allow dashing even after completing the step
+		if (Input.IsKeyPressed(Key.Shift) && _dashTimer <= 0.0f && _currentStep == TutorialStep.Completed)
+		{
+			TriggerDash();
+		}
+
+		if (_dashTimer > 0.0f)
+		{
+			_dashTimer -= dt;
+			_player.Velocity = _dashDirection * (MoveSpeed * DashSpeedMultiplier);
+			_player.MoveAndSlide();
+			return;
+		}
+
 		Vector2 moveInput = GetWasdInput();
 		if (moveInput != Vector2.Zero)
 		{
-			_player.Velocity = moveInput.Normalized() * MoveSpeed;
+			Vector2 normalized = moveInput.Normalized();
+			_lastMoveDirection = normalized;
+			_player.Velocity = normalized * MoveSpeed;
 			_player.MoveAndSlide();
 		}
 		else
@@ -72,6 +142,33 @@ public partial class TutorialWorld : Node2D
 			_player.Velocity = Vector2.Zero;
 			_player.MoveAndSlide();
 		}
+	}
+
+	private void TriggerDash()
+	{
+		Vector2 currentInput = GetWasdInput();
+		_dashDirection = currentInput != Vector2.Zero ? currentInput.Normalized() : _lastMoveDirection;
+		_dashTimer = DashDuration;
+	}
+
+	private void UpdateStepPrompt()
+	{
+		_promptLabel.Text = _currentStep switch
+		{
+			TutorialStep.PressW =>
+				"Step 1/5: Press [W] to move UP!",
+			TutorialStep.PressA =>
+				"Step 2/5: Press [A] to move LEFT!",
+			TutorialStep.PressS =>
+				"Step 3/5: Press [S] to move DOWN!",
+			TutorialStep.PressD =>
+				"Step 4/5: Press [D] to move RIGHT!",
+			TutorialStep.PressShift =>
+				"Step 5/5: Press [LSHIFT] to DASH!",
+			_ =>
+				"Nice! You're ready to explore.\n" +
+				"Puzzles use Q / W / E / R (rhythm) and mouse/slider controls."
+		};
 	}
 
 	private static Vector2 GetWasdInput()

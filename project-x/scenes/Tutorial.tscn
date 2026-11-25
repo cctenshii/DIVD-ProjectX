@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://dusho7o78k8va" path="res://scripts/TutorialWorld.cs" id="1_cfv3y"]
 [ext_resource type="PackedScene" uid="uid://clb3stt01eb3" path="res://scenes/Player.tscn" id="2_ci5ev"]
 [ext_resource type="PackedScene" uid="uid://cw17you85qnn" path="res://scenes/main_map.tscn" id="2_pgr2e"]
-[ext_resource type="PackedScene" uid="uid://0qu7e510dt1p" path="res://scenes/doors.tscn" id="3_ebau5"]
 
 [node name="Tutorial" type="Node2D" unique_id=1855951267]
 script = ExtResource("1_cfv3y")
@@ -38,11 +37,6 @@ theme_override_colors/font_color = Color(0.8745098, 0.7647059, 0.11372549, 1)
 text = "Start Game"
 
 [node name="MainMap" parent="." unique_id=1396763503 instance=ExtResource("2_pgr2e")]
-position = Vector2(-3159, -3442)
-
-[node name="Doors" parent="." unique_id=281256552 instance=ExtResource("3_ebau5")]
-position = Vector2(365, 450)
-rotation = 1.5707964
-scale = Vector2(1.2, 1.2)
+position = Vector2(-1733, -1773)
 
 [node name="Player" parent="." unique_id=984035576 instance=ExtResource("2_ci5ev")]
