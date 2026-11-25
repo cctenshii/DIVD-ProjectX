@@ -103,9 +103,25 @@ public partial class PXBossArena : Node2D
 		if (State == ArenaState.Exploring && CanStartMainQuest() && _room.ShouldActivate(_player.GlobalPosition, _boss.GlobalPosition)) BeginEncounter();
 		if (_camera != null)
 		{
-			_camera.GlobalPosition = EncounterStarted ? _room.WorldBounds.GetCenter() : _player.GlobalPosition;
-			_camera.Zoom = EncounterStarted ? new Vector2(.48f, .48f) : new Vector2(1.25f, 1.25f);
+			// Boss fight: follow the player, but clamp the camera to the arena so the
+			// void outside the room is never visible (feedback: too far zoomed out).
+			bool arena = EncounterStarted && _room != null;
+			Rect2 view = CombatBounds.Grow(48);
+			_camera.LimitLeft = arena ? (int)view.Position.X : -10000000;
+			_camera.LimitTop = arena ? (int)view.Position.Y : -10000000;
+			_camera.LimitRight = arena ? (int)view.End.X : 10000000;
+			_camera.LimitBottom = arena ? (int)view.End.Y : 10000000;
+			float fit = Mathf.Max(1f, Mathf.Max(1920f / view.Size.X, 1080f / view.Size.Y));
+			// Smooth follow everywhere: the camera's position smoothing chases the player,
+			// limits ease in instead of snapping, and the zoom blends between modes.
+			_camera.PositionSmoothingEnabled = true;
+			_camera.LimitSmoothed = true;
+			_camera.GlobalPosition = _player.GlobalPosition;
+			var zoom = arena ? new Vector2(fit, fit) : new Vector2(1.25f, 1.25f);
+			_camera.Zoom = _camera.Zoom.Lerp(zoom, 1f - Mathf.Exp(-dt * 4f));
 		}
+		// White combat glow only while the boss fight is running.
+		_player.CombatGlow = EncounterStarted && !RoundOver;
 		RefreshHUD();
 	}
 	public override void _Input(InputEvent inputEvent)

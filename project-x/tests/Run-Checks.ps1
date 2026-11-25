@@ -24,8 +24,12 @@ $checks = @(
 foreach ($check in $checks) {
     $log = Join-Path $logRoot ($check.Name + '.log')
     $arguments = @('--headless', '--path', $projectRoot, '--quit-after', '7200', '--log-file', $log) + $check.Args
+    # Debug prints on stderr (e.g. GD.PrintErr) must not abort the run; real
+    # failures are detected below by exit code and ERROR markers in the log.
+    $ErrorActionPreference = 'Continue'
     $output = & $GodotPath @arguments 2>&1 | Out-String
     $code = $LASTEXITCODE
+    $ErrorActionPreference = 'Stop'
     $record = if (Test-Path -LiteralPath $log) { Get-Content -LiteralPath $log -Raw } else { $output }
     # Godot can return zero after a script error or timeout; require a success marker too.
     if ($code -ne 0 -or $record -match 'ERROR:|SCRIPT ERROR|Unhandled exception' -or ($check.Marker -and -not $record.Contains($check.Marker))) {

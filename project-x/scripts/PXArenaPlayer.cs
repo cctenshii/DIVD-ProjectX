@@ -23,6 +23,39 @@ public partial class PXArenaPlayer : CharacterBody2D
 	private Vector2 _knockback;
 	private AnimatedSprite2D _body;
 	private int _facing;
+	private bool _combatGlow;
+	private ShaderMaterial _glowMaterial;
+	// Minecraft-style "glowing" effect: a white outline that follows the sprite's
+	// silhouette. For every transparent pixel, look at the neighbours within
+	// `width` texels; if any of them is part of the character, paint it white.
+	private const string GlowShader = @"
+shader_type canvas_item;
+uniform vec4 glow_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform float width = 2.0;
+void fragment() {
+	vec4 base = texture(TEXTURE, UV);
+	float near = 0.0;
+	for (float x = -width; x <= width; x += 1.0)
+		for (float y = -width; y <= width; y += 1.0)
+			if (x * x + y * y <= width * width + 0.5)
+				near = max(near, texture(TEXTURE, UV + vec2(x, y) * TEXTURE_PIXEL_SIZE).a);
+	float pulse = 0.8 + 0.2 * sin(TIME * 5.0);
+	vec4 outline = vec4(glow_color.rgb, near * (1.0 - base.a) * glow_color.a * pulse);
+	// COLOR already holds texture * modulate, so the damage blink keeps working.
+	COLOR = base.a > 0.0 ? COLOR : outline;
+}";
+	/// <summary>White silhouette glow around the player, switched on during the boss fight.</summary>
+	public bool CombatGlow
+	{
+		get => _combatGlow;
+		set
+		{
+			if (_combatGlow == value || _body == null) return;
+			_combatGlow = value;
+			_glowMaterial ??= new ShaderMaterial { Shader = new Shader { Code = GlowShader } };
+			_body.Material = value ? _glowMaterial : null;
+		}
+	}
 
 	public override void _EnterTree()
 	{

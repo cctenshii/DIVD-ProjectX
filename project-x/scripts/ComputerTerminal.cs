@@ -60,7 +60,12 @@ public partial class ComputerTerminal : QuestInteractable
 			return;
 		}
 
-		if (_playerInRange && !ChipCollected && Input.IsActionJustPressed("interact"))
+		// Fallback for scenes without the QuestInteraction manager (e.g. quest_map_test).
+		// In World the manager already calls Interact(); handling E twice would
+		// open the dialogue or collect the chip before the side quest is accepted.
+		var manager = GetNodeOrNull<QuestInteraction>("/root/QuestInteraction");
+		bool managed = manager != null && manager.HasQuestTargets() && IsInstanceValid(manager.Player);
+		if (!managed && _playerInRange && !ChipCollected && Input.IsActionJustPressed("interact"))
 		{
 			if (!IsUnlocked)
 			{
@@ -185,7 +190,9 @@ public partial class ComputerTerminal : QuestInteractable
 
 	private void CollectChip()
 	{
+		if (ChipCollected) return;
 		ChipCollected = true;
+		GetNodeOrNull<QuestInteraction>("/root/QuestInteraction")?.Journal?.Navigator.InvalidateRoute();
 		GD.Print("Chip Acquired!");
 
 		if (_popupLayer != null)

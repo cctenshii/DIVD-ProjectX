@@ -35,6 +35,15 @@ func _ready() -> void:
 	title_label.text = "04 - Connect Cables"
 	instruction_label.text = "Connect the matching symbols."
 	restart_button.pressed.connect(_restart_puzzle)
+
+	# Fix: the status text changes length on every click. Without wrapping the
+	# label stretched the whole panel, so the puzzle jumped wider and back.
+	# Now the width is fixed by the buttons + cable area, and the status text
+	# wraps inside a fixed two-line box.
+	line_canvas.custom_minimum_size = Vector2(260, 0)
+	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	status_label.custom_minimum_size = Vector2(0, 64)
+	status_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	
 	# Connect button signals
 	for i in range(left_buttons.size()):
@@ -143,7 +152,7 @@ func _on_line_canvas_draw() -> void:
 	# Pseudocode: for each connection -> take the inner edge of both buttons ->
 	# convert to LineCanvas space (also correct when the puzzle is scaled) -> draw cable.
 	var to_canvas: Transform2D = line_canvas.get_global_transform().affine_inverse()
-	var cable_color := Color(0.3, 1.0, 0.5) if puzzle_solved else Color(0.2, 0.8, 1.0)
+	var cable_color := Color(0.95, 0.15, 0.25) # Red cables (feedback)
 	for l_idx in connections:
 		var r_idx = connections[l_idx]
 

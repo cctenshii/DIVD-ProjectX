@@ -27,9 +27,6 @@ texture_region_size = Vector2i(64, 64)
 texture = ExtResource("3_cyf2o")
 texture_region_size = Vector2i(64, 64)
 0:0/0 = 0
-0:1/0 = 0
-1:0/0 = 0
-1:1/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_kdyc3"]
 tile_size = Vector2i(64, 64)
@@ -1834,9 +1831,6 @@ texture_region_size = Vector2i(32, 32)
 texture = ExtResource("3_cyf2o")
 texture_region_size = Vector2i(64, 64)
 0:0/0 = 0
-1:0/0 = 0
-0:1/0 = 0
-1:1/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_cyf2o"]
 tile_size = Vector2i(32, 32)

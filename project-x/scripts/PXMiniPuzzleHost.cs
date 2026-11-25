@@ -32,7 +32,7 @@ public partial class PXMiniPuzzleHost : Control
         _goal = PXRetroUI.Label(this, "", new(36, 80, 1520, 42), 23, new Color("55ead4"));
         _content = new Control { Position = new(40, 140), Size = new(1520, 700), MouseFilter = MouseFilterEnum.Ignore };
         // Keep the teammate's UI theme and original logical coordinate system.
-        _content.Theme = new Theme { DefaultFontSize = 20 };
+        _content.Theme = new Theme { DefaultFontSize = PXRetroUI.Size(20) };
         AddChild(_content); Hide();
     }
     public void PrepareRandomHack(int stage = 1)

@@ -6,6 +6,7 @@ using ProjectXBossArenaPrototype;
 public partial class QuestFlowTests : Node
 {
     private int _checks;
+    private bool _usedPortal;
     private PXBossArena _world;
     private PXArenaPlayer _player;
     private QuestJournal _journal;
@@ -35,7 +36,13 @@ public partial class QuestFlowTests : Node
             if (marker == null || !_journal.Navigator.SegmentClear(_player.GlobalPosition, marker.GlobalPosition))
                 throw new Exception($"Unsafe or missing route: {label}; player={_player.GlobalPosition}, goal={goal}, waypoint={marker?.GlobalPosition}, points={_journal.Navigator.RoutePointCount}");
             if (_player.GlobalPosition.DistanceTo(marker.GlobalPosition) < 1)
-                throw new Exception("Stalled route: " + label);
+            {
+                // Standing on Jade's teleport: wait for the fade-out, jump and fade-in.
+                var before = _player.GlobalPosition;
+                await Frames(90);
+                if (_player.GlobalPosition.DistanceTo(before) < 500) throw new Exception($"Stalled route: {label} at {before}");
+                _usedPortal = true; continue;
+            }
             _player.GlobalPosition = marker.GlobalPosition; await Frames(2);
         }
         Check(_player.GlobalPosition.DistanceTo(goal) <= 96, "Full safe route: " + label);
@@ -61,7 +68,8 @@ public partial class QuestFlowTests : Node
         await Approach(enemy);
         for (int i = 1; i <= enemy.HitsToDefeat; i++)
         {
-            await Press(Key.E); Check(_interaction.Busy && _player.Locked, "E starts minipuzzle and locks player");
+            await Press(Key.E); if (!_interaction.Busy) await Press(Key.Enter);
+            Check(_interaction.Busy && _player.Locked, "E starts minipuzzle and locks player");
             await StartFuse(); SolveFuse(_interaction.Hack.Puzzle); await Frames(8);
             Check(enemy.SuccessfulHacks == i && _interaction.State == QuestInteraction.InteractionState.Result, "Native puzzle completion deals one hit");
             await Press(Key.Enter); Check(!_player.Locked, "Continue restores movement");
@@ -91,29 +99,47 @@ public partial class QuestFlowTests : Node
             var guide = _interaction.NavigationTarget;
             Check(guide != null && _journal.Navigator.RoutePointCount > 20, "Distant side quest uses intermediate route points");
             Check(_journal.Navigator.SegmentClear(_player.GlobalPosition, guide.GlobalPosition), "First guidance segment cannot cross walls");
-            await CheckRoute(_world.GetNode<DoorController>("DoorControllers"), "market to first console around the southern exit");
+            await CheckRoute(_world.GetNode<DoorController>("DoorControllers"), "market through the quest teleport to the first console");
+            Check(_usedPortal, "Arrow guides to Jade's teleport when the quest area is separate");
             var first = _world.GetNode<Doors>("Doors"); var second = _world.GetNode<Doors>("Doors2");
             var terminal = _world.GetNode<ComputerTerminal>("ComputerTerminal");
             await Approach(terminal); await Press(Key.E); Check(!terminal.ChipCollected, "Locked doors prevent early chip pickup");
             await Approach(_world.GetNode<DoorController>("DoorControllers")); await Press(Key.E);
             Check(first.IsOpen && first.CurrentActivations == 1, "First console opens first door exactly once");
             await CheckRoute(_world.GetNode<Enemy>("Enemy"), "through opened first door to enemy");
-            var enemy = _world.GetNode<Enemy>("Enemy"); await Approach(enemy); await Press(Key.E); await StartFuse();
+            var enemy = _world.GetNode<Enemy>("Enemy"); await Approach(enemy);
+            await Press(Key.E); if (!_interaction.Busy) await Press(Key.Enter);
+            await StartFuse();
             var puzzle = _interaction.Hack.Puzzle; puzzle.Call("_on_inventory_fuse_pressed",3); puzzle.Call("_on_slot_pressed",0);
             Button(puzzle,"Restart").EmitSignal(BaseButton.SignalName.Pressed); await Frames();
             Check(puzzle.Get("slot_values").AsGodotArray()[0].VariantType == Variant.Type.Nil, "Original restart button retains native reset logic");
             Button(_interaction.Hack,"CANCEL").EmitSignal(BaseButton.SignalName.Pressed); await Frames();
             Check(!_interaction.Hack.Active && enemy.SuccessfulHacks == 0 && _interaction.State == QuestInteraction.InteractionState.Result, "Visible Cancel ends attempt without awarding progress");
             await Press(Key.Enter);
-            await Press(Key.E); await StartFuse(); await Press(Key.Escape);
+            // Jade's breach warning appears first; Enter/E confirms it and opens the hack.
+            await Press(Key.E); if (!_interaction.Busy) await Press(Key.Enter);
+            Check(_interaction.State == QuestInteraction.InteractionState.Hacking, "Breach warning leads into the enemy hack");
+            await StartFuse(); await Press(Key.Escape);
             Check(enemy.SuccessfulHacks == 0 && !_interaction.Hack.Active, "Escape also cancels an active minipuzzle");
             await Press(Key.Enter);
             await Defeat(enemy); await Defeat(_world.GetNode<Enemy>("Enemy2"));
             await Approach(_world.GetNode<DoorController>("DoorControllers2")); await Press(Key.E);
-            Check(!second.IsOpen && second.CurrentActivations == 3, "Final door needs all four unique contributions");
+            Check(enemy.IsDefeated && _world.GetNode<Enemy>("Enemy2").IsDefeated, "Both guards can be disabled");
+            Check(!second.IsOpen && second.CurrentActivations == 1, "Final door needs both consoles (Jade's design)");
             await Approach(_world.GetNode<DoorController>("DoorControllers3")); await Press(Key.E);
-            Check(second.IsOpen && second.CurrentActivations == 4, "Two defeated enemies and two consoles unlock final door");
+            Check(second.IsOpen && second.CurrentActivations == 2, "Two consoles unlock final door");
             await CheckRoute(terminal, "through opened final door to chip");
+            await Approach(terminal); await Press(Key.E);
+            Check(!terminal.ChipCollected && !terminal.IsUnlocked, "Computer stays locked until all rotation controllers are aligned");
+            await Press(Key.Enter); Check(!_player.Locked, "Locked-computer warning closes and frees movement");
+            foreach (var name in new[] { "RotationController", "RotationController2", "RotationController3", "RotationController4" })
+            {
+                var controller = _world.GetNode<RotationController>(name);
+                _player.GlobalPosition = controller.GlobalPosition; await Frames(6);
+                for (int turn = 0; turn < 4 && !controller.IsCorrect; turn++) await Press(Key.E);
+                Check(controller.IsCorrect, $"{name} can be rotated into place with E");
+            }
+            Check(terminal.IsUnlocked, "Aligning all four controllers unlocks the computer");
             await Approach(terminal); await Press(Key.E);
             Check(_journal.HasChip && !_journal.SideCompleted, "Picking up chip does not complete the side quest");
             Check(_journal.Objective() == robot, "Side quest now guides back to the robot");

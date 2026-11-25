@@ -83,7 +83,7 @@ public partial class PXArenaBoss : CharacterBody2D
 		_name = GetNode<Label>("Name");
 		_name.AddThemeFontOverride("font", PXRetroUI.Font);
 		_name.AddThemeColorOverride("font_color", PXRetroUI.Ink);
-		_name.AddThemeFontSizeOverride("font_size", 22);
+		_name.AddThemeFontSizeOverride("font_size", PXRetroUI.Size(22));
 		_prompt.AddThemeFontOverride("font", PXRetroUI.Font);
 		_prompt.AddThemeColorOverride("font_color", PXRetroUI.Accent);
 		// The old timer node stays compatible with the original scene.

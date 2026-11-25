@@ -12,7 +12,9 @@ public static class PXRetroUI
 		{
 			if (_font == null)
 			{
-				const string path = "res://assets/PixelifySans.ttf";
+				// VT323 (SIL OFL, see assets/fonts/VT323-OFL.txt): clear pixel digits
+				// (2 vs 5 were hard to tell apart in PixelifySans).
+				const string path = "res://assets/fonts/VT323-Regular.ttf";
 				FontFile font = null;
 				// F6 can be pressed before the editor imports a newly copied font.
 				// In an editor build we can read the original TTF directly.
@@ -29,22 +31,26 @@ public static class PXRetroUI
 				if (font != null)
 				{
 					font.Oversampling = 2;
+					font.Hinting = TextServer.Hinting.None;
 					_font = font;
 				}
 				else
 				{
 					// Cache the fallback as well: never retry a missing file each frame.
 					_font = ThemeDB.FallbackFont ?? new SystemFont();
-					GD.Print("Project X: PixelifySans unavailable; using the default font.");
+					GD.Print("Project X: VT323 unavailable; using the default font.");
 				}
 			}
 			return _font;
 		}
 	}
 	public static readonly Color Ink = new("f3e600"), Accent = new("c5003c"), Muted = new("880425");
+	/// <summary>VT323 glyphs are smaller than PixelifySans at the same size; scale all UI text.</summary>
+	public const float FontScale = 1.25f;
+	public static int Size(int size) => Mathf.RoundToInt(size * FontScale);
 	public static Theme MakeTheme()
 	{
-	var theme = new Theme { DefaultFont = Font, DefaultFontSize = 28 };
+	var theme = new Theme { DefaultFont = Font, DefaultFontSize = Size(28) };
 	theme.SetColor("font_color", "Label", Ink);
 	theme.SetColor("font_color", "Button", Ink);
 	theme.SetColor("font_hover_color", "Button", new Color("55ead4"));
@@ -64,7 +70,7 @@ public static class PXRetroUI
 	public static Label Label(Control parent, string text, Rect2 rect, int size = 28, Color? color = null)
 	{
 		var label = new Label { Text = text, Position = rect.Position, Size = rect.Size, MouseFilter = Control.MouseFilterEnum.Ignore };
-		label.AddThemeFontSizeOverride("font_size", size);
+		label.AddThemeFontSizeOverride("font_size", Size(size));
 		label.AddThemeColorOverride("font_color", color ?? Ink);
 		parent.AddChild(label); return label;
 	}

@@ -12,6 +12,8 @@ namespace ProjectXBossArenaPrototype;
 public partial class PXMapBoundary : Node2D
 {
 	[Export] public NodePath GroundPath { get; set; } = new("../MainMap/groundbase");
+	/// <summary>Other floor layers that need a border too (Jade's separate side-quest area).</summary>
+	[Export] public string[] ExtraGroundLayers { get; set; } = { "groundbaseQuest" };
 	[Export] public string[] SolidLayers { get; set; } = { "plateu", "decor-poor-area", "building", "bg-buildings" };
 	[Export] public string[] WalkableLayers { get; set; } = { "streets" };
 	/// <summary>Number of rectangle colliders created for solid layers (used by tests).</summary>
@@ -21,6 +23,8 @@ public partial class PXMapBoundary : Node2D
 	{
 		var floor = GetNode<TileMapLayer>(GroundPath);
 		BuildFloorEdges(floor);
+		foreach (string name in ExtraGroundLayers)
+			if (floor.GetParent().GetNodeOrNull<TileMapLayer>(name) is { } extra) BuildFloorEdges(extra);
 		BuildSolidLayers(floor.GetParent());
 	}
 
