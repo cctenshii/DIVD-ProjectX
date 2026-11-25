@@ -1,11 +1,11 @@
 using Godot;
 using System.Collections.Generic;
 
-namespace ProjectXBossArenaPrototype;
+namespace ProjectX;
 
 // Adapter only: all puzzle rules, controls and timers remain in minipuzzles/.
 // Native flow -> Start -> observe native completion -> emit exactly one result.
-public partial class PXMiniPuzzleHost : Control
+public partial class MiniPuzzleHost : Control
 {
     [Signal] public delegate void FinishedEventHandler(bool success);
     public bool Active { get; private set; }
@@ -22,17 +22,18 @@ public partial class PXMiniPuzzleHost : Control
     private Label _goal;
     private ulong _laidOutPuzzle;
 
+    public static PackedScene Scene => GD.Load<PackedScene>("res://scenes/MiniPuzzleHost.tscn");
     public override void _Ready()
     {
         Size = new(1600, 880); MouseFilter = MouseFilterEnum.Stop;
-        Theme = PXRetroUI.MakeTheme();
-        PXRetroUI.Panel(this, new(0, 0, 1600, 880));
-        PXRetroUI.Label(this, "OMNI-TOOL / SECURITY CHALLENGE", new(36, 18, 1120, 52), 30);
-        PXRetroUI.Button(this, "CANCEL / ESC", new(1260, 18, 300, 56), () => Resolve(false));
-        _goal = PXRetroUI.Label(this, "", new(36, 80, 1520, 42), 23, new Color("55ead4"));
+        Theme = RetroUI.MakeTheme();
+        RetroUI.Panel(this, new(0, 0, 1600, 880));
+        RetroUI.Label(this, "OMNI-TOOL / SECURITY CHALLENGE", new(36, 18, 1120, 52), 30);
+        RetroUI.Button(this, "CANCEL / ESC", new(1260, 18, 300, 56), () => Resolve(false));
+        _goal = RetroUI.Label(this, "", new(36, 80, 1520, 42), 23, new Color("55ead4"));
         _content = new Control { Position = new(40, 140), Size = new(1520, 700), MouseFilter = MouseFilterEnum.Ignore };
         // Keep the teammate's UI theme and original logical coordinate system.
-        _content.Theme = new Theme { DefaultFontSize = PXRetroUI.Size(20) };
+        _content.Theme = new Theme { DefaultFontSize = RetroUI.Size(20) };
         AddChild(_content); Hide();
     }
     public void PrepareRandomHack(int stage = 1)

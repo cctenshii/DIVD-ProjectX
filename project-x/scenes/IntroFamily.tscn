@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://wt4rrxedy1nv"]
 
-[ext_resource type="Script" path="res://scripts/PXStoryScene.cs" id="1"]
+[ext_resource type="Script" path="res://scripts/StoryScene.cs" id="1"]
 
 [node name="IntroFamily" type="Control"]
 layout_mode = 3

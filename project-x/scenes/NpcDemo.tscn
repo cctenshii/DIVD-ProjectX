@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://cwel34lllvaje"]
 
-[ext_resource type="PackedScene" uid="uid://c8b6xtqwp2n7b" path="res://scenes/chat_box.tscn" id="1_jyhfs"]
+[ext_resource type="PackedScene" uid="uid://c8b6xtqwp2n7b" path="res://scenes/ChatBox.tscn" id="1_jyhfs"]
 [ext_resource type="PackedScene" path="res://scenes/QuestPlayer.tscn" id="4_o6xl0"]
-[ext_resource type="PackedScene" uid="uid://cw17you85qnn" path="res://scenes/main_map.tscn" id="5_tbgi4"]
-[ext_resource type="PackedScene" uid="uid://vq4nmswecdhd" path="res://scenes/quest_1_npcs.tscn" id="6_tefeu"]
+[ext_resource type="PackedScene" uid="uid://cw17you85qnn" path="res://scenes/MainMap.tscn" id="5_tbgi4"]
+[ext_resource type="PackedScene" uid="uid://vq4nmswecdhd" path="res://scenes/Quest1Npcs.tscn" id="6_tefeu"]
 [ext_resource type="Texture2D" uid="uid://dgcrwf447fuli" path="res://assets/images/tilemaps/nenon-tilemap/big-robot10.png" id="7_o6xl0"]
 
 [node name="Main" type="Node2D" unique_id=1880656200]

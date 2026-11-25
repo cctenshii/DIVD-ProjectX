@@ -1,10 +1,10 @@
 using Godot;
 using System;
 
-namespace ProjectXBossArenaPrototype;
+namespace ProjectX;
 
 // Reusable tutorial component. It has no dependency on the arena, player or boss.
-public partial class PXInstructionPopup : Control
+public partial class InstructionPopup : Control
 {
 	public bool Active => Visible;
 	private string[] _titles = Array.Empty<string>(), _pages = Array.Empty<string>();
@@ -14,15 +14,15 @@ public partial class PXInstructionPopup : Control
 	private Action _finished;
 	public override void _Ready()
 	{
-		Size = new(1920, 1080); Theme = PXRetroUI.MakeTheme(); MouseFilter = MouseFilterEnum.Stop;
+		Size = new(1920, 1080); Theme = RetroUI.MakeTheme(); MouseFilter = MouseFilterEnum.Stop;
 		AddChild(new ColorRect { Size = Size, Color = new Color(0.02f, 0.04f, 0.07f, 0.72f), MouseFilter = MouseFilterEnum.Ignore });
-		var panel = PXRetroUI.Panel(this, new(420, 235, 1080, 610));
-		PXRetroUI.Label(panel, "OMNI-TOOL  /  TRANSMISSION", new(52, 34, 976, 40), 24, PXRetroUI.Accent);
-		_title = PXRetroUI.Label(panel, "", new(52, 100, 976, 64), 48);
-		_body = PXRetroUI.Label(panel, "", new(52, 188, 976, 268), 32);
+		var panel = RetroUI.Panel(this, new(420, 235, 1080, 610));
+		RetroUI.Label(panel, "OMNI-TOOL  /  TRANSMISSION", new(52, 34, 976, 40), 24, RetroUI.Accent);
+		_title = RetroUI.Label(panel, "", new(52, 100, 976, 64), 48);
+		_body = RetroUI.Label(panel, "", new(52, 188, 976, 268), 32);
 		_body.AutowrapMode = TextServer.AutowrapMode.WordSmart;
-		_count = PXRetroUI.Label(panel, "", new(52, 500, 450, 48), 24, PXRetroUI.Muted);
-		_next = PXRetroUI.Button(panel, "CONTINUE", new(612, 490, 416, 68), Advance);
+		_count = RetroUI.Label(panel, "", new(52, 500, 450, 48), 24, RetroUI.Muted);
+		_next = RetroUI.Button(panel, "CONTINUE", new(612, 490, 416, 68), Advance);
 		Hide();
 	}
 	public void ShowPages(string[] titles, string[] pages, Action finished)

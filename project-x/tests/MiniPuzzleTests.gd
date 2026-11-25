@@ -24,7 +24,7 @@ func start(kind):
 	intro.get_node("StartButton").pressed.emit()
 	await frames(10)
 func run():
-	host = load("res://scripts/PXMiniPuzzleHost.cs").new()
+	host = load("res://scripts/MiniPuzzleHost.cs").new()
 	root.add_child(host)
 	host.connect("Finished", func(success): results.append(success))
 	for kind in range(8):

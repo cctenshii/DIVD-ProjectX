@@ -1,8 +1,8 @@
 using Godot;
 
-namespace ProjectXBossArenaPrototype;
+namespace ProjectX;
 
-public partial class PXStoryScene : Control
+public partial class StoryScene : Control
 {
 	[Export] public bool StorageChapter { get; set; }
 	[Export(PropertyHint.File, "*.tscn")] public string NextScene { get; set; } = "res://scenes/IntroSpaceshipStorage.tscn";
@@ -24,14 +24,14 @@ public partial class PXStoryScene : Control
 		GetWindow().ContentScaleMode = Window.ContentScaleModeEnum.CanvasItems;
 		GetWindow().ContentScaleAspect = Window.ContentScaleAspectEnum.Keep;
 		SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-		Theme = PXRetroUI.MakeTheme();
-		PXRetroUI.Label(this, "PROJECT X", new(120, 72, 900, 100), 64, PXRetroUI.Accent);
-		_chapter = PXRetroUI.Label(this, "", new(120, 200, 900, 70), 40);
-		_body = PXRetroUI.Label(this, "", new(120, 310, 900, 450), 32);
+		Theme = RetroUI.MakeTheme();
+		RetroUI.Label(this, "PROJECT X", new(120, 72, 900, 100), 64, RetroUI.Accent);
+		_chapter = RetroUI.Label(this, "", new(120, 200, 900, 70), 40);
+		_body = RetroUI.Label(this, "", new(120, 310, 900, 450), 32);
 		_body.AutowrapMode = TextServer.AutowrapMode.WordSmart;
-		_next = PXRetroUI.Button(this, "", new(120, 850, 760, 80), Advance);
-		PXRetroUI.Button(this, "SKIP INTRO", new(1440, 960, 380, 60), () => GoTo("res://scenes/World.tscn"));
-		PXRetroUI.Label(this, "ENTER / SPACE = CONTINUE", new(120, 950, 900, 40), 22, PXRetroUI.Muted);
+		_next = RetroUI.Button(this, "", new(120, 850, 760, 80), Advance);
+		RetroUI.Button(this, "SKIP INTRO", new(1440, 960, 380, 60), () => GoTo("res://scenes/World.tscn"));
+		RetroUI.Label(this, "ENTER / SPACE = CONTINUE", new(120, 950, 900, 40), 22, RetroUI.Muted);
 		UpdatePage();
 	}
 	public override void _UnhandledInput(InputEvent input)
@@ -70,15 +70,15 @@ public partial class PXStoryScene : Control
 				var box = new Rect2(1160 + x * 200, 420 + y * 180, 170, 150);
 				DrawRect(box, new Color("344b5c")); DrawRect(box.Grow(-10), new Color("6e8a99"), false, 3);
 			}
-			DrawArc(new(1470, 360), 68, 0, Mathf.Tau, 48, PXRetroUI.Accent, 5);
-			DrawRect(new(1440, 320, 60, 80), PXRetroUI.Accent);
+			DrawArc(new(1470, 360), 68, 0, Mathf.Tau, 48, RetroUI.Accent, 5);
+			DrawRect(new(1440, 320, 60, 80), RetroUI.Accent);
 			DrawRect(new(1452, 332, 36, 38), new Color("142332"));
 		}
 		else
 		{
 			DrawCircle(new(1300, 390), 95, new Color("43416d"));
 			DrawColoredPolygon(new[] { new Vector2(1220, 650), new Vector2(1640, 460), new Vector2(1520, 690), new Vector2(1330, 720) }, new Color("9dafbd"));
-			DrawColoredPolygon(new[] { new Vector2(1220, 650), new Vector2(1140, 750), new Vector2(1330, 720) }, PXRetroUI.Accent);
+			DrawColoredPolygon(new[] { new Vector2(1220, 650), new Vector2(1140, 750), new Vector2(1330, 720) }, RetroUI.Accent);
 			DrawLine(new(1460, 590), new(1550, 550), new Color("142332"), 16);
 		}
 	}

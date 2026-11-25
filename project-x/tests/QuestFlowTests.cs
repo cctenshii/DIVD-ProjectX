@@ -1,14 +1,14 @@
 using Godot;
 using System;
 using System.Threading.Tasks;
-using ProjectXBossArenaPrototype;
+using ProjectX;
 
 public partial class QuestFlowTests : Node
 {
     private int _checks;
     private bool _usedPortal;
-    private PXBossArena _world;
-    private PXArenaPlayer _player;
+    private BossArena _world;
+    private Player _player;
     private QuestJournal _journal;
     private QuestInteraction _interaction;
     private void Check(bool condition, string text) { if (!condition) throw new Exception(text); _checks++; GD.Print("PASS: " + text); }
@@ -79,8 +79,8 @@ public partial class QuestFlowTests : Node
     {
         try
         {
-            _world = GD.Load<PackedScene>("res://scenes/World.tscn").Instantiate<PXBossArena>(); AddChild(_world);
-            _player = _world.GetNode<PXArenaPlayer>("Player"); _journal = _world.GetNode<QuestJournal>("QuestJournal");
+            _world = GD.Load<PackedScene>("res://scenes/World.tscn").Instantiate<BossArena>(); AddChild(_world);
+            _player = _world.GetNode<Player>("Player"); _journal = _world.GetNode<QuestJournal>("QuestJournal");
             _interaction = GetNode<QuestInteraction>("/root/QuestInteraction");
             await Frames(55);
             Check(_player.GlobalPosition.DistanceTo(new(3552,3520)) < 5, "Spawn is in the market");

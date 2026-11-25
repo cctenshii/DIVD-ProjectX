@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-namespace ProjectXBossArenaPrototype;
+namespace ProjectX;
 
 // Builds the world collision for main_map at startup.
 // 1) Exposed floor edges of the ground layer become thin walls (map border).
@@ -9,7 +9,7 @@ namespace ProjectXBossArenaPrototype;
 //    market stalls) becomes part of a merged rectangle collider.
 // 3) Tiles on a "walkable" layer (streets) cut through solid layers.
 // Editing the painted map automatically updates the collision on the next run.
-public partial class PXMapBoundary : Node2D
+public partial class MapBoundary : Node2D
 {
 	[Export] public NodePath GroundPath { get; set; } = new("../MainMap/groundbase");
 	/// <summary>Other floor layers that need a border too (Jade's separate side-quest area).</summary>

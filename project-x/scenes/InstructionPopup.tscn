@@ -1,5 +1,5 @@
 [gd_scene load_steps=2 format=3]
-[ext_resource type="Script" path="res://scripts/PXInstructionPopup.cs" id="1"]
+[ext_resource type="Script" path="res://scripts/InstructionPopup.cs" id="1"]
 [node name="InstructionPopup" type="Control"]
 offset_right = 1920.0
 offset_bottom = 1080.0

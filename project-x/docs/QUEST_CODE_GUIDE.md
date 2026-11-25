@@ -21,7 +21,7 @@
 | `DoorController.cs` | Bestaande Inspector-links activeren |
 | `Doors.cs` | Unieke bronnen tellen, sprite/collision uitschakelen, route verversen |
 | `ComputerTerminal.cs` | Chip één keer verzamelen en melding tonen |
-| `PXMiniPuzzleHost.cs` | GDScript-puzzels in de game plaatsen en één resultaat teruggeven |
+| `MiniPuzzleHost.cs` | GDScript-puzzels in de game plaatsen en één resultaat teruggeven |
 | `quest_arrow.gd` | Bestaand artwork richten via `GetNavigationTarget()` |
 
 Deze scripts staan onder `scripts/`. De map `minipuzzles/` blijft de bron van alle acht minigames. Er is geen duplicaat van hun spelregels in C# gemaakt.

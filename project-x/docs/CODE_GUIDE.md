@@ -7,22 +7,29 @@ F5: `project.godot` → `scenes/World.tscn` → market. De gameplay blijft C#; d
 | Onderdeel | Bestand | Verantwoordelijkheid |
 | --- | --- | --- |
 | Wereld | `scenes/World.tscn` | Bestaande map, marktspawn, NPC's, questkamers en boss samenbrengen |
-| Main quest / gevecht | `scripts/PXBossArena.cs` | Toegangsvoorwaarden, pauze, hacks, fasen, minions, overwinning en retry |
-| Speler | `scripts/PXArenaPlayer.cs`, `scenes/CombatPlayer.tscn` | C#-beweging, dash, HP en bestaande animatieframes |
+| Main quest / gevecht | `scripts/BossArena.cs` | Toegangsvoorwaarden, pauze, hacks, fasen, minions, overwinning en retry |
+| Speler | `scripts/Player.cs`, `scenes/Player.tscn` | C#-beweging, dash (`TryDash`, Shift + richting), HP, glow en animatieframes |
 | Queststatus | `scripts/QuestJournal.cs` | Main/side-voortgang, geselecteerde quest, chip terugbrengen |
 | NPC's | `scripts/QuestNpc.cs`, `scripts/RoamingCat.cs` | Cat/robot-interactie en rondlopende ball cats |
 | Interacties / journal | `scripts/QuestInteraction.cs` | Eén E-doel, spelervergrendeling, resultaat, Tab-selectie en quest-HUD |
 | Route | `scripts/QuestNavigator.cs` | Vloer-/collisiongrid, route zoeken, zichtbaar bereikbaar tussenpunt |
 | Pijl | `scripts/quest_arrow.gd` | Bestaande pijl richten op het door C# gekozen tussenpunt |
-| Mapdesign | `scenes/main_map.tscn` | Bestaande tegelkaart, gebouwen en decoraties |
-| Vloerranden | `scripts/PXMapBoundary.cs` | Collision langs de gebruikte vloertegels |
-| Bosskamer | `scripts/PXBossRoom.cs`, `scenes/BossRoom.tscn` | Radius, instapdiepte en fysieke poort |
-| Boss / terrein | `scripts/PXArenaBoss.cs`, `scripts/PXArenaTerrain.cs` | Bestaande AI, aanvallen, grotere cover, verbonden arena en veilige spawns |
-| Minions / lasers | `scripts/PXArenaMinion.cs`, `scripts/PXArenaLaser.cs` | Bestaand vijand- en projectielgedrag |
-| Puzzelkoppeling | `scripts/PXMiniPuzzleHost.cs` | Originele minipuzzels laden, Cancel, voltooiing en layout van de instantie |
+| Mapdesign | `scenes/MainMap.tscn` | Bestaande tegelkaart, gebouwen en decoraties |
+| Vloerranden | `scripts/MapBoundary.cs` | Collision langs de gebruikte vloertegels |
+| Bosskamer | `scripts/BossRoom.cs`, `scenes/BossRoom.tscn` | Radius, instapdiepte en fysieke poort |
+| Boss / terrein | `scripts/Boss.cs`, `scripts/ArenaTerrain.cs` | Bestaande AI, aanvallen, grotere cover, verbonden arena en veilige spawns |
+| Minions / lasers | `scripts/Minion.cs` + `scenes/Minion.tscn`, `scripts/Laser.cs` + `scenes/Laser.tscn` | Vijand- en projectielgedrag; collision staat in de scène |
+| Puzzelkoppeling | `scripts/MiniPuzzleHost.cs` + `scenes/MiniPuzzleHost.tscn` | Originele minipuzzels laden, Cancel, voltooiing en layout van de instantie |
 | Puzzelregels | `minipuzzles/` | Oorspronkelijke GDScript-logica, uitleg, Restart en countdown |
-| Bossinterface | `scripts/PXBossHUD.cs`, `scripts/PXInstructionPopup.cs`, `scripts/PXRetroUI.cs` | Engelse HUD, gevechtsuitleg en gedeelde stijl |
-| Intro | `scripts/PXStoryScene.cs` | Bestaande verhaalpagina's en scene-overgangen |
+| Bossinterface | `scripts/BossHUD.cs`, `scripts/InstructionPopup.cs`, `scripts/RetroUI.cs` | Engelse HUD, gevechtsuitleg en gedeelde stijl |
+| Intro | `scripts/StoryScene.cs` | Bestaande verhaalpagina's en scene-overgangen |
+
+## Naamgeving en input
+
+- C#-klassen en scènes heten naar wat ze zijn (`Player`, `Boss`, `BossArena`, `Minion`), zonder `PX`-voorvoegsel. Namespace: `ProjectX`. Scènes zijn PascalCase (`Doors.tscn`, `ComputerTerminal.tscn`); GDScript-bestanden volgen de Godot-stijl snake_case (`quest_1_npc.gd`, `scripts/chat_box.gd`).
+- Elke scène met gedrag heeft haar script op de rootnode; objecten die tijdens het spel verschijnen worden via `<Klasse>.Scene.Instantiate()` gemaakt.
+- Alle besturing staat in **Project Settings → Input Map**: `left/right/up/down` (WASD + pijltjes), `dash` (Shift), `interact` (E). Er worden geen acties meer in code geregistreerd.
+- `scenes/QuestPlayer.tscn` + `player.gd` horen alleen bij de oude testscènes `NpcDemo.tscn` en `QuestMapTest.tscn`; de echte speler is `scenes/Player.tscn`.
 
 ## Pseudocode: quests en route
 
@@ -81,9 +88,9 @@ on retry:
 
 ## C# en GDScript
 
-`PXMiniPuzzleHost` leest de bestaande puzzelstatus en laat de originele scripts de invoer en regels uitvoeren. `QuestInteraction` levert via `GetNavigationTarget()` het routepunt aan de bestaande GDScript-pijl. De actieve World-player gebruikt C#; het bewaarde designprototype gebruikt `player.gd`, met de bestaande `locked`-property voor interacties.
+`MiniPuzzleHost` leest de bestaande puzzelstatus en laat de originele scripts de invoer en regels uitvoeren. `QuestInteraction` levert via `GetNavigationTarget()` het routepunt aan de bestaande GDScript-pijl. De actieve World-player gebruikt C#; het bewaarde designprototype gebruikt `player.gd`, met de bestaande `locked`-property voor interacties.
 
-`scenes/main.tscn` en `QuestPlayer.tscn` bewaren de oorspronkelijke NPC-dialogen met `QuestManager.gd`, `npc.gd`, `quest1-npc.gd` en `chat_box.gd`. Hun afzonderlijke queststappen zijn geen tweede voortgangssysteem voor de speelbare World-scene. De pijl houdt de oude NPC-fallback voor dit prototype.
+`scenes/NpcDemo.tscn` en `QuestPlayer.tscn` bewaren de oorspronkelijke NPC-dialogen met `QuestManager.gd`, `npc.gd`, `quest_1_npc.gd` en `chat_box.gd`. Hun afzonderlijke queststappen zijn geen tweede voortgangssysteem voor de speelbare World-scene. De pijl houdt de oude NPC-fallback voor dit prototype.
 
 ## Verwerking en onderhoud
 

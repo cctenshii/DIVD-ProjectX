@@ -14,7 +14,7 @@ De side quest gebruikt de bestaande kameropzet: eerste console opent deur 1; daa
 
 ## Originele minipuzzels
 
-Alle hacks laden nu de acht scenes uit `minipuzzles/` via `scripts/PXMiniPuzzleHost.cs`. De oude eigen puzzelimplementatie is verwijderd. De bestanden en spelregels in `minipuzzles/` blijven behouden.
+Alle hacks laden nu de acht scenes uit `minipuzzles/` via `scripts/MiniPuzzleHost.cs`. De oude eigen puzzelimplementatie is verwijderd. De bestanden en spelregels in `minipuzzles/` blijven behouden.
 
 De C#-koppeling voegt een altijd beschikbare **CANCEL / ESC**-knop toe. De originele uitleg, Start, Restart en countdown blijven actief. Restart gebruikt de oorspronkelijke puzzelreset; de bestaande countdown blijft doorlopen. Cancel beëindigt de poging. In de side quest levert dat geen hackvoortgang op; tijdens het bossgevecht blijven de oorspronkelijke kosten voor een mislukte/geannuleerde hack gelden.
 
@@ -24,11 +24,11 @@ De bevestigde eindvoorwaarden zijn **3 voltooide Memory-rondes** en **500 Rhythm
 
 De boss staat rechtsboven op `(8256, 1920)`. De kamer begint op `(6208, 1664)` en sluit pas wanneer de main quest is aangenomen en geselecteerd, de speler minstens 96 pixels binnen de kamer staat en de boss binnen een radius van 1000 pixels is.
 
-Het gevecht heeft 9 bosshacks: drie fasen van elk 3 hacks (playtestfeedback: 15 was te lang), miniongolven van 3 en 5, lasers en wisselend terrein. De boss is de robot-cowboy (`assets/images/bosses/robot-cowboy-pack-v2`, eigen artwork per fase) en verschijnt pas nadat de cat de main quest geeft. Het terrain wordt per fase willekeurig verspreid met verschillende vormen (fase 1 rotsen/pilaren/kratten, fase 2 kratten/barrières/hoekmuren, fase 3 scherven en puin); basisgrootte in World 100–180 pixels, losse arena 70–130. Gebouwen, platforms, muren en kramen in `main_map` krijgen automatisch collision via `PXMapBoundary.cs` (straten blijven beloopbaar). Na overwinning opent de poort, wordt tijdelijke gevechtscover opgeruimd en kun je verder verkennen of de side quest doen.
+Het gevecht heeft 9 bosshacks: drie fasen van elk 3 hacks (playtestfeedback: 15 was te lang), miniongolven van 3 en 5, lasers en wisselend terrein. De boss is de robot-cowboy (`assets/images/bosses/robot-cowboy-pack-v2`, eigen artwork per fase) en verschijnt pas nadat de cat de main quest geeft. Het terrain wordt per fase willekeurig verspreid met verschillende vormen (fase 1 rotsen/pilaren/kratten, fase 2 kratten/barrières/hoekmuren, fase 3 scherven en puin); basisgrootte in World 100–180 pixels, losse arena 70–130. Gebouwen, platforms, muren en kramen in `main_map` krijgen automatisch collision via `MapBoundary.cs` (straten blijven beloopbaar). Na overwinning opent de poort, wordt tijdelijke gevechtscover opgeruimd en kun je verder verkennen of de side quest doen.
 
 ## Bewaarde scenes en code
 
-- `CombatPlayer.tscn`: bestaande C#-besturing met de SpriteFrames van de teammate en `all-position-V2.png`.
+- `Player.tscn`: bestaande C#-besturing met de SpriteFrames van de teammate en `all-position-V2.png`.
 - `QuestPlayer.tscn`, `main.tscn` en de GDScript-NPC/dialogcode: bewaard designprototype.
 - `quest_map_test.tscn`: losse oorspronkelijke questkamer voor F6-tests.
 - `BossArena.tscn`: compacte, afzonderlijke gevechtstest.

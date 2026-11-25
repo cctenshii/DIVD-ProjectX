@@ -1,9 +1,9 @@
 using Godot;
 using System.Collections.Generic;
 
-namespace ProjectXBossArenaPrototype;
+namespace ProjectX;
 
-public partial class PXBossArena : Node2D
+public partial class BossArena : Node2D
 {
 	// State flow: explore -> proximity trigger -> combat -> hack -> phase/minions -> end.
 	// Input/signal callbacks queue requests; physics processing applies transitions once.
@@ -18,20 +18,20 @@ public partial class PXBossArena : Node2D
 	public bool Intermission { get; private set; }
 	public int MinionsRemaining => _minions.Count;
 	public float HackCooldown => _hackCooldown;
-	private PXArenaPlayer _player;
-	private PXArenaBoss _boss;
-	private PXBossHUD _hud;
-	private PXMiniPuzzleHost _hack;
-	private PXArenaTerrain _terrain;
-	private PXBossRoom _room;
+	private Player _player;
+	private Boss _boss;
+	private BossHUD _hud;
+	private MiniPuzzleHost _hack;
+	private ArenaTerrain _terrain;
+	private BossRoom _room;
 	private Camera2D _camera;
 	private Node _questArrow;
 	private ArenaState _stateBeforePause;
 	public Rect2 CombatBounds => _terrain.Bounds;
 	public bool EncounterStarted { get; private set; }
 	private Node2D _lasers, _minionRoot;
-	private readonly List<PXArenaMinion> _minions = new();
-	private PXArenaMinion _hackMinion;
+	private readonly List<Minion> _minions = new();
+	private Minion _hackMinion;
 	private bool _startRequested, _menuRequested, _hackRequested, _resumeRequested, _introComplete, _beginPrepared, _endVictory, _endRequested;
 	private bool? _hackResult;
 	private float _hackCooldown, _transitionTime;
@@ -45,10 +45,10 @@ public partial class PXBossArena : Node2D
 		var window = GetWindow(); window.ContentScaleSize = new(1920, 1080);
 		window.ContentScaleMode = Window.ContentScaleModeEnum.CanvasItems; window.ContentScaleAspect = Window.ContentScaleAspectEnum.Keep;
 		if (StartFullscreen && CanUseFullscreen) window.Mode = Window.ModeEnum.Fullscreen;
-		_terrain = GetNodeOrNull<PXArenaTerrain>("Terrain"); _player = GetNodeOrNull<PXArenaPlayer>("Player"); _boss = GetNodeOrNull<PXArenaBoss>("Boss");
-		_room = GetNodeOrNull<PXBossRoom>("BossRoom"); _camera = GetNodeOrNull<Camera2D>("WorldCamera");
+		_terrain = GetNodeOrNull<ArenaTerrain>("Terrain"); _player = GetNodeOrNull<Player>("Player"); _boss = GetNodeOrNull<Boss>("Boss");
+		_room = GetNodeOrNull<BossRoom>("BossRoom"); _camera = GetNodeOrNull<Camera2D>("WorldCamera");
 		_questArrow = _player?.GetNodeOrNull("QuestArrow");
-		_hud = GetNodeOrNull<PXBossHUD>("HUD");
+		_hud = GetNodeOrNull<BossHUD>("HUD");
 		if (_terrain == null || _player == null || _boss == null || _hud == null || !_hud.Initialized)
 		{ StopWithStartupMessage(); return; }
 		_hack = _hud.Hack;
@@ -173,13 +173,13 @@ public partial class PXBossArena : Node2D
 			return;
 		}
 		ResetWorld(); State = ArenaState.Intro; SetLocked(true); _hud.HideMenu();
-		_hud.Message($"{PXArenaBoss.RequiredHacks} BOSS HACKS  /  {PXArenaBoss.Phases} PHASES  /  2 MINION WAVES");
+		_hud.Message($"{Boss.RequiredHacks} BOSS HACKS  /  {Boss.Phases} PHASES  /  2 MINION WAVES");
 		_hud.Instructions.ShowPages(
 			new[] { "MOVE & DODGE", "OMNI-TOOL", "THREE PHASES", "HACK SAFELY" },
 			new[] {
 				"WASD = move.\nSHIFT + movement = dash.\nObstacles block the boss and lasers.\nESC = pause. F11 = fullscreen / windowed.",
 				"Approach a target and press E with a clear line of sight to start a random hack.\n\nSuccess deals damage. Failing or cancelling costs 20 HP. The tool then recharges for 3 seconds.",
-				$"Defeat the boss with {PXArenaBoss.RequiredHacks} successful hacks. The terrain changes after every {PXArenaBoss.HacksPerPhase} hacks.\n\nWave 1: 3 minions. Wave 2: 5 minions. Each minion takes 1 hack. The boss is invulnerable during these waves.",
+				$"Defeat the boss with {Boss.RequiredHacks} successful hacks. The terrain changes after every {Boss.HacksPerPhase} hacks.\n\nWave 1: 3 minions. Wave 2: 5 minions. Each minion takes 1 hack. The boss is invulnerable during these waves.",
 				"The arena freezes during instructions and hacks. Your HP remains visible at the top.\n\nA successful boss hack stuns the boss for 1.5 seconds. Use that time to escape!" },
 			() => _introComplete = true);
 	}
@@ -200,9 +200,9 @@ public partial class PXBossArena : Node2D
 		_nextStage = 0; _endRequested = false; ClearLasers(); SetLocked(true); _hud.ShowMenu();
 		if (_room != null) { _room.SetClosed(false); _boss.Dormant = true; }
 	}
-	private PXArenaMinion NearestMinion()
+	private Minion NearestMinion()
 	{
-		PXArenaMinion nearest = null; float best = float.MaxValue;
+		Minion nearest = null; float best = float.MaxValue;
 		foreach (var minion in _minions)
 		{
 			float distance = minion.GlobalPosition.DistanceTo(_player.GlobalPosition);
@@ -235,7 +235,7 @@ public partial class PXBossArena : Node2D
 			if (_hackMinion != null)
 			{ _minions.Remove(_hackMinion); _hackMinion.Defeat(); _defeatedMinions++; _hud.Message("MINION DISABLED  /  +1 HACK"); }
 			else
-			{ _boss.CompleteHack(); _boss.Stun(BossStunSeconds); _hud.Message($"HACK SUCCESSFUL  {_boss.SuccessfulHacks}/{PXArenaBoss.RequiredHacks}  /  BOSS STUNNED FOR 1.5s"); }
+			{ _boss.CompleteHack(); _boss.Stun(BossStunSeconds); _hud.Message($"HACK SUCCESSFUL  {_boss.SuccessfulHacks}/{Boss.RequiredHacks}  /  BOSS STUNNED FOR 1.5s"); }
 			_player.ProtectAfterHack(BossStunSeconds);
 		}
 		else
@@ -275,7 +275,7 @@ public partial class PXBossArena : Node2D
 			for (int i = 0; i < count; i++)
 			{
 				Vector2 spawn = _terrain.FindSpawn(_player.GlobalPosition, _boss.GlobalPosition, occupied); occupied.Add(spawn);
-				var minion = new PXArenaMinion { Position = spawn, Player = _player, Terrain = _terrain, Number = i + 1 };
+				var minion = Minion.Scene.Instantiate<Minion>(); minion.Position = spawn; minion.Player = _player; minion.Terrain = _terrain; minion.Number = i + 1;
 				minion.ContactHit += damage => _hud.Message($"MINION CONTACT HIT  -{damage} HP");
 				_minionRoot.AddChild(minion); _minions.Add(minion);
 			}
@@ -288,15 +288,15 @@ public partial class PXBossArena : Node2D
 		_player.Locked = locked; _boss.Locked = locked || Intermission || !EncounterStarted;
 		if (locked) _player.Velocity = _boss.Velocity = Vector2.Zero;
 		foreach (var minion in _minions) { minion.Locked = locked; if (locked) minion.Velocity = Vector2.Zero; }
-		foreach (Node node in _lasers.GetChildren()) if (node is PXArenaLaser laser) laser.Frozen = locked;
+		foreach (Node node in _lasers.GetChildren()) if (node is Laser laser) laser.Frozen = locked;
 	}
 	private void SpawnLaser(Vector2 origin, Vector2 direction, float speed, int damage)
 	{
 		if (BattlePaused || Intermission || _boss.PhaseFrozen) return;
-		_lasers.AddChild(new PXArenaLaser { Position = origin, Direction = direction, Speed = speed, Damage = damage, Arena = this });
+		var laser = Laser.Scene.Instantiate<Laser>(); laser.Position = origin; laser.Direction = direction; laser.Speed = speed; laser.Damage = damage; laser.Arena = this; _lasers.AddChild(laser);
 	}
 	private void ClearLasers()
-	{ foreach (Node child in _lasers.GetChildren()) { if (child is PXArenaLaser l) l.Frozen = true; _lasers.RemoveChild(child); child.QueueFree(); } }
+	{ foreach (Node child in _lasers.GetChildren()) { if (child is Laser l) l.Frozen = true; _lasers.RemoveChild(child); child.QueueFree(); } }
 	private void ClearMinions()
 	{ foreach (var minion in _minions) { _minionRoot.RemoveChild(minion); minion.QueueFree(); } _minions.Clear(); }
 	public void NotifyLaserHit(int damage) => _hud.Message($"LASER  -{damage} HP  /  DASH OR FIND COVER");

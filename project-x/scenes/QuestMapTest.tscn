@@ -1,14 +1,14 @@
 [gd_scene format=3 uid="uid://bjpk3r2j63ofn"]
 
-[ext_resource type="PackedScene" uid="uid://cw17you85qnn" path="res://scenes/main_map.tscn" id="1_bay8p"]
+[ext_resource type="PackedScene" uid="uid://cw17you85qnn" path="res://scenes/MainMap.tscn" id="1_bay8p"]
 [ext_resource type="PackedScene" uid="uid://bbdkdp4g6wvt5" path="res://scenes/QuestPlayer.tscn" id="2_ix4b4"]
-[ext_resource type="PackedScene" uid="uid://0qu7e510dt1p" path="res://scenes/doors.tscn" id="3_iolgo"]
-[ext_resource type="PackedScene" uid="uid://bcrmkq4rkbd3a" path="res://scenes/door_controllers.tscn" id="4_8jlq7"]
-[ext_resource type="PackedScene" uid="uid://chq6ykq5rasxb" path="res://scenes/enemy.tscn" id="5_ix4b4"]
-[ext_resource type="PackedScene" uid="uid://cvesvngas7gwt" path="res://scenes/computer_terminal.tscn" id="6_iolgo"]
-[ext_resource type="PackedScene" uid="uid://cmigi2a684l4p" path="res://scenes/rotation_controller.tscn" id="7_8jlq7"]
-[ext_resource type="Script" uid="uid://dihwklvq0lthl" path="res://scripts/PXMapBoundary.cs" id="7_boundary"]
-[ext_resource type="PackedScene" uid="uid://c11j5rfaojpod" path="res://scenes/quest_entrance.tscn" id="9_cdu4k"]
+[ext_resource type="PackedScene" uid="uid://0qu7e510dt1p" path="res://scenes/Doors.tscn" id="3_iolgo"]
+[ext_resource type="PackedScene" uid="uid://bcrmkq4rkbd3a" path="res://scenes/DoorControllers.tscn" id="4_8jlq7"]
+[ext_resource type="PackedScene" uid="uid://chq6ykq5rasxb" path="res://scenes/Enemy.tscn" id="5_ix4b4"]
+[ext_resource type="PackedScene" uid="uid://cvesvngas7gwt" path="res://scenes/ComputerTerminal.tscn" id="6_iolgo"]
+[ext_resource type="PackedScene" uid="uid://cmigi2a684l4p" path="res://scenes/RotationController.tscn" id="7_8jlq7"]
+[ext_resource type="Script" uid="uid://dihwklvq0lthl" path="res://scripts/MapBoundary.cs" id="7_boundary"]
+[ext_resource type="PackedScene" uid="uid://c11j5rfaojpod" path="res://scenes/QuestEntrance.tscn" id="9_cdu4k"]
 
 [node name="quest-map-test" type="Node2D" unique_id=139579945]
 

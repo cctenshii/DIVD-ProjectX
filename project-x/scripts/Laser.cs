@@ -1,15 +1,16 @@
 using Godot;
 
-namespace ProjectXBossArenaPrototype;
+namespace ProjectX;
 
-public partial class PXArenaLaser : Node2D
+public partial class Laser : Node2D
 {
     public Vector2 Direction { get; set; } = Vector2.Right;
     public float Speed { get; set; } = 300f;
     public int Damage { get; set; } = 12;
     public bool Frozen { get; set; }
-    public PXBossArena Arena { get; set; }
+    public BossArena Arena { get; set; }
     private float _life = 5f;
+    public static PackedScene Scene => GD.Load<PackedScene>("res://scenes/Laser.tscn");
 
     public override void _PhysicsProcess(double delta)
     {
@@ -22,7 +23,7 @@ public partial class PXArenaLaser : Node2D
         var hit = GetWorld2D().DirectSpaceState.IntersectRay(query);
         if (hit.Count > 0)
         {
-            if (hit["collider"].AsGodotObject() is PXArenaPlayer player && !player.Locked &&
+            if (hit["collider"].AsGodotObject() is Player player && !player.Locked &&
                 player.TakeDamage(Damage, GlobalPosition)) Arena?.NotifyLaserHit(Damage);
             QueueFree();
             return;

@@ -37,7 +37,7 @@ func run():
 		count += 1
 	var manager = root.get_node("QuestManager")
 	manager.quest_step = 0
-	var demo = load("res://scenes/main.tscn").instantiate()
+	var demo = load("res://scenes/NpcDemo.tscn").instantiate()
 	root.add_child(demo)
 	await frames()
 	var player = demo.get_node("Player/Player")

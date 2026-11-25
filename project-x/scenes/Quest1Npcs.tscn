@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://vq4nmswecdhd"]
 
-[ext_resource type="Script" uid="uid://caeflpsuf4dc3" path="res://scripts/quest1-npc.gd" id="1_hivgg"]
+[ext_resource type="Script" uid="uid://caeflpsuf4dc3" path="res://scripts/quest_1_npc.gd" id="1_hivgg"]
 [ext_resource type="Texture2D" uid="uid://dlf57tdtxqph0" path="res://assets/images/player/Player.png" id="2_5cqce"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8eclo"]

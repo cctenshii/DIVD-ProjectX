@@ -1,9 +1,9 @@
 using Godot;
 
-namespace ProjectXBossArenaPrototype;
+namespace ProjectX;
 
 // Entering the room alone never starts combat: depth and distance must both match.
-public partial class PXBossRoom : Node2D
+public partial class BossRoom : Node2D
 {
 	[Export] public Vector2 RoomSize { get; set; } = new(2976, 1696);
 	[Export] public float EntryDepth { get; set; } = 96f;

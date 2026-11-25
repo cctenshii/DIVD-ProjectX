@@ -1,8 +1,8 @@
 using Godot;
 
-namespace ProjectXBossArenaPrototype;
+namespace ProjectX;
 
-public partial class PXArenaPlayer : CharacterBody2D
+public partial class Player : CharacterBody2D
 {
 	#region State and input registration
 	[Signal] public delegate void HealthChangedEventHandler(int current, int maximum);
@@ -20,6 +20,8 @@ public partial class PXArenaPlayer : CharacterBody2D
 	private float _dashCooldown, _dashTime;
 	private Vector2 _dashDirection = Vector2.Right;
 	private float _invulnerability;
+	// Blink only after damage or a hack; the short dash protection stays invisible.
+	private float _blink;
 	private Vector2 _knockback;
 	private AnimatedSprite2D _body;
 	private int _facing;
@@ -57,21 +59,14 @@ void fragment() {
 		}
 	}
 
-	public override void _EnterTree()
-	{
-		RegisterAction("px_boss_dash", Key.Shift);
-		RegisterAction("px_boss_left", Key.A, Key.Left);
-		RegisterAction("px_boss_right", Key.D, Key.Right);
-		RegisterAction("px_boss_up", Key.W, Key.Up);
-		RegisterAction("px_boss_down", Key.S, Key.Down);
-	}
-
+	// Input actions (left/right/up/down = WASD + arrows, dash = Shift) are defined in
+	// Project Settings > Input Map (project.godot).
 	public override void _Ready()
 	{
 		MotionMode = MotionModeEnum.Floating;
 		_body = GetNode<AnimatedSprite2D>("Body");
-		GetNode<Label>("Name").AddThemeFontOverride("font", PXRetroUI.Font);
-		GetNode<Label>("Name").AddThemeColorOverride("font_color", PXRetroUI.Accent);
+		GetNode<Label>("Name").AddThemeFontOverride("font", RetroUI.Font);
+		GetNode<Label>("Name").AddThemeColorOverride("font_color", RetroUI.Accent);
 		ResetPlayer(GlobalPosition);
 	}
 	#endregion
@@ -81,25 +76,33 @@ void fragment() {
 	public override void _PhysicsProcess(double delta)
 	{
 		// Flow: reject locked input -> update timers -> animate -> dash/walk -> collide.
-		if (Locked || !IsAlive) { Velocity = Vector2.Zero; _body.Pause(); return; }
+		// A dialogue or hack cancels a running dash, so it cannot continue afterwards.
+		if (Locked || !IsAlive) { Velocity = Vector2.Zero; _dashTime = 0f; _body.Pause(); return; }
 		_dashCooldown = Mathf.Max(0f, _dashCooldown - (float)delta);
 		_invulnerability = Mathf.Max(0f, _invulnerability - (float)delta);
-		_body.Modulate = _invulnerability > 0f && ((int)(_invulnerability * 12f) % 2 == 0)
+		_blink = Mathf.Max(0f, _blink - (float)delta);
+		_body.Modulate = _blink > 0f && ((int)(_blink * 12f) % 2 == 0)
 			? new Color(1f, 1f, 1f, 0.35f) : Colors.White;
 
-		Vector2 direction = Input.GetVector("px_boss_left", "px_boss_right", "px_boss_up", "px_boss_down");
+		Vector2 direction = Input.GetVector("left", "right", "up", "down");
 		UpdateSprite(direction);
 		if (direction.LengthSquared() > 0) _dashDirection = direction;
-		if (Input.IsActionJustPressed("px_boss_dash") && _dashCooldown <= 0 && direction.LengthSquared() > 0)
-		{
-			_dashTime = 0.15f;
-			_dashCooldown = 1.1f;
-			_invulnerability = Mathf.Max(_invulnerability, 0.18f);
-		}
+		if (Input.IsActionJustPressed("dash")) TryDash(direction);
 		_dashTime = Mathf.Max(0f, _dashTime - (float)delta);
 		Velocity = _dashTime > 0 ? _dashDirection * 820f : direction * Speed + _knockback;
 		_knockback = _knockback.MoveToward(Vector2.Zero, 850f * (float)delta);
 		MoveAndSlide();
+	}
+
+	/// <summary>Short burst in the given direction (Shift + movement). Needs a direction and no cooldown.</summary>
+	public bool TryDash(Vector2 direction)
+	{
+		if (Locked || !IsAlive || _dashCooldown > 0f || direction.LengthSquared() == 0f) return false;
+		_dashDirection = direction.Normalized();
+		_dashTime = 0.15f;
+		_dashCooldown = 1.1f;
+		_invulnerability = Mathf.Max(_invulnerability, 0.18f);
+		return true;
 	}
 
 	// Jade's SpriteFrames supply presentation; movement, HP and dash stay in this controller.
@@ -124,7 +127,7 @@ void fragment() {
 			return false;
 
 		Health = Mathf.Max(0, Health - amount);
-		_invulnerability = InvulnerabilitySeconds;
+		_invulnerability = _blink = InvulnerabilitySeconds;
 		Vector2 away = GlobalPosition - source;
 		_knockback = (away.LengthSquared() > 0.01f ? away.Normalized() : Vector2.Left) * 240f;
 		EmitSignal(SignalName.HealthChanged, Health, MaxHealth);
@@ -139,6 +142,7 @@ void fragment() {
 	public void ProtectAfterHack(float seconds = 1.5f)
 	{
 		_invulnerability = Mathf.Max(_invulnerability, seconds);
+		_blink = Mathf.Max(_blink, seconds);
 		_knockback = Vector2.Zero;
 		_dashTime = 0;
 	}
@@ -150,7 +154,7 @@ void fragment() {
 		Locked = false;
 		Velocity = Vector2.Zero;
 		_knockback = Vector2.Zero;
-		_invulnerability = 0f;
+		_invulnerability = _blink = 0f;
 		_dashCooldown = _dashTime = 0f;
 		_facing = 0;
 		if (_body != null) { _body.FlipH = false; UpdateSprite(Vector2.Zero); }
@@ -159,14 +163,4 @@ void fragment() {
 	}
 
 	#endregion
-
-	private static void RegisterAction(string name, params Key[] keys)
-	{
-		if (!InputMap.HasAction(name)) InputMap.AddAction(name);
-		foreach (Key key in keys)
-		{
-			var inputEvent = new InputEventKey { PhysicalKeycode = key };
-			if (!InputMap.ActionHasEvent(name, inputEvent)) InputMap.ActionAddEvent(name, inputEvent);
-		}
-	}
 }

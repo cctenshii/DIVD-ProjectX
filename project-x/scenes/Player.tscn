@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://clb3stt01eb3"]
+[gd_scene format=3]
 
-[ext_resource type="Script" uid="uid://bl2636iwud2jw" path="res://scripts/player.gd" id="1_g2els"]
-[ext_resource type="Texture2D" uid="uid://wflse34ym77f" path="res://assets/tilesets/all-position-V2.png" id="2_qhqgy"]
+[ext_resource type="Script" path="res://scripts/Player.cs" id="1_g2els"]
+[ext_resource type="Texture2D" path="res://assets/tilesets/all-position-V2.png" id="2_qhqgy"]
 [ext_resource type="Texture2D" uid="uid://c2oh5vtpbbkkc" path="res://assets/images/effects/arrow.png" id="3_dqkch"]
 [ext_resource type="Script" uid="uid://vu3jksraqbfa" path="res://scripts/quest_arrow.gd" id="4_qlg0r"]
 
@@ -188,29 +188,32 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g2els"]
 size = Vector2(68, 123.5)
 
-[node name="Player" type="Node2D" unique_id=984035576]
-
-[node name="Player" type="CharacterBody2D" parent="." unique_id=20092957 groups=["Player"]]
+[node name="Player" type="CharacterBody2D" groups=["Player"]]
+collision_layer = 2
+collision_mask = 13
+motion_mode = 1
 script = ExtResource("1_g2els")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player" unique_id=44327832]
+[node name="Body" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_fs4d3")
-animation = &"running_left"
-frame_progress = 0.934957
-flip_h = true
+animation = &"idle_down"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Player" unique_id=18695351]
-position = Vector2(0, 0.875)
-scale = Vector2(0.5, 0.5)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+scale = Vector2(0.5, 0.35)
 shape = SubResource("RectangleShape2D_g2els")
 
-[node name="Camera2D" type="Camera2D" parent="Player" unique_id=495690464]
-zoom = Vector2(1.5, 1.5)
-position_smoothing_enabled = true
+[node name="Name" type="Label" parent="."]
+offset_left = -48.0
+offset_top = -49.0
+offset_right = 48.0
+offset_bottom = -29.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "YOU"
+horizontal_alignment = 1
 
-[node name="QuestArrow" type="Sprite2D" parent="Player" unique_id=771597616]
-position = Vector2(0, -44)
-scale = Vector2(-0.02, -0.02)
+[node name="QuestArrow" type="Sprite2D" parent="."]
+position = Vector2(0, -60)
+scale = Vector2(0.025, 0.025)
 texture = ExtResource("3_dqkch")
 script = ExtResource("4_qlg0r")
-rotation_offset_degrees = null

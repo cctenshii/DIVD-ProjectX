@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://chq6ykq5rasxb"]
+[gd_scene format=3 uid="uid://c7ebfxf382bjo"]
 
 [ext_resource type="Texture2D" uid="uid://dgcrwf447fuli" path="res://assets/images/tilemaps/nenon-tilemap/big-robot10.png" id="1_7p1mj"]
 [ext_resource type="Script" uid="uid://cc2t6lss57e7k" path="res://scripts/Enemy.cs" id="1_md0e3"]

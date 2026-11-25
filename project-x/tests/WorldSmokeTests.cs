@@ -1,16 +1,16 @@
 using Godot;
 using System;
 using System.Threading.Tasks;
-using ProjectXBossArenaPrototype;
+using ProjectX;
 
-public partial class PXWorldSmokeTests : Node
+public partial class WorldSmokeTests : Node
 {
-	private PXBossArena _world;
-	private PXArenaPlayer _player;
-	private PXArenaBoss _boss;
-	private PXBossRoom _room;
-	private PXBossHUD _hud;
-	private PXArenaTerrain _terrain;
+	private BossArena _world;
+	private Player _player;
+	private Boss _boss;
+	private BossRoom _room;
+	private BossHUD _hud;
+	private ArenaTerrain _terrain;
 	private int _checks;
 	private void Check(bool value, string label)
 	{
@@ -35,7 +35,7 @@ public partial class PXWorldSmokeTests : Node
 		{
 			var position = target.GlobalPosition + Vector2.Left.Rotated(i * Mathf.Tau / 8) * 90;
 			if (!_terrain.IsClear(position, 18) || !_boss.HasClearSight(position) && target == _boss) continue;
-			if (target is PXArenaMinion minion && !minion.HasSight(position)) continue;
+			if (target is Minion minion && !minion.HasSight(position)) continue;
 			_player.GlobalPosition = position; found = true; break;
 		}
 		Check(found, "Target has a safe hack approach around larger cover");
@@ -43,12 +43,12 @@ public partial class PXWorldSmokeTests : Node
 		Check(_world.TryStartHack(), "Nearby target can be hacked");
 		if (_hud.Instructions.Active) _hud.Instructions.Advance();
 		Tick();
-		Check(_world.State == PXBossArena.ArenaState.Hacking && _player.Locked && _boss.Locked, "Hack freezes combat");
+		Check(_world.State == BossArena.ArenaState.Hacking && _player.Locked && _boss.Locked, "Hack freezes combat");
 		_hud.Hack.CancelSilently();
-		_hud.Hack.EmitSignal(PXMiniPuzzleHost.SignalName.Finished, true);
+		_hud.Hack.EmitSignal(MiniPuzzleHost.SignalName.Finished, true);
 		Tick(); await Frames();
 	}
-	private void CheckTerrain(PXArenaTerrain terrain, Vector2 player, Vector2 boss)
+	private void CheckTerrain(ArenaTerrain terrain, Vector2 player, Vector2 boss)
 	{
 		Check(terrain.Connected && terrain.Footprints.Count >= 8, "Larger cover retains a connected, populated arena");
 		foreach (var rect in terrain.Footprints)
@@ -72,21 +72,33 @@ public partial class PXWorldSmokeTests : Node
 	{
 		try
 		{
-			_world = GD.Load<PackedScene>("res://scenes/World.tscn").Instantiate<PXBossArena>();
+			_world = GD.Load<PackedScene>("res://scenes/World.tscn").Instantiate<BossArena>();
 			AddChild(_world);
 			_world.SetPhysicsProcess(false);
-			_player = _world.GetNode<PXArenaPlayer>("Player"); _player.SetPhysicsProcess(false);
-			_boss = _world.GetNode<PXArenaBoss>("Boss"); _boss.SetPhysicsProcess(false);
-			_room = _world.GetNode<PXBossRoom>("BossRoom"); _hud = _world.GetNode<PXBossHUD>("HUD");
-			_terrain = _world.GetNode<PXArenaTerrain>("Terrain");
+			_player = _world.GetNode<Player>("Player"); _player.SetPhysicsProcess(false);
+			_boss = _world.GetNode<Boss>("Boss"); _boss.SetPhysicsProcess(false);
+			_room = _world.GetNode<BossRoom>("BossRoom"); _hud = _world.GetNode<BossHUD>("HUD");
+			_terrain = _world.GetNode<ArenaTerrain>("Terrain");
             // Normal travel from market finishes the startup bake before reaching the boss.
             await Frames(55); Tick();
 			Check(_player.GlobalPosition == new Vector2(3552, 3520), "Player starts in the market");
             Check(GetNode<Control>("/root/QuestInteraction/QuestUI").Visible, "Quest HUD is available in the market");
 			Check(((AtlasTexture)_player.GetNode<AnimatedSprite2D>("Body").SpriteFrames.GetFrameTexture("idle_down", 0)).Atlas.ResourcePath.EndsWith("all-position-V2.png"), "Player uses requested spritesheet");
+			// Dash: Shift + direction, defined in the project Input Map; no damage blink; a lock cancels it.
+			Check(InputMap.HasAction("dash") && InputMap.HasAction("left") && InputMap.HasAction("up"), "Dash and movement live in the project Input Map");
+			Vector2 market = _player.GlobalPosition; const double step = 1.0 / 60;
+			Check(!_player.TryDash(Vector2.Zero), "Shift without a direction does not dash");
+			Input.ActionPress("right");
+			Check(_player.TryDash(Vector2.Right) && !_player.TryDash(Vector2.Right), "Dash starts once, then recharges");
+			_player._PhysicsProcess(step);
+			Check(_player.Velocity.X > 700 && !_player.DashReady, "Shift + direction dashes");
+			Check(_player.GetNode<AnimatedSprite2D>("Body").Modulate == Colors.White, "Dash does not blink like damage");
+			_player.Locked = true; _player._PhysicsProcess(step); _player.Locked = false; _player._PhysicsProcess(step);
+			Check(_player.Velocity.X > 0 && _player.Velocity.X < 400, "A dialogue lock cancels a running dash");
+			Input.ActionRelease("right"); _player.ResetPlayer(market);
 			Check(_boss.GlobalPosition == new Vector2(8256, 1920) && _boss.Dormant && _boss.Locked, "Boss starts dormant in upper-right room");
 			Check(!_boss.Present && !_boss.Visible, "Boss is hidden until the cat gives the main quest");
-			var boundary = _world.GetNode<PXMapBoundary>("MapBoundary");
+			var boundary = _world.GetNode<MapBoundary>("MapBoundary");
 			Check(boundary.SolidColliderCount > 20, "Buildings, platforms and walls have colliders");
 			var space = _player.GetWorld2D().DirectSpaceState;
 			bool Solid(Vector2 p) => space.IntersectPoint(new PhysicsPointQueryParameters2D { Position = p, CollisionMask = 1 }).Count > 0;
@@ -95,7 +107,7 @@ public partial class PXWorldSmokeTests : Node
 				Check(!Solid(_world.GetNode<Node2D>(name).GlobalPosition), $"{name} stands on walkable floor");
 			Check(!_room.Closed && _terrain.Generation == 0 && !_world.TryStartHack(), "Exploration has no gate, terrain hazards or hacks");
 			Key(Godot.Key.Escape); Tick(); Check(_player.Locked, "Exploration pauses");
-			Key(Godot.Key.Escape); Tick(); Check(_world.State == PXBossArena.ArenaState.Exploring && !_player.Locked && _boss.Locked, "Resume keeps boss dormant");
+			Key(Godot.Key.Escape); Tick(); Check(_world.State == BossArena.ArenaState.Exploring && !_player.Locked && _boss.Locked, "Resume keeps boss dormant");
             _player.GlobalPosition = new(8000, 2200); Tick();
             Check(!_world.EncounterStarted, "Boss waits until main quest is accepted");
             var journal = _world.GetNode<QuestJournal>("QuestJournal");
@@ -116,7 +128,7 @@ public partial class PXWorldSmokeTests : Node
 			var gateRay = PhysicsRayQueryParameters2D.Create(new(7504, 2600), new(7504, 2800), 1);
 			Check(_player.GetWorld2D().DirectSpaceState.IntersectRay(gateRay).Count > 0, "Closed entrance physically blocks passage");
 			Key(Godot.Key.Escape); Tick(); Key(Godot.Key.Escape); Tick();
-			Check(_world.State == PXBossArena.ArenaState.Combat && _room.Closed, "Combat pause preserves gate");
+			Check(_world.State == BossArena.ArenaState.Combat && _room.Closed, "Combat pause preserves gate");
 			_player.TakeDamage(100, _boss.GlobalPosition, true); Tick(); await Frames();
 			Check(_world.RoundOver && !_room.Closed, "Death ends encounter and releases gate");
 			_world.StartRound(); await Frames();
@@ -124,7 +136,7 @@ public partial class PXWorldSmokeTests : Node
 			await Activate();
 			for (int stage = 1; stage <= 3; stage++)
 			{
-				for (int i = 0; i < PXArenaBoss.HacksPerPhase; i++) await Hack(_boss);
+				for (int i = 0; i < Boss.HacksPerPhase; i++) await Hack(_boss);
 				if (stage == 3) break;
 				Tick(2);
                 // Inspect spawn positions before any minion has walked toward the player.
@@ -136,17 +148,17 @@ public partial class PXWorldSmokeTests : Node
 				CheckTerrain(_terrain, _player.GlobalPosition, _boss.GlobalPosition);
 				foreach (var child in _world.GetNode("Minions").GetChildren())
 				{
-					var minion = (PXArenaMinion)child; minion.SetPhysicsProcess(false);
+					var minion = (Minion)child; minion.SetPhysicsProcess(false);
 					Check(_room.WorldBounds.HasPoint(minion.GlobalPosition) && _terrain.IsClear(minion.GlobalPosition, 60), "Minion spawns safely inside room");
 					await Hack(minion);
 				}
 				Tick(2); await Frames();
 				Check(!_world.Intermission && !_boss.PhaseFrozen && _room.Closed, "Clearing wave resumes boss while gate stays closed");
-				_boss.EmitSignal(PXArenaBoss.SignalName.LaserRequested, _boss.GlobalPosition + Vector2.Left * 80, Vector2.Left, 440f, 12);
+				_boss.EmitSignal(Boss.SignalName.LaserRequested, _boss.GlobalPosition + Vector2.Left * 80, Vector2.Left, 440f, 12);
 				await Frames();
 				Check(_world.GetNode("Lasers").GetChildCount() > 0, "Lasers survive at world-map coordinates");
 			}
-			Check(_world.GetNode<QuestJournal>("QuestJournal").MainCompleted && _world.State == PXBossArena.ArenaState.Exploring && !_boss.IsAlive && !_room.Closed && _boss.SuccessfulHacks == 9, "Nine hacks (3 phases x 3) complete main quest and return to exploration");
+			Check(_world.GetNode<QuestJournal>("QuestJournal").MainCompleted && _world.State == BossArena.ArenaState.Exploring && !_boss.IsAlive && !_room.Closed && _boss.SuccessfulHacks == 9, "Nine hacks (3 phases x 3) complete main quest and return to exploration");
             Check(!_boss.Present, "Defeated boss disappears after the main quest");
             Check(_terrain.Footprints.Count == 0, "Victory clears combat cover so exploration routes remain accurate");
             journal.SelectQuest(1); await Frames(55);
@@ -158,7 +170,7 @@ public partial class PXWorldSmokeTests : Node
 			_world.ReturnToMenu(); _world.StartRound(); await Frames();
 			Check(_boss.Dormant && _world.MinionsRemaining == 0 && !_room.Closed, "Menu and restart clean up encounter");
 			// Check the compact standalone arena as well as multiple regenerated world layouts.
-			var compact = new PXArenaTerrain { BuildWalls = false, DrawFloor = false };
+			var compact = new ArenaTerrain { BuildWalls = false, DrawFloor = false };
 			AddChild(compact);
 			for (int stage = 1; stage <= 3; stage++)
 			{
@@ -169,7 +181,7 @@ public partial class PXWorldSmokeTests : Node
 			}
             // Reproduce many layouts, including the compact arena that previously
             // lost too much cover when its four rows blocked navigation clearance.
-            var rng = (RandomNumberGenerator)typeof(PXArenaTerrain).GetField("_rng", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(compact);
+            var rng = (RandomNumberGenerator)typeof(ArenaTerrain).GetField("_rng", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(compact);
             for (ulong seed = 1; seed <= 20; seed++)
             {
                 rng.Seed = seed;

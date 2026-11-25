@@ -13,11 +13,11 @@ De actieve World-player gebruikt C# met `AnimatedSprite2D` en de bestaande `all-
 | Probleem na samenvoegen | Gevolg | Lokale reparatie |
 | --- | --- | --- |
 | Startscene en questkamer stonden los van de bedoelde marktflow | Geen gezamenlijke start voor beide quests | `World.tscn` is F5-startscene, met marktspawn, cat en robot |
-| Oud eigen hackpaneel was nog de gameplay-puzzel | Nieuwe minipuzzels werden niet gebruikt | `PXMiniPuzzleHost.cs` laadt de oorspronkelijke acht `minipuzzles`-scenes |
+| Oud eigen hackpaneel was nog de gameplay-puzzel | Nieuwe minipuzzels werden niet gebruikt | `MiniPuzzleHost.cs` laadt de oorspronkelijke acht `minipuzzles`-scenes |
 | Memory en Rhythm hebben geen definitieve native overwinning | Hack kon niet vanzelf worden voltooid | Externe eindvoorwaarden: 3 rondes / 500 punten, zoals bevestigd |
 | Tijdens een puzzel ontbrak een terugweg naar de game | Alleen opnieuw beginnen was beschikbaar | Externe Cancel-knop en Escape beëindigen de poging zonder succes |
 | Native puzzelpanelen hebben verschillende afmetingen en krappe sliders | Bediening kon te klein of onhandig geplaatst zijn | Layout van de geladen instantie aangepast; bronbestanden behouden |
-| Gecombineerde player verwachtte een ander Body-nodetype | C# en playerscene sloten niet op elkaar aan | `CombatPlayer.tscn` gebruikt het verwachte AnimatedSprite2D met bestaande frames |
+| Gecombineerde player verwachtte een ander Body-nodetype | C# en playerscene sloten niet op elkaar aan | `Player.tscn` gebruikt het verwachte AnimatedSprite2D met bestaande frames |
 | Pijl kende geen gezamenlijke questselectie | Tegenstrijdige doelen of richting door leegte/muren | Journal kiest één quest; navigator levert één bereikbaar tussenpunt |
 | Deurcollider wordt later in de physics-stap uitgeschakeld | Een lege route kon na het openen gecachet blijven | Collisiongrid na twee physics-frames verversen en daarna de route opnieuw berekenen, ook bij stilstaande speler |
 | Tab tijdens combat kon een journal-verzoek achterlaten | Questvenster opende onverwacht na het gevecht | Questinvoer buiten verkennen afwijzen en achtergebleven verzoeken wissen |

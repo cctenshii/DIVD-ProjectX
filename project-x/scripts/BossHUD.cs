@@ -1,0 +1,105 @@
+using Godot;
+using System;
+
+namespace ProjectX;
+
+public partial class BossHUD : CanvasLayer
+{
+	public Action StartPressed, RetryPressed, MenuPressed, ResumePressed;
+	public MiniPuzzleHost Hack { get; private set; }
+	public InstructionPopup Instructions { get; private set; }
+	public ProgressBar PlayerBar { get; private set; }
+	public Control HackOverlay { get; private set; }
+	public bool Initialized { get; private set; }
+	private Control _baseUI;
+	private Control _menu, _ending, _pause, _banner, _top;
+	private Label _playerText, _bossText, _phase, _dash, _context, _message, _bannerTitle, _bannerBody, _endTitle, _endBody;
+	private ProgressBar _bossBar;
+	private StyleBoxFlat _healthFill;
+	private Control Root(string name)
+	{
+		var root = new Control { Name = name, Size = new(1920, 1080), MouseFilter = Control.MouseFilterEnum.Ignore, Theme = RetroUI.MakeTheme() };
+		AddChild(root); return root;
+	}
+	private Control Backdrop(string name)
+	{
+		var root = Root(name); root.MouseFilter = Control.MouseFilterEnum.Stop;
+		root.AddChild(new ColorRect { Size = root.Size, Color = new Color(.02f, .04f, .07f, .88f), MouseFilter = Control.MouseFilterEnum.Ignore });
+		return root;
+	}
+	public override void _Ready()
+	{
+		Layer = 10;
+		var baseUI = Root("Status"); _baseUI = baseUI;
+		_message = RetroUI.Label(baseUI, "", new(64, 998, 1350, 40), 26);
+		_context = RetroUI.Label(baseUI, "", new(64, 1042, 1400, 30), 22, RetroUI.Muted);
+		_dash = RetroUI.Label(baseUI, "", new(1480, 1010, 380, 40), 26, RetroUI.Accent);
+		HackOverlay = Root("HackOverlay"); HackOverlay.MouseFilter = Control.MouseFilterEnum.Stop;
+		Hack = MiniPuzzleHost.Scene.Instantiate<MiniPuzzleHost>(); Hack.Position = new(160, 100); HackOverlay.AddChild(Hack); HackOverlay.Hide();
+		_banner = Root("StageBanner");
+		var bannerPanel = RetroUI.Panel(_banner, new(480, 390, 960, 260), new Color(.05f, .1f, .16f, .94f));
+		_bannerTitle = RetroUI.Label(bannerPanel, "", new(40, 38, 880, 70), 52);
+		_bannerTitle.HorizontalAlignment = HorizontalAlignment.Center;
+		_bannerBody = RetroUI.Label(bannerPanel, "", new(40, 126, 880, 80), 28, RetroUI.Accent);
+		_bannerBody.HorizontalAlignment = HorizontalAlignment.Center; _banner.Hide();
+		_menu = Backdrop("MainMenu");
+		RetroUI.Label(_menu, "PROJECT X", new(340, 160, 1240, 140), 112);
+		RetroUI.Label(_menu, "OMNI-TOOL  /  BOSS ARENA", new(348, 320, 1200, 70), 42, RetroUI.Accent);
+		RetroUI.Label(_menu, "LOW-FIDELITY TEST  //  3 PHASES  //  8 HACKS", new(348, 410, 1200, 50), 28, RetroUI.Muted);
+		RetroUI.Button(_menu, "START", new(350, 540, 480, 86), () => StartPressed?.Invoke());
+		RetroUI.Button(_menu, "QUIT", new(350, 650, 480, 76), () => GetTree().Quit());
+		RetroUI.Label(_menu, "V3.2  /  ROOT FOLDER LAYOUT", new(350, 870, 1200, 44), 24, RetroUI.Muted);
+		_ending = Backdrop("EndScreen");
+		_endTitle = RetroUI.Label(_ending, "", new(350, 250, 1400, 100), 76);
+		_endBody = RetroUI.Label(_ending, "", new(355, 380, 1200, 120), 36, RetroUI.Accent);
+		RetroUI.Button(_ending, "RETRY", new(355, 570, 480, 84), () => RetryPressed?.Invoke());
+		RetroUI.Button(_ending, "MAIN MENU", new(875, 570, 480, 84), () => MenuPressed?.Invoke()); _ending.Hide();
+		_pause = Backdrop("PauseScreen");
+		RetroUI.Label(_pause, "PAUSED", new(530, 290, 1100, 100), 72);
+		RetroUI.Button(_pause, "RESUME", new(530, 460, 800, 84), () => ResumePressed?.Invoke());
+		RetroUI.Button(_pause, "MAIN MENU", new(530, 570, 800, 84), () => MenuPressed?.Invoke()); _pause.Hide();
+		Instructions = GD.Load<PackedScene>("res://scenes/InstructionPopup.tscn").Instantiate<InstructionPopup>();
+		AddChild(Instructions);
+		// Last UI child: health stays above every hack and instruction popup.
+		_top = Root("PersistentHealth");
+		var topBackground = RetroUI.Panel(_top, new(40, 12, 1840, 72)); topBackground.MouseFilter = Control.MouseFilterEnum.Ignore;
+		_playerText = RetroUI.Label(topBackground, "", new(20, 3, 420, 34), 24);
+		PlayerBar = RetroUI.Bar(topBackground, new(20, 43, 420, 12), RetroUI.Accent);
+		_healthFill = (StyleBoxFlat)PlayerBar.GetThemeStylebox("fill");
+		_bossText = RetroUI.Label(topBackground, "", new(500, 3, 740, 34), 24);
+		_bossBar = RetroUI.Bar(topBackground, new(500, 43, 740, 12), new("df897e"));
+		_phase = RetroUI.Label(topBackground, "", new(1300, 16, 500, 40), 28, RetroUI.Accent);
+		Initialized = true;
+	}
+	public void UpdateStatus(Player player, Boss boss, bool intermission, int minions, float cooldown, string context)
+	{
+		if (!Initialized || player == null || boss == null) return;
+		PlayerBar.MaxValue = player.MaxHealth; PlayerBar.Value = player.Health;
+		_healthFill.BgColor = _healthFill.BorderColor = player.Health <= 30 ? new Color("f27777") : RetroUI.Accent;
+		_playerText.Text = $"PLAYER  {player.Health} / {player.MaxHealth} HP";
+		_bossBar.MaxValue = boss.MaxHealth; _bossBar.Value = boss.Health;
+		_bossText.Text = $"BOSS  {boss.SuccessfulHacks} / {Boss.RequiredHacks} HACKS   |   {boss.Intent}";
+		_phase.Text = intermission ? $"MINIONS LEFT: {minions}" : $"PHASE {boss.Stage} / {Boss.Phases}";
+		_dash.Text = player.DashReady ? "SHIFT  /  DASH READY" : "DASH RECHARGING";
+		_context.Text = cooldown > 0 ? FormattableString.Invariant($"OMNI-TOOL RECHARGING  {cooldown:0.0}s") : context;
+	}
+	public void SetExploring(bool exploring) { _baseUI.Visible = !exploring; _top.Visible = !exploring; }
+	public void Message(string message) => _message.Text = message;
+	public void ShowMenu() { _menu.Show(); _ending.Hide(); _pause.Hide(); _top.Hide(); HideHack(); HideBanner(); Instructions.CloseSilently(); }
+	public void HideMenu() { _menu.Hide(); _ending.Hide(); _pause.Hide(); _top.Show(); }
+	public void ShowHack(string target)
+	{
+
+		HackOverlay.Show();
+	}
+	public void HideHack() => HackOverlay.Hide();
+	public void Banner(string title, string body) { _bannerTitle.Text = title; _bannerBody.Text = body; _banner.Show(); }
+	public void HideBanner() => _banner.Hide();
+	public void Pause(bool paused) => _pause.Visible = paused;
+	public void End(bool win, int hacks, int minions)
+	{
+		_endTitle.Text = win ? "BOSS DISABLED" : "SIGNAL LOST";
+		_endBody.Text = $"{hacks} / {Boss.RequiredHacks} BOSS HACKS\n{minions} MINIONS DISABLED";
+		HideHack(); HideBanner(); Instructions.CloseSilently(); _ending.Show();
+	}
+}

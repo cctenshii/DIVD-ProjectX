@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://bqs7mukrcfo7m"]
 
-[ext_resource type="Script" uid="uid://ua6o52abh7jh" path="res://scripts/PXBossArena.cs" id="1"]
-[ext_resource type="Script" uid="uid://c3mjwjg01go7j" path="res://scripts/PXArenaTerrain.cs" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/CombatPlayer.tscn" id="3"]
+[ext_resource type="Script" uid="uid://ua6o52abh7jh" path="res://scripts/BossArena.cs" id="1"]
+[ext_resource type="Script" uid="uid://c3mjwjg01go7j" path="res://scripts/ArenaTerrain.cs" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/Boss.tscn" id="4"]
-[ext_resource type="Script" uid="uid://bvcahwhvmnvk0" path="res://scripts/PXBossHUD.cs" id="5"]
+[ext_resource type="Script" uid="uid://bvcahwhvmnvk0" path="res://scripts/BossHUD.cs" id="5"]
 
 [node name="BossArena" type="Node2D" unique_id=1324208053]
 script = ExtResource("1")

@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://0qu7e510dt1p"]
+[gd_scene format=3 uid="uid://b37y6lga711b7"]
 
 [ext_resource type="Script" uid="uid://d0tf1nab4kbw6" path="res://scripts/Doors.cs" id="1_ik3nm"]
 [ext_resource type="Texture2D" uid="uid://csvstuwi2fai0" path="res://assets/images/effects/doors-sprite.png" id="2_4ybfh"]

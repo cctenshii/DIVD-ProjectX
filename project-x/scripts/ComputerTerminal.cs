@@ -1,5 +1,5 @@
 using Godot;
-using ProjectXBossArenaPrototype;
+using ProjectX;
 
 public partial class ComputerTerminal : QuestInteractable
 {
@@ -119,7 +119,7 @@ public partial class ComputerTerminal : QuestInteractable
 			Name = "TerminalLockedUI",
 			Size = new Vector2(1920, 1080),
 			MouseFilter = Control.MouseFilterEnum.Stop,
-			Theme = PXRetroUI.MakeTheme()
+			Theme = RetroUI.MakeTheme()
 		};
 		_lockedDialogueLayer.AddChild(root);
 
@@ -130,18 +130,18 @@ public partial class ComputerTerminal : QuestInteractable
 			MouseFilter = Control.MouseFilterEnum.Ignore
 		});
 
-		var panel = PXRetroUI.Panel(root, new Rect2(440, 320, 1040, 390));
-		PXRetroUI.Label(panel, LockedTitle, new Rect2(48, 36, 944, 64), 46, new Color("ff4d6d"));
+		var panel = RetroUI.Panel(root, new Rect2(440, 320, 1040, 390));
+		RetroUI.Label(panel, LockedTitle, new Rect2(48, 36, 944, 64), 46, new Color("ff4d6d"));
 
 		// Show live progress of how many controllers are currently aligned
 		int alignedCount = GetAlignedControllerCount();
 		int totalCount = PuzzleControllers?.Length ?? 0;
 		string fullMessage = $"{LockedMessage}\nCONTROLLERS ALIGNED: {alignedCount}/{totalCount}";
 
-		var bodyLabel = PXRetroUI.Label(panel, fullMessage, new Rect2(48, 120, 944, 140), 28, new Color("55ead4"));
+		var bodyLabel = RetroUI.Label(panel, fullMessage, new Rect2(48, 120, 944, 140), 28, new Color("55ead4"));
 		bodyLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
 
-		PXRetroUI.Button(panel, "ACKNOWLEDGE  /  ENTER", new Rect2(48, 276, 944, 72), CloseLockedDialogue);
+		RetroUI.Button(panel, "ACKNOWLEDGE  /  ENTER", new Rect2(48, 276, 944, 72), CloseLockedDialogue);
 
 		GetTree().Root.AddChild(_lockedDialogueLayer);
 	}
@@ -246,7 +246,7 @@ public partial class ComputerTerminal : QuestInteractable
 	private void SetPlayerLocked(Node2D player, bool locked)
 	{
 		if (!IsInstanceValid(player)) return;
-		if (player is PXArenaPlayer combatPlayer) combatPlayer.Locked = locked;
+		if (player is Player combatPlayer) combatPlayer.Locked = locked;
 		else player.Set("locked", locked);
 		if (player is CharacterBody2D body) body.Velocity = Vector2.Zero;
 	}

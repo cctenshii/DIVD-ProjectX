@@ -1,8 +1,8 @@
 using Godot;
 
-namespace ProjectXBossArenaPrototype;
+namespace ProjectX;
 
-public partial class PXArenaBoss : CharacterBody2D
+public partial class Boss : CharacterBody2D
 {
 	public enum BrainState { Chasing, Searching, Wandering }
 	[Signal] public delegate void HealthChangedEventHandler(int current, int maximum);
@@ -43,7 +43,7 @@ public partial class PXArenaBoss : CharacterBody2D
 	[Export] public float BaseChaseSpeed { get; set; } = 195f;
 
 	private readonly RandomNumberGenerator _random = new();
-	private PXArenaPlayer _player;
+	private Player _player;
 	private Area2D _contact;
 	private Polygon2D _body;
 	private Label _prompt;
@@ -81,17 +81,17 @@ public partial class PXArenaBoss : CharacterBody2D
 		}
 		_prompt = GetNode<Label>("HackPrompt");
 		_name = GetNode<Label>("Name");
-		_name.AddThemeFontOverride("font", PXRetroUI.Font);
-		_name.AddThemeColorOverride("font_color", PXRetroUI.Ink);
-		_name.AddThemeFontSizeOverride("font_size", PXRetroUI.Size(22));
-		_prompt.AddThemeFontOverride("font", PXRetroUI.Font);
-		_prompt.AddThemeColorOverride("font_color", PXRetroUI.Accent);
+		_name.AddThemeFontOverride("font", RetroUI.Font);
+		_name.AddThemeColorOverride("font_color", RetroUI.Ink);
+		_name.AddThemeFontSizeOverride("font_size", RetroUI.Size(22));
+		_prompt.AddThemeFontOverride("font", RetroUI.Font);
+		_prompt.AddThemeColorOverride("font_color", RetroUI.Accent);
 		// The old timer node stays compatible with the original scene.
 		GetNode<Timer>("WanderTimer").Stop();
 		ResetBoss(GlobalPosition);
 	}
 
-	public void SetTarget(PXArenaPlayer player) => _player = player;
+	public void SetTarget(Player player) => _player = player;
 
 	/// <summary>Shows or hides the boss completely (visual, body collision and contact damage).</summary>
 	public void SetPresent(bool present)
@@ -189,7 +189,7 @@ public partial class PXArenaBoss : CharacterBody2D
 		foreach (Node2D body in _contact.GetOverlappingBodies())
 		{
 			int damage = 12 + Stage * 3;
-			if (body is PXArenaPlayer player && !player.Locked && player.TakeDamage(damage, GlobalPosition))
+			if (body is Player player && !player.Locked && player.TakeDamage(damage, GlobalPosition))
 				EmitSignal(SignalName.ContactHit, damage);
 		}
 	}
@@ -315,9 +315,9 @@ public partial class PXArenaBoss : CharacterBody2D
 			DrawArc(Vector2.Zero, 61, _lookAngle - 0.55f, _lookAngle + 0.55f, 20, new Color("c79f33"), 4, true);
 		if (StunRemaining > 0 || PhaseFrozen)
 		{
-			DrawArc(Vector2.Zero, 62, 0, Mathf.Tau, 48, PXRetroUI.Accent, 3);
-			DrawLine(new(-12, -132), new(-12, -118), PXRetroUI.Accent, 5);
-			DrawLine(new(12, -132), new(12, -118), PXRetroUI.Accent, 5);
+			DrawArc(Vector2.Zero, 62, 0, Mathf.Tau, 48, RetroUI.Accent, 3);
+			DrawLine(new(-12, -132), new(-12, -118), RetroUI.Accent, 5);
+			DrawLine(new(12, -132), new(12, -118), RetroUI.Accent, 5);
 		}
 		if (_windup <= 0 || Locked || PhaseFrozen || StunRemaining > 0) return;
 		Color warning = _radialAttack ? new Color(0.63f, 0.2f, 0.65f, 0.55f) : new Color(0.8f, 0.42f, 0.05f, 0.65f);

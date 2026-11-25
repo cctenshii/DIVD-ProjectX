@@ -1,5 +1,5 @@
 using Godot;
-using ProjectXBossArenaPrototype;
+using ProjectX;
 
 public partial class Enemy : QuestInteractable
 {
@@ -87,7 +87,7 @@ public partial class Enemy : QuestInteractable
 			Name = "EnemyBreachUI",
 			Size = new Vector2(1920, 1080),
 			MouseFilter = Control.MouseFilterEnum.Stop,
-			Theme = PXRetroUI.MakeTheme()
+			Theme = RetroUI.MakeTheme()
 		};
 		_dialogueLayer.AddChild(root);
 
@@ -99,14 +99,14 @@ public partial class Enemy : QuestInteractable
 			MouseFilter = Control.MouseFilterEnum.Ignore
 		});
 
-		var panel = PXRetroUI.Panel(root, new Rect2(440, 320, 1040, 390));
-		PXRetroUI.Label(panel, BreachTitle, new Rect2(48, 36, 944, 64), 46, new Color("ff4d6d"));
+		var panel = RetroUI.Panel(root, new Rect2(440, 320, 1040, 390));
+		RetroUI.Label(panel, BreachTitle, new Rect2(48, 36, 944, 64), 46, new Color("ff4d6d"));
 
 		string formattedMessage = $"{BreachMessage}\nSECURITY LAYERS: {Mathf.Max(1, HitsToDefeat)}";
-		var bodyLabel = PXRetroUI.Label(panel, formattedMessage, new Rect2(48, 120, 944, 140), 28, new Color("55ead4"));
+		var bodyLabel = RetroUI.Label(panel, formattedMessage, new Rect2(48, 120, 944, 140), 28, new Color("55ead4"));
 		bodyLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
 
-		PXRetroUI.Button(panel, "ENGAGE  /  ENTER", new Rect2(48, 276, 944, 72), ConfirmBreachAndStartHack);
+		RetroUI.Button(panel, "ENGAGE  /  ENTER", new Rect2(48, 276, 944, 72), ConfirmBreachAndStartHack);
 
 		GetTree().Root.AddChild(_dialogueLayer);
 	}
@@ -161,7 +161,7 @@ public partial class Enemy : QuestInteractable
 	private void SetPlayerLocked(Node2D player, bool locked)
 	{
 		if (!IsInstanceValid(player)) return;
-		if (player is PXArenaPlayer combatPlayer) combatPlayer.Locked = locked;
+		if (player is Player combatPlayer) combatPlayer.Locked = locked;
 		else player.Set("locked", locked);
 		if (player is CharacterBody2D body) body.Velocity = Vector2.Zero;
 	}

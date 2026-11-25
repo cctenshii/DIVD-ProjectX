@@ -1,5 +1,5 @@
 using Godot;
-using ProjectXBossArenaPrototype;
+using ProjectX;
 
 // Quest progress is independent; only SelectedQuest controls the single route arrow.
 public partial class QuestJournal : Node

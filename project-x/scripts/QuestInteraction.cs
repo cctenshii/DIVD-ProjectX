@@ -1,6 +1,6 @@
 using Godot;
 using System.Collections.Generic;
-using ProjectXBossArenaPrototype;
+using ProjectX;
 
 // E -> nearest eligible target -> puzzle -> result -> Continue -> exploration.
 // C# owns quest state; the existing GDScript player exposes only its movement lock.
@@ -14,7 +14,7 @@ public partial class QuestInteraction : CanvasLayer
     private Label _mainStatus, _sideStatus;
     private bool _toggleJournal;
     public Node2D Player { get; private set; }
-    public PXMiniPuzzleHost Hack { get; private set; }
+    public MiniPuzzleHost Hack { get; private set; }
     public Node2D NavigationTarget { get; private set; }
     public QuestInteractable NearbyTarget { get; private set; }
     private readonly List<QuestInteractable> _targets = new();
@@ -29,36 +29,36 @@ public partial class QuestInteraction : CanvasLayer
     public override void _Ready()
     {
         Layer = 30;
-        _root = new Control { Name = "QuestUI", Size = new(1920, 1080), MouseFilter = Control.MouseFilterEnum.Ignore, Theme = PXRetroUI.MakeTheme() };
+        _root = new Control { Name = "QuestUI", Size = new(1920, 1080), MouseFilter = Control.MouseFilterEnum.Ignore, Theme = RetroUI.MakeTheme() };
         AddChild(_root);
-        var status = PXRetroUI.Panel(_root, new(32, 920, 1856, 128));
+        var status = RetroUI.Panel(_root, new(32, 920, 1856, 128));
         status.MouseFilter = Control.MouseFilterEnum.Ignore;
-        _message = PXRetroUI.Label(status, "WASD / ARROWS = MOVE   /   E = INTERACT", new(24, 12, 1808, 40), 26);
-        _prompt = PXRetroUI.Label(status, "", new(24, 66, 1808, 40), 28, new Color("55ead4"));
-        var objectivePanel = PXRetroUI.Panel(_root, new(32, 24, 1200, 80));
+        _message = RetroUI.Label(status, "WASD / ARROWS = MOVE   /   E = INTERACT", new(24, 12, 1808, 40), 26);
+        _prompt = RetroUI.Label(status, "", new(24, 66, 1808, 40), 28, new Color("55ead4"));
+        var objectivePanel = RetroUI.Panel(_root, new(32, 24, 1200, 80));
         objectivePanel.MouseFilter = Control.MouseFilterEnum.Ignore;
-        _objective = PXRetroUI.Label(objectivePanel, "", new(24, 12, 1152, 52), 26);
+        _objective = RetroUI.Label(objectivePanel, "", new(24, 12, 1152, 52), 26);
         _overlay = new Control { Name = "PuzzleOverlay", Size = _root.Size, MouseFilter = Control.MouseFilterEnum.Stop };
         _root.AddChild(_overlay);
         _overlay.AddChild(new ColorRect { Size = _root.Size, Color = new Color(.02f, .04f, .07f, .88f), MouseFilter = Control.MouseFilterEnum.Ignore });
-        Hack = new PXMiniPuzzleHost { Position = new(160, 100) }; _overlay.AddChild(Hack);
+        Hack = MiniPuzzleHost.Scene.Instantiate<MiniPuzzleHost>(); Hack.Position = new(160, 100); _overlay.AddChild(Hack);
         Hack.Finished += success => _hackResult = success;
         _overlay.Hide();
-        _result = PXRetroUI.Panel(_root, new(420, 300, 1080, 480));
-        _resultTitle = PXRetroUI.Label(_result, "", new(48, 40, 984, 70), 48);
-        _resultBody = PXRetroUI.Label(_result, "", new(48, 140, 984, 160), 30, new Color("55ead4"));
+        _result = RetroUI.Panel(_root, new(420, 300, 1080, 480));
+        _resultTitle = RetroUI.Label(_result, "", new(48, 40, 984, 70), 48);
+        _resultBody = RetroUI.Label(_result, "", new(48, 140, 984, 160), 30, new Color("55ead4"));
         _resultBody.AutowrapMode = TextServer.AutowrapMode.WordSmart;
-        PXRetroUI.Button(_result, "CONTINUE  /  ENTER", new(48, 340, 984, 84), () => _continueRequested = true);
+        RetroUI.Button(_result, "CONTINUE  /  ENTER", new(48, 340, 984, 84), () => _continueRequested = true);
         _result.Hide();
-        PXRetroUI.Button(_root, "QUESTS / TAB", new(1568, 24, 320, 64), () => _toggleJournal = true);
-        _journalPanel = PXRetroUI.Panel(_root, new(320, 180, 1280, 680));
-        PXRetroUI.Label(_journalPanel, "QUEST JOURNAL", new(48, 28, 1184, 70), 48);
-        PXRetroUI.Label(_journalPanel, "Track one quest. The arrow follows its route; both quests keep their progress.", new(48, 106, 1184, 48), 24);
-        _mainStatus = PXRetroUI.Label(_journalPanel, "", new(48, 194, 1140, 70), 30);
-        PXRetroUI.Button(_journalPanel, "TRACK MAIN QUEST", new(48, 278, 550, 70), () => SelectQuest(0));
-        _sideStatus = PXRetroUI.Label(_journalPanel, "", new(48, 390, 1140, 70), 30);
-        PXRetroUI.Button(_journalPanel, "TRACK SIDE QUEST", new(48, 474, 550, 70), () => SelectQuest(1));
-        PXRetroUI.Button(_journalPanel, "CLOSE / TAB", new(800, 570, 420, 64), () => _toggleJournal = true);
+        RetroUI.Button(_root, "QUESTS / TAB", new(1568, 24, 320, 64), () => _toggleJournal = true);
+        _journalPanel = RetroUI.Panel(_root, new(320, 180, 1280, 680));
+        RetroUI.Label(_journalPanel, "QUEST JOURNAL", new(48, 28, 1184, 70), 48);
+        RetroUI.Label(_journalPanel, "Track one quest. The arrow follows its route; both quests keep their progress.", new(48, 106, 1184, 48), 24);
+        _mainStatus = RetroUI.Label(_journalPanel, "", new(48, 194, 1140, 70), 30);
+        RetroUI.Button(_journalPanel, "TRACK MAIN QUEST", new(48, 278, 550, 70), () => SelectQuest(0));
+        _sideStatus = RetroUI.Label(_journalPanel, "", new(48, 390, 1140, 70), 30);
+        RetroUI.Button(_journalPanel, "TRACK SIDE QUEST", new(48, 474, 550, 70), () => SelectQuest(1));
+        RetroUI.Button(_journalPanel, "CLOSE / TAB", new(800, 570, 420, 64), () => _toggleJournal = true);
         _journalPanel.Hide(); _root.Hide();
     }
 
@@ -93,7 +93,7 @@ public partial class QuestInteraction : CanvasLayer
         if (!IsInstanceValid(Player)) return;
         if (!IsInstanceValid(Journal)) Journal = GetTree().GetFirstNodeInGroup("QuestJournal") as QuestJournal;
         // The optional World console must not overlay or interrupt the boss HUD.
-        if (Player.GetParent() is PXBossArena arena && arena.State != PXBossArena.ArenaState.Exploring)
+        if (Player.GetParent() is BossArena arena && arena.State != BossArena.ArenaState.Exploring)
         {
             _root.Hide(); _interactRequested = _toggleJournal = _continueRequested = false; return;
         }
@@ -122,7 +122,7 @@ public partial class QuestInteraction : CanvasLayer
     public override void _UnhandledInput(InputEvent input)
     {
         if (_targets.Count == 0 || input is not InputEventKey key || !key.Pressed || key.Echo) return;
-        if (IsInstanceValid(Player) && Player.GetParent() is PXBossArena arena && arena.State != PXBossArena.ArenaState.Exploring) return;
+        if (IsInstanceValid(Player) && Player.GetParent() is BossArena arena && arena.State != BossArena.ArenaState.Exploring) return;
         if (key.Keycode == Key.Tab || (key.Keycode == Key.Escape && State == InteractionState.Journal))
         { _toggleJournal = true; GetViewport().SetInputAsHandled(); }
         else if (State == InteractionState.Result && key.Keycode == Key.Enter)
@@ -151,7 +151,7 @@ public partial class QuestInteraction : CanvasLayer
             if (distance < navigationDistance) { navigationDistance = distance; NavigationTarget = target; }
             if (distance < nearest && target.CanInteract(Player)) { nearest = distance; NearbyTarget = target; }
         }
-        _root.Visible = Journal != null || Player is not PXArenaPlayer || Busy || NearbyTarget != null;
+        _root.Visible = Journal != null || Player is not ProjectX.Player || Busy || NearbyTarget != null;
         if (Journal != null)
         {
             NavigationTarget = Busy ? null : Journal.Navigator.Guide(Player.GlobalPosition, Journal.Objective());
@@ -194,7 +194,7 @@ public partial class QuestInteraction : CanvasLayer
     private void SetPlayerLocked(bool locked)
     {
         if (!IsInstanceValid(Player)) return;
-        if (Player is PXArenaPlayer combatPlayer) combatPlayer.Locked = locked;
+        if (Player is ProjectX.Player combatPlayer) combatPlayer.Locked = locked;
         else Player.Set("locked", locked);
         if (Player is CharacterBody2D body) body.Velocity = Vector2.Zero;
     }

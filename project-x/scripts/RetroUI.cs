@@ -1,9 +1,9 @@
 using Godot;
 using System;
 
-namespace ProjectXBossArenaPrototype;
+namespace ProjectX;
 
-public static class PXRetroUI
+public static class RetroUI
 {
 	private static Font _font;
 	public static Font Font

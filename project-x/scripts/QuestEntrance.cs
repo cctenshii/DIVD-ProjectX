@@ -1,6 +1,6 @@
 using Godot;
 using System.Threading.Tasks;
-using ProjectXBossArenaPrototype;
+using ProjectX;
 
 public partial class QuestEntrance : Area2D
 {
@@ -110,7 +110,7 @@ public partial class QuestEntrance : Area2D
 	{
 		if (!IsInstanceValid(player)) return;
 
-		if (player is PXArenaPlayer combatPlayer)
+		if (player is Player combatPlayer)
 		{
 			combatPlayer.Locked = locked;
 		}

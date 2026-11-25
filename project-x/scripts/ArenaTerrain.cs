@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-namespace ProjectXBossArenaPrototype;
+namespace ProjectX;
 
 // Random combat cover for the boss arena. A new layout is generated for every phase.
 //
@@ -14,7 +14,7 @@ namespace ProjectXBossArenaPrototype;
 //     bake a navigation grid; drop the newest obstacle until every free cell
 //     is reachable again
 //   keep the most populated connected layout and build its colliders/visuals
-public partial class PXArenaTerrain : Node2D
+public partial class ArenaTerrain : Node2D
 {
 	[Export] public Rect2 Bounds { get; set; } = new(64, 144, 1792, 824);
 	[Export] public bool BuildWalls { get; set; } = true;
