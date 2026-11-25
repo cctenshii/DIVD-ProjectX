@@ -133,20 +133,28 @@ func _linear_draw_callback() -> void:
 
 
 func _draw() -> void:
-	# Draw lines between connected left and right buttons relative to the canvas
-	for l_idx in connections:
-		var r_idx = connections[l_idx]
-		
-		var l_btn = left_buttons[l_idx]
-		var r_btn = right_buttons[r_idx]
-		
-		# Get center positions of the buttons relative to line_canvas
-		var start_pos = l_btn.global_position + (l_btn.size / 2.0) - line_canvas.global_position
-		var end_pos = r_btn.global_position + (r_btn.size / 2.0) - line_canvas.global_position
-		
-		# Draw a smooth connection cable line
-		line_canvas.draw_line(start_pos, end_pos, Color(0.2, 0.8, 1.0), 6.0, true)
+	# Fix: drawing on another node only works inside THAT node's draw callback.
+	# The cables are now drawn in _on_line_canvas_draw() below.
+	pass
 
 
 func _on_line_canvas_draw() -> void:
-	pass # Replace with function body.
+	# Draw lines between connected left and right buttons relative to the canvas.
+	# Pseudocode: for each connection -> take the inner edge of both buttons ->
+	# convert to LineCanvas space (also correct when the puzzle is scaled) -> draw cable.
+	var to_canvas: Transform2D = line_canvas.get_global_transform().affine_inverse()
+	var cable_color := Color(0.3, 1.0, 0.5) if puzzle_solved else Color(0.2, 0.8, 1.0)
+	for l_idx in connections:
+		var r_idx = connections[l_idx]
+
+		var l_btn: Control = left_buttons[l_idx]
+		var r_btn: Control = right_buttons[r_idx]
+
+		# Right edge of the left button and left edge of the right button
+		var start_pos = to_canvas * (l_btn.get_global_transform() * Vector2(l_btn.size.x, l_btn.size.y / 2.0))
+		var end_pos = to_canvas * (r_btn.get_global_transform() * Vector2(0.0, r_btn.size.y / 2.0))
+
+		# Draw a smooth connection cable line with plugs at both ends
+		line_canvas.draw_line(start_pos, end_pos, cable_color, 6.0, true)
+		line_canvas.draw_circle(start_pos, 7.0, cable_color)
+		line_canvas.draw_circle(end_pos, 7.0, cable_color)

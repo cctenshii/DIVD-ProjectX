@@ -48,7 +48,8 @@ func run():
 					for note in puzzle.notes.duplicate():
 						if abs(note.y_pos - puzzle.target_y_position) < 15:
 							var event = InputEventKey.new()
-							event.keycode = [KEY_W,KEY_A,KEY_S,KEY_D][note.lane]
+							# Puzzles 2.0: use the puzzle's own lane keys (QWER).
+							event.keycode = puzzle.LANE_KEYS[note.lane]
 							event.pressed = true
 							puzzle._unhandled_input(event)
 					await frames(1)

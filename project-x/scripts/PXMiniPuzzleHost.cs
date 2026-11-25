@@ -53,8 +53,11 @@ public partial class PXMiniPuzzleHost : Control
         var entry = Flow.Get("puzzles").AsGodotArray()[CurrentKind].AsGodotDictionary();
         Flow.Set("selected_puzzle", entry);
         InstructionTitle = entry["title"].AsString();
-        string goal = CurrentKind == 0 ? "Complete 3 memory rounds." : CurrentKind == 1 ? "Reach 500 rhythm points." : "Solve the puzzle.";
-        InstructionBody = entry["description"].AsString() + "\n\n" + goal + " You have 60 seconds. Cancel ends this attempt.";
+        string goal = CurrentKind == 0 ? "Complete 3 memory rounds." : CurrentKind == 1 ? "Reach 500 rhythm points with Q W E R. More than 3 misses: press Restart." : "Solve the puzzle.";
+        string nativeText = entry["description"].AsString();
+        // Puzzles 2.0 moved the rhythm lanes to QWER; the shared description still says WASD.
+        if (CurrentKind == 1) nativeText = nativeText.Replace("WASD", "QWER");
+        InstructionBody = nativeText + "\n\n" + goal + " You have 60 seconds. Cancel ends this attempt.";
         Flow.GetNode("Intro").Call("setup", InstructionTitle, InstructionBody);
         Flow.GetNode("Intro").Connect("cancel_requested", Callable.From(() => Resolve(false)));
         Flow.GetNode("TimerDisplay").Connect("time_up", Callable.From(() => Resolve(false)));
@@ -109,7 +112,8 @@ public partial class PXMiniPuzzleHost : Control
         bool solved = CurrentKind switch
         {
             0 => puzzle.Get("round_number").AsInt32() >= 3 && puzzle.Get("player_index").AsInt32() == puzzle.Get("sequence").AsGodotArray().Count,
-            1 => puzzle.Get("score").AsInt32() >= 500,
+            // Puzzles 2.0 defines its own target_score (default 500).
+            1 => puzzle.Get("score").AsInt32() >= Mathf.Max(1, puzzle.Get("target_score").VariantType == Variant.Type.Nil ? 500 : puzzle.Get("target_score").AsInt32()),
             _ => puzzle.Get("puzzle_solved").AsBool()
         };
         if (solved) Resolve(true);
