@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://b0bedc4nx4op3"]
+
+[ext_resource type="Script" uid="uid://dusho7o78k8va" path="res://scripts/TutorialWorld.cs" id="1_cfv3y"]
+[ext_resource type="PackedScene" uid="uid://clb3stt01eb3" path="res://scenes/Player.tscn" id="2_ci5ev"]
+[ext_resource type="PackedScene" uid="uid://cw17you85qnn" path="res://scenes/main_map.tscn" id="2_pgr2e"]
+
+[node name="Tutorial" type="Node2D" unique_id=1855951267]
+script = ExtResource("1_cfv3y")
+
+[node name="UILayer" type="CanvasLayer" parent="." unique_id=2015041822]
+
+[node name="PanelContainer" type="PanelContainer" parent="UILayer" unique_id=530354564]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -90.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="UILayer/PanelContainer" unique_id=499084745]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/PanelContainer/MarginContainer" unique_id=449115298]
+layout_mode = 2
+
+[node name="PromptLabel" type="Label" parent="UILayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1553319602]
+layout_mode = 2
+
+[node name="StartGameButton" type="Button" parent="UILayer/PanelContainer/MarginContainer/VBoxContainer" unique_id=718000073]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8745098, 0.7647059, 0.11372549, 1)
+text = "Start Game"
+
+[node name="MainMap" parent="." unique_id=1396763503 instance=ExtResource("2_pgr2e")]
+position = Vector2(-1733, -1773)
+
+[node name="Player" parent="." unique_id=984035576 instance=ExtResource("2_ci5ev")]
