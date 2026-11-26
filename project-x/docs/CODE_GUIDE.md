@@ -1,11 +1,12 @@
 # Codegids en pseudocode
 
-F5: `project.godot` → `scenes/World.tscn` → market. De gameplay blijft C#; de oorspronkelijke minipuzzels, questpijl en bewaarde design-/NPC-code blijven GDScript.
+F5: `project.godot` → `scenes/Tutorial.tscn` (Sissi: WASD + Shift-stappen) → Start Game → intro (`IntroFamily.tscn` → `IntroSpaceshipStorage.tscn`, of SKIP INTRO) → `scenes/World.tscn` → market. Het doel van Start Game staat als `MainGameScenePath` in `Tutorial.tscn`. De gameplay blijft C#; de oorspronkelijke minipuzzels, questpijl en bewaarde design-/NPC-code blijven GDScript.
 
 ## Verantwoordelijkheden
 
 | Onderdeel | Bestand | Verantwoordelijkheid |
 | --- | --- | --- |
+| Tutorial | `scenes/Tutorial.tscn`, `scripts/TutorialWorld.cs` | Sissi's stappen W/A/S/D/Shift en Start Game. Beweging en dash doet de echte `Player`; TutorialWorld beweegt alleen een speler zonder eigen controller. Eigen camera + `MapBoundary` in de scène |
 | Wereld | `scenes/World.tscn` | Bestaande map, marktspawn, NPC's, questkamers en boss samenbrengen |
 | Main quest / gevecht | `scripts/BossArena.cs` | Toegangsvoorwaarden, pauze, hacks, fasen, minions, overwinning en retry |
 | Speler | `scripts/Player.cs`, `scenes/Player.tscn` | C#-beweging, dash (`TryDash`, Shift + richting), HP, glow en animatieframes |

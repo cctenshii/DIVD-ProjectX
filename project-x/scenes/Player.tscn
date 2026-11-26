@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://clb3stt01eb3"]
 
 [ext_resource type="Script" path="res://scripts/Player.cs" id="1_g2els"]
 [ext_resource type="Texture2D" path="res://assets/tilesets/all-position-V2.png" id="2_qhqgy"]

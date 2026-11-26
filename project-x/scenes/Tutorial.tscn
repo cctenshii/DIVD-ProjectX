@@ -2,10 +2,12 @@
 
 [ext_resource type="Script" uid="uid://dusho7o78k8va" path="res://scripts/TutorialWorld.cs" id="1_cfv3y"]
 [ext_resource type="PackedScene" uid="uid://clb3stt01eb3" path="res://scenes/Player.tscn" id="2_ci5ev"]
-[ext_resource type="PackedScene" uid="uid://cw17you85qnn" path="res://scenes/main_map.tscn" id="2_pgr2e"]
+[ext_resource type="PackedScene" uid="uid://cw17you85qnn" path="res://scenes/MainMap.tscn" id="2_pgr2e"]
+[ext_resource type="Script" uid="uid://dihwklvq0lthl" path="res://scripts/MapBoundary.cs" id="3_boundary"]
 
 [node name="Tutorial" type="Node2D" unique_id=1855951267]
 script = ExtResource("1_cfv3y")
+MainGameScenePath = "res://scenes/IntroFamily.tscn"
 
 [node name="UILayer" type="CanvasLayer" parent="." unique_id=2015041822]
 
@@ -40,3 +42,10 @@ text = "Start Game"
 position = Vector2(-1733, -1773)
 
 [node name="Player" parent="." unique_id=984035576 instance=ExtResource("2_ci5ev")]
+
+[node name="MapBoundary" type="Node2D" parent="."]
+script = ExtResource("3_boundary")
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0

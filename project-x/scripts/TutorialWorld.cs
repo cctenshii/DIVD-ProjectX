@@ -1,3 +1,4 @@
+#nullable enable
 using Godot;
 
 public partial class TutorialWorld : Node2D
@@ -109,6 +110,14 @@ public partial class TutorialWorld : Node2D
 	public override void _PhysicsProcess(double delta)
 	{
 		if (_player == null)
+		{
+			return;
+		}
+
+		// Integration (merge): scenes/Player.tscn is the game's own Player (Player.cs), which already
+		// handles WASD/arrows and Shift-dash with the same speed and cooldown as in the World.
+		// Moving it here too would apply two movements per frame, so the tutorial only tracks the steps.
+		if (_player is ProjectX.Player)
 		{
 			return;
 		}

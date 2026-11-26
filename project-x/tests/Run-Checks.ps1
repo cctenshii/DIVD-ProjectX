@@ -15,6 +15,7 @@ New-Item -ItemType Directory -Path $logRoot -Force | Out-Null
 if ($LASTEXITCODE -ne 0) { throw 'C# build failed.' }
 $checks = @(
     @{ Name = 'import'; Args = @('--editor', '--import', '--quit'); Marker = '' },
+    @{ Name = 'tutorial'; Args = @('res://tests/TutorialTests.tscn'); Marker = 'TUTORIAL TESTS PASSED:' },
     @{ Name = 'quest'; Args = @('res://tests/QuestFlowTests.tscn'); Marker = 'QUEST TESTS PASSED:' },
     @{ Name = 'minipuzzles'; Args = @('--script', 'res://tests/MiniPuzzleTests.gd'); Marker = 'MINIPUZZLE TESTS PASSED:' },
     @{ Name = 'world'; Args = @('res://tests/WorldSmokeTests.tscn'); Marker = 'WORLD TESTS PASSED:' },
