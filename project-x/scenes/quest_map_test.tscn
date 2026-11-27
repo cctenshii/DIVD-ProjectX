@@ -54,7 +54,7 @@ position = Vector2(11811, 3256)
 PuzzleControllers = [NodePath("../RotationController"), NodePath("../RotationController2"), NodePath("../RotationController3"), NodePath("../RotationController4")]
 
 [node name="Player" parent="." unique_id=984035576 groups=["Player"] instance=ExtResource("2_ix4b4")]
-position = Vector2(7280, 4574)
+position = Vector2(7150, 2207)
 
 [node name="RotationController" parent="." unique_id=452575670 node_paths=PackedStringArray("LinkedComputer") instance=ExtResource("7_8jlq7")]
 position = Vector2(11618, 3473)
